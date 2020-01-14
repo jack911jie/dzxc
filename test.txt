@@ -3,4 +3,22 @@ Git is a version control system.
 Git is free software.
 
 第二次提交
+<<<<<<< HEAD
 在asus上的提交
+=======
+
+
+创建分支
+
+在小米上的提交
+
+第三次在小米上的提交
+
+
+第四次修改在小米上
+
+
+切换回dev 小米 
+
+大智小超01
+
