@@ -1,6 +1,7 @@
-哈哈哈
+哈哈
 Git is a version control system.
 Git is free software.
 
 第二次提交
 在asus上的提交
+在小米dzxc的仓库上更新
