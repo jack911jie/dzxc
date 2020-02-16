@@ -20,31 +20,43 @@ class sht_merge:
     
     def rd(self):
         print("* 正在读取数据... \n")
-        sht_0=pd.read_excel(self.filename,sheet_name=0)
-        sht_1=pd.read_excel(self.filename,sheet_name=1,usecols=[0,1,2,3,4,5,6,7,8])
-        sht_2=self.slct_ValidAgent() #先整理出有效的律所列表
-        sht_3=self.slct_dyw() #先整理出有效的不动产列表
+        sht_0=pd.read_excel(self.filename,sheet_name=0)  #一审及执行情况
+        sht_1=pd.read_excel(self.filename,sheet_name=1,usecols=[0,1,2,3,4,5]) #二审情况
+        sht_2=self.slct_ValidAgent() #先整理出有效的律所列表  代理方式
+        sht_3=self.slct_dyw() #先整理出有效的不动产列表    抵押物情况
+        sht_4=pd.read_excel(self.filename,sheet_name=4)  #代偿金额
         
         print("完成 \n * 正在处理数据... \n")
 
         res_1=sht_0.sort_values(by="案件名称") #表一按名称排序
         cls_2=sht_1.loc[sht_1['审级']==2]  #二审
         cls_3=sht_1.loc[sht_1['审级']==3]  #再审
-        # cls_4=sht_1.loc[sht_1['审级']==4]  #执行
+        cls_4=sht_1.loc[sht_1['审级']==4]  #执行
 
         
-        res=pd.merge(res_1,cls_2,left_on='案号',right_on='一审案号',how="left",suffixes=["","_二审"])                     .drop(columns=["一审案号","案件名称_二审","审级","主办_二审","副办_二审"])
-        res=pd.merge(res,cls_3,left_on='案号',right_on='一审案号',how="left",suffixes=["","_再审"])                     .drop(columns=["一审案号","案件名称_再审","审级","审理情况_再审","主办法官_再审","管辖法院_再审","主办_再审","副办_再审"])  
-        res=pd.merge(res,sht_2,left_on='案件名称',right_on='一审案件名称',how="left")                     .drop(columns=["一审案件名称"])
-        res=pd.merge(res,sht_3,left_on='案件名称',right_on='案件名称',how="left")
+        res=pd.merge(res_1,cls_2,left_on='案号',right_on='一审案号',how="left",suffixes=["","_二审"]) \
+                .drop(columns=["一审案号","案件名称_二审","审级"])
+        res=pd.merge(res,cls_3,left_on='案号',right_on='一审案号',how="left",suffixes=["","_再审"]) \
+                .drop(columns=["一审案号","案件名称_再审","审级","主办法官_再审","管辖法院_再审"])  
+        res=pd.merge(res,sht_2,left_on='案号',right_on='一审案号',how="left") \
+                .drop(columns=["一审案件名称"])
+        # res=pd.merge(res,sht_3,left_on='案件名称',right_on='案件名称',how="left")
+        # res=pd.merge(res,sht_4,left_on='案件名称',right_on='案件名称',how="left")
 
+        # order=["案件名称","起诉金额（元）","财务代偿余额（元）","抵押物情况","主办","副办","诉讼状态" \
+        #          ,"代理方式","律所名称","辅助机构"  \
+        #          ,"案号","案号_二审","案号_再审","执行案号","起诉日期" \
+        #          ,"立案日期","一审管辖法院","一审主办法官" \
+        #          ,"管辖法院","主办法官" \
+        #          ,"执行法院","执行主办法官" \
+        #          ,"备注"]
         
-        order=["户数","案件数","案件名称","起诉金额（元）","财务代偿余额（元）","抵押物情况","主办","副办","诉讼状态"                 ,"代理方式","律所名称","辅助机构"                 ,"案号","案号_二审","案号_再审","执行案号","起诉日期"                 ,"立案日期","一审情况","执行情况","一审管辖法院","一审主办法官"                 ,"审理情况","管辖法院","主办法官"                 ,"执行情况","执行法院","执行主办法官"                 ,"备注"]
-        
-        res=res[order]
-        res=res.rename(columns={"案号":"一审案号","案号_二审":"二审案号","案号_再审":"再审案号"                            ,"审理情况":"二审审理情况","管辖情况":"二审管辖情况","主办法官":"二审主办法官"                            })
+        # res=res[order]
+        # res=res.rename(columns={"案号":"一审案号","案号_二审":"二审案号","案号_再审":"再审案号" \
+        #          ,"审理情况":"二审审理情况","管辖情况":"二审管辖情况","主办法官":"二审主办法官"  \
+        #          })
 
-#         print(res)
+        print(res)
         self.res=res
         print("完成 \n ")
     
@@ -53,13 +65,21 @@ class sht_merge:
 
         sht_2=pd.read_excel(self.filename,sheet_name=2)
 
-        dl_1=sht_2.loc[sht_2["一审代理律所名称"]==sht_2["目前有效"]]             .drop(columns=["二审代理律所名称","再审代理律所名称","执行代理律所名称"])             .rename(columns={"一审代理律所名称":"律所名称"})
+        dl_1=sht_2.loc[sht_2["一审代理律所名称"]==sht_2["目前有效"]] \
+                        .drop(columns=["二审代理律所名称","再审代理律所名称","执行代理律所名称"]) \
+                                        .rename(columns={"一审代理律所名称":"律所名称"})
 
-        dl_2=sht_2.loc[sht_2["二审代理律所名称"]==sht_2["目前有效"]]             .drop(columns=["一审代理律所名称","再审代理律所名称","执行代理律所名称"])             .rename(columns={"二审代理律所名称":"律所名称"})
+        dl_2=sht_2.loc[sht_2["二审代理律所名称"]==sht_2["目前有效"]] \
+                        .drop(columns=["一审代理律所名称","再审代理律所名称","执行代理律所名称"]) \
+                                        .rename(columns={"二审代理律所名称":"律所名称"})
 
-        dl_3=sht_2.loc[sht_2["再审代理律所名称"]==sht_2["目前有效"]]             .drop(columns=["一审代理律所名称","二审代理律所名称","执行代理律所名称"])             .rename(columns={"再审代理律所名称":"律所名称"})
+        dl_3=sht_2.loc[sht_2["再审代理律所名称"]==sht_2["目前有效"]] \
+                        .drop(columns=["一审代理律所名称","二审代理律所名称","执行代理律所名称"]) \
+                                        .rename(columns={"再审代理律所名称":"律所名称"})
 
-        dl_4=sht_2.loc[sht_2["执行代理律所名称"]==sht_2["目前有效"]]             .drop(columns=["一审代理律所名称","二审代理律所名称","再审代理律所名称"])             .rename(columns={"执行代理律所名称":"律所名称"})
+        dl_4=sht_2.loc[sht_2["执行代理律所名称"]==sht_2["目前有效"]] \
+                        .drop(columns=["一审代理律所名称","二审代理律所名称","再审代理律所名称"]) \
+                                        .rename(columns={"执行代理律所名称":"律所名称"})
 
         dl=pd.concat([dl_1,dl_2,dl_3,dl_4]).drop(columns=["目前有效"])
         return dl    
@@ -104,10 +124,13 @@ class wt_excel:
         wb = opx.load_workbook(self.filename)
         sht = wb['Sheet1']
         sht.insert_rows(1,2)
+        sht.insert_columns(1,2)
         mrows=sht.max_row
         mcols=sht.max_column
     
         e="C"+str(mrows)
+
+
         
         n=4 #表格数据从第二行开始
         lst=[]
@@ -128,7 +151,7 @@ class wt_excel:
             g.append(g_0)
             
         gp=[]
-        col_to_merge=["C","E","F","G","H","K","L"] #需要合并的列坐标
+        col_to_merge=["A","C","E","F","G","H","K","L"] #需要合并的列坐标
         for i in g:
             if i[0]!=i[-1]:
                 for j in col_to_merge:
@@ -238,5 +261,5 @@ if __name__=="__main__":
     luo.rd()
     luo.wt()
     
-    wt=wt_excel("c:\\py\\lyy\\output.xlsx")
-    wt.wt()
+    # wt=wt_excel("c:\\py\\lyy\\output.xlsx")
+    # wt.wt()
