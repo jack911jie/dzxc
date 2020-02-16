@@ -30,7 +30,7 @@ class sht_merge:
         res_1=sht_0.sort_values(by="案件名称") #表一按名称排序
         cls_2=sht_1.loc[sht_1['审级']==2]  #二审
         cls_3=sht_1.loc[sht_1['审级']==3]  #再审
-        cls_4=sht_1.loc[sht_1['审级']==4]  #执行
+        # cls_4=sht_1.loc[sht_1['审级']==4]  #执行
 
         
         res=pd.merge(res_1,cls_2,left_on='案号',right_on='一审案号',how="left",suffixes=["","_二审"])                     .drop(columns=["一审案号","案件名称_二审","审级","主办_二审","副办_二审"])
@@ -232,7 +232,7 @@ class wt_excel:
             
         wb.save(self.outputname)
         print("完成\n")
-        a=input("")
+        a=input("按回车退出")
                         
 if __name__=="__main__":
     luo=sht_merge("c:\py\lyy\南宁市南方融资担保有限公司诉讼案件总表.xlsm")
@@ -241,4 +241,3 @@ if __name__=="__main__":
     
     wt=wt_excel("c:\py\lyy\output.xlsx")
     wt.wt()
-
