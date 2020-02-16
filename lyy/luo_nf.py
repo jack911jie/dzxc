@@ -146,8 +146,7 @@ class wt_excel:
         sht["Z2"].value="执行"
         sht["A1"].value="南宁市南方融资担保有限公司诉讼案件总表"
             
-        
-            
+                    
 #         self.adjust_fmt()
             
             
@@ -235,9 +234,9 @@ class wt_excel:
         a=input("按回车退出")
                         
 if __name__=="__main__":
-    luo=sht_merge("c:\py\lyy\南宁市南方融资担保有限公司诉讼案件总表.xlsm")
+    luo=sht_merge("c:\\py\\lyy\\ttttt.xlsm")
     luo.rd()
     luo.wt()
     
-    wt=wt_excel("c:\py\lyy\output.xlsx")
+    wt=wt_excel("c:\\py\\lyy\\output.xlsx")
     wt.wt()
