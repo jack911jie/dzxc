@@ -2,8 +2,6 @@
 # coding: utf-8
 
 # In[1]:
-
-
 import pandas as pd
 import openpyxl as opx
 from openpyxl import Workbook
@@ -13,11 +11,16 @@ import xlrd
 import os
 import time
 import socket
+from datetime import datetime, timedelta
+# import logging
+# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(lineno)d  - %(message)s')
+# logger = logging.getLogger(__name__)
 
 class sht_merge:
     def __init__(self,filename):
         pth=os.getcwd()      
         self.filename=os.path.join(pth,filename)
+        
     
     def rd(self):
         print("* 正在读取\"{}\" \n".format(self.filename))
@@ -117,13 +120,14 @@ class sht_merge:
         wt=pd.ExcelWriter(os.path.join(os.getcwd(),'output.xlsx'))
         self.res.to_excel(wt,index=False)
         wt.save()
-        print("完成 \n \n")
-    
+        # print("完成 \n \n")
+
 class wt_excel:
     def __init__(self,filename,outputname="报表.xlsx"):
         pth=os.getcwd()        
         self.filename=os.path.join(pth,filename)
         self.outputname=os.path.join(pth,outputname)
+        self.origin=os.path.join(pth,'南宁市南方融资担保有限公司诉讼案件子表.xlsm')
     
     def wt(self):
         print("* 正在写入数据，并调整格式... \n")
@@ -192,10 +196,6 @@ class wt_excel:
         sht["W2"].value="执行"
         sht["A1"].value="南宁市南方融资担保有限公司诉讼案件总表" 
                     
-#         self.adjust_fmt()
-            
-            
-#     def adjust_fmt(self):
 
         #调整格式     
         title_A_L=sht["A3:L3"]  
@@ -210,7 +210,7 @@ class wt_excel:
         n=0
         for i in sht["A2:L2"][0]:
             i.value=title_A_L[0][n].value
-#             print(i.value)
+            # print(i.value)
             n+=1
 
         sht["Y2"].value=title_Y.value
@@ -286,13 +286,140 @@ class wt_excel:
         print("完成 \n \n * 正在生成文件：{}... \n".format(self.outputname))
             
         wb.save(self.outputname)
-        print("完成\n")
-        a=input("按回车退出")
-                        
+        print("完成报表\n")
+        # a=input("按回车退出")
+
+    def to_txt(self,today):    
+        print('*正在处理数据...\n') 
+        # today='2019-7-13'
+        s_left=today.find('-')
+        s_right=today.rfind('-')
+        month=today[0:s_right] #月份
+        m=today[s_left+1:s_right]
+        if m[0]=='0':
+            m=m[-1]   # {4}
+        d=today[s_right+1:]
+        if d[0]=='0':
+            d=d[-1]
+
+        day_txt=m+'月'+d+'日'  #日期 {0}
+        
+        df1=pd.read_excel(self.filename)
+        df1['起诉日期']=pd.to_datetime(df1['起诉日期'],format="%Y-%m-%d")
+        
+        col_names=["户数","案件数","案件名称","起诉金额（元）","财务代偿余额（元）","抵押物情况","主办","副办","诉讼状态","代理方式","律所名称","辅助机构","一审案号","二审案号","再审案号","执行案号","起诉日期","立案日期","一审管辖法院","一审主办法官","二审管辖法院","二审主办法官","执行法院","执行主办法官","备注"]
+        # df2=pd.read_excel(self.outputname,skiprows=3,names=col_names)
+        
+        df_before_today=df1.loc[df1['起诉日期']<=today] #累计到录入时间点        
+        df1_qisuIndex=df1.set_index('起诉日期') #起诉日期索引
+        df1_qisuIndex=df1_qisuIndex[month]
+
+        #截至1月31日，包括政策性担保项目在内，我公司累计诉讼69户96件，起诉金额55034.87万元。【累计】
+        hushu_total=len(list(set(df_before_today['案件名称'].values)))                        #去重后，累计户数 {1}
+        num_totalcases=df_before_today.shape[0] #行数 ，即累计案件数 {2} {18}
+        amt_qisu=str((df_before_today['起诉金额（元）'].sum()/10000).round(2))+"万元"  #累计起诉金额  {3}
+
+        # 1月新增案件1起（诉都安润美泉农业科技），结清案件0起。【录入月】
+        num_case_new=df1_qisuIndex.shape[0] # 录入月份的新增案件数  {5}
+                                        #录入月份新增案件名称  {6}
+        _case=df1_qisuIndex['案件名称'].values
+        _case=list(set(_case)) #利用set函数去重
+        case=''
+        if _case:
+            for txt in _case:
+                case=case+txt+'、'
+            casenames='（'+case[0:-1]+'）'     
+        else:
+            casenames=''
+                                                         
+        num_case_done=df_before_today.loc[df_before_today['诉讼状态']=='结清'].shape[0] # 录入月份的结清案件数  {7}
+
+        #目前待开庭案件8件，涉及起诉金额4065.47万元......【累计】
+        
+        num_toopen_total=df_before_today.loc[df_before_today['诉讼状态']=='待开庭'].shape[0] #累计待开庭案件数   {8}
+        amt_toopen_total=str((df_before_today.loc[df_before_today['诉讼状态']=='待开庭']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计待开庭案件起诉金额 {9}
+        num_tojdg_total=df_before_today.loc[df_before_today['诉讼状态']=='待判决'].shape[0] #累计待判决案件数  {10}
+        amt_tojdg_total=str((df_before_today.loc[df_before_today['诉讼状态']=='待判决']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计待判决案件起诉金额 {11}
+        num_toexec_total=df_before_today.loc[df_before_today['诉讼状态']=='申请执行'].shape[0] #累计 准备申请执行 案件数  {12}
+        amt_toexec_total=str((df_before_today.loc[df_before_today['诉讼状态']=='申请执行']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计 准备申请执行 案件起诉金额 {13}
+        num_todo_total=df_before_today.loc[df_before_today['诉讼状态']=='执行'].shape[0] #累计 执行阶段 案件数 {14}
+        amt_todo_total=str((df_before_today.loc[df_before_today['诉讼状态']=='执行']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计 执行阶段 案件起诉金额 {15}
+        num_2nd_cases=df_before_today.loc[df_before_today['诉讼状态']=='二审'].shape[0] #二审案件数 {16}
+        amt_2nd_cases=str((df_before_today.loc[df_before_today['诉讼状态']=='二审']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计 二审 案件起诉金额 {17}
+        hushu_lawyerOffice=len(list(set(df_before_today.loc[df_before_today['代理方式']=='律所代理']['案件名称'].values))) #律所代理户数 {19}
+        num_lawyerOffice=df_before_today.loc[df_before_today['代理方式']=='律所代理'].shape[0] #律所代理数 {20}
+        amt_lawyerOffice=str((df_before_today.loc[df_before_today['代理方式']=='自己代理']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计 律所代理 案件起诉金额 {21}
+        hushu_self=len(list(set(df_before_today.loc[df_before_today['代理方式']=='自己代理']['案件名称'].values))) #自行代理户数 {22}
+        num_self=df_before_today.loc[df_before_today['代理方式']=='自己代理'].shape[0] #自行代理数 {23}
+        amt_self=str((df_before_today.loc[df_before_today['代理方式']=='自己代理']['起诉金额（元）'].sum()/10000).round(2))+'万元' #累计 自行代理 案件起诉金额 {24}
+
+
+        # {0} : day_txt
+        # {1} : hushu_total
+        # {2} : num_totalcases
+        # {3} : amt_qisu
+        # {4} : m
+        # {5} : num_case_new
+        # {6} : casenames
+        # {7} : num_case_done
+        # {8} : num_toopen_total
+        # {9} : amt_toopen_total
+        # {10} : num_tojdg_total
+        # {11} : amt_tojdg_total
+        # {12} : num_toexec_total
+        # {13} : amt_toexec_total
+        # {14} : num_todo_total
+        # {15} : amt_todo_total
+        # {16} : num_2nd_cases
+        # {17} : amt_2nd_cases
+        # {18} : num_totalcases
+        # {19} : hushu_lawyerOffice
+        # {20} : num_lawyerOffice
+        # {21} : amt_lawyerOffice
+        # {22} : hushu_self
+        # {23} : num_self
+        # {24} : amt_self
+
+        t='''
+ （三）代偿债权处置
+ 1.诉讼工作
+ 截至{0}，包括政策性担保项目在内，我公司累计诉讼{1}户{2}件，起诉金额{3}。{4}月新增案件{5}起{6}，结清案件{7}起。目前待开庭案件{8}件，涉及起诉金额{9}；待判决案件{10}件，涉及起诉金额{11}；准备申请执行案件{12}件，涉及起诉金额{13}；执行阶段案件{14}件，涉及起诉金额{15}；二审阶段案件{16}件，涉及起诉金额{17}。在{18}件诉讼案件中，采用律所风险代理方式处理的案件有{19}户{20}件，金额{21}；自行代理方式的案件{22}户{23}件，金额{24}。
+                
+                '''  
+
+        txt_out=t.format(day_txt,hushu_total,num_totalcases,amt_qisu,m,num_case_new,casenames,num_case_done,num_toopen_total,amt_toopen_total, \
+                            num_tojdg_total,amt_tojdg_total,num_toexec_total,amt_toexec_total,num_todo_total,amt_todo_total,num_2nd_cases,amt_2nd_cases, \
+                            num_totalcases,hushu_lawyerOffice,num_lawyerOffice,amt_lawyerOffice,hushu_self,num_self,amt_self)        
+        
+        fn_txt=os.path.join(os.getcwd() ,month+'总结.txt')
+        with open(fn_txt,'w') as f:
+            f.write(txt_out)
+
+        # input('已完成，按回车退出。')
+
+def main():
+    slct=input('请输入：\n1——生成报表\n2——生成本月总结（片段）\n')
+    if slct=='1':
+        luo=sht_merge("南宁市南方融资担保有限公司诉讼案件子表.xlsm")
+        luo.rd()
+        luo.wt()
+        
+        wt=wt_excel("output.xlsx")
+        wt.wt()
+        input('已完成报表，按回车退出。')
+    elif slct=='2':
+        today=input('请输入日期【YYYY-M-D】:\n')
+        luo=sht_merge("南宁市南方融资担保有限公司诉讼案件子表.xlsm")
+        luo.rd()
+        luo.wt()
+        
+        wt=wt_excel("output.xlsx")
+        wt.wt()
+        wt.to_txt(today)
+        input('已完成文字生成，按回车退出。')
+    else:
+        input('不在选择之内，按回车退出重新选择。')
+
+                             
 if __name__=="__main__":
-    luo=sht_merge("南宁市南方融资担保有限公司诉讼案件子表.xlsm")
-    luo.rd()
-    luo.wt()
-    
-    wt=wt_excel("output.xlsx")
-    wt.wt()
+    main()
