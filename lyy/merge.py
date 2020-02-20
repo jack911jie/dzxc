@@ -55,11 +55,7 @@ class merge:
         for i in g:
             sht.merge_cells(i)
 
-<<<<<<< HEAD
         print('完成以下合并：\n{}\n'.format(g))
-=======
-        print('完成以下合并：\n{}'.format(g))
->>>>>>> 89c4ab8839c844c9e5f83c2ff7988c143bef05c0
 
         out=os.path.join(self.pth,self.inputname[0:-5]+'合并单元格后.xlsx')
         wb.save(out)
