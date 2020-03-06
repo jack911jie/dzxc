@@ -1,2 +1,0 @@
-conda activate base
-conda install pandas openpyxl xlrd
