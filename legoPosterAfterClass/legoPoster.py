@@ -10,13 +10,14 @@ import logging
 import pandas as pd
 from PIL import Image,ImageDraw,ImageFont
 from tqdm import tqdm
+import exifread
 
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(lineno)d - %(message)s')
 logger = logging.getLogger(__name__)
 
 class poster:
     def __init__(self):
-        with open(os.path.join(os.getcwd(),'legoPosterAfterClass','LegoPoster.config'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPoster.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
         _line=''
         for line in lines:
@@ -168,6 +169,20 @@ class poster:
             print('完成')
             
             return[picWid,picX1,picX2,picX3,picX4,picY1,picY2,picY3,picY4,pic0,pic1,pic2,pic3,pic4]   
+
+        def sortPics(files):
+            newfiles={}
+            for file in files:
+                if file[-3:].lower()=='jpg':
+                    with open(file,'rb') as fd:
+                        tag=exifread.process_file(fd)
+                        t=str(tag['EXIF DateTimeOriginal']).replace(':','-',2)
+                        newfiles[t]=file
+                        # print(t,file)
+            newList=[]
+            for i in sorted(newfiles):
+                newList.append(newfiles[i])
+            return newList
         
         def read_excel():
             print('正在读取学员和课程信息……',end='')
@@ -293,8 +308,9 @@ class poster:
                 num=2
 
             pics_stds_addrs=random.sample(pics_for_crs,num)
+            sorted_pics_stds_addrs=sortPics(pics_stds_addrs)
             pics=[pic_title_addr]
-            pics.extend(pics_stds_addrs)
+            pics.extend(sorted_pics_stds_addrs)
             
             logging.info(pics)
             return pics
@@ -349,7 +365,6 @@ class poster:
             print('完成')
             
         def expScript(name_input):
-#             name='李三三'
             name=name_input
             script=name+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]
             return script                   
