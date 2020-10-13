@@ -28,7 +28,7 @@ class poster:
         self.bg=config['导出文件夹']
         self.font_dir=config['字体文件夹']
         self.default_font=config['默认字体']         
-        self.crsList=config['wedo课程表']
+        self.crsList=config['课程信息表']
         self.crsStudent=config['学员签到表']
         self.picTitleDir=config['课程标题照片文件夹']
         self.picStdDir=config['学员照片文件夹']
@@ -203,7 +203,7 @@ class poster:
             Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
             Students_List=Students.values.tolist()
             logging.info(Students_List)
-            logging.info('\n'.join(crs_info))   
+            # logging.info('\n'.join(crs_info))   
             print('完成')
             return([Students_List,crs_info])               
         
@@ -368,7 +368,7 @@ class poster:
             name=name_input
             script=name+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]
             return script                   
-        
+
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
             print('    正在置入文本……',end='')
             draw=ImageDraw.Draw(img)        
@@ -439,8 +439,8 @@ class poster:
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
         
-        
+       
 if __name__=='__main__':
     my=poster()
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('双翼飞机',20200929)    
+    my.PosterDraw('夏天的手摇风扇',20201013)    
