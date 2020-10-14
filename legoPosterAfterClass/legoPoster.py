@@ -143,7 +143,11 @@ class poster:
             '微软雅黑':'i:\\py\\msyh.ttf',
             '鸿蒙印品':'j:\\fonts\\hongMengHei.ttf',
             '优设标题':'j:\\fonts\\yousheTitleHei.ttf',
-            '汉仪超级战甲':'j:\\fonts\\HYChaoJiZhanJiaW-2.ttf'            
+            '汉仪超级战甲':'j:\\fonts\\HYChaoJiZhanJiaW-2.ttf',
+            '汉仪心海行楷w':'j:\\fonts\\HYXinHaiXingKaiW.ttf',
+            '华康海报体W12(p)':'j:\\fonts\\HuaKangHaiBaoTiW12-P-1.ttf',
+            '汉仪锐智w':'j:\\fonts\\HYRuiZhiW.ttf',
+            '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf'            
         }
 
 #       ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
@@ -158,7 +162,7 @@ class poster:
             r=0.75
             picX1,picX3=10,10
             picX2,picX4=picX1+picWid+20,picX1+picWid+20
-            picY1,picY2=770,770
+            picY1,picY2=720,720
             picY3,picY4=picY1+picWid*r+20,picY1+picWid*r+20
 
             pic0=pic_xy(picWid,int(picWid*r),440,290) #标题图
@@ -191,7 +195,9 @@ class poster:
             knowledge=list(crs['知识点'])
             script=list(crs['话术'])
             dif_level=list(crs['难度'])
-            crs_info=[crs_name,knowledge[0],script[0],dif_level[0]]            
+            instrument=list(crs['教具'])
+            crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]            
+            # print(crs_info)
             stars=crs_info[-1].replace('*','★')
             crs_info[-1]=stars 
             
@@ -223,12 +229,12 @@ class poster:
             return [[int(recX0),int(recY0),int(recX1),int(recY1)],[int(picX0),int(picY0),int(picX1),int(picY1)]]        
         
         def basic_bg(num):
-            s1=150
-            s2=100
-            s3=500
+            s1=100
+            s2=140
+            s3=450
             s4=700
-            s5=350
-            s6=150
+            s5=380
+            s6=200
             sprt=5      
             total_len=s1+s2+s3+s4+s5+s6+sprt*5
 
@@ -252,12 +258,12 @@ class poster:
             if num==4:
                 img = Image.new("RGB",(900,total_len),(255,255,255))
                 draw=ImageDraw.Draw(img)
-                draw.rectangle([(0,0),(900,y1)],fill='rgb(255,255,255)') #乐高机器人课
-                draw.rectangle([(0,y2),(900,y2_2)],fill='rgb(250,254,255)') # 姓名 年龄
-                draw.rectangle([(0,y3),(900,y3_2)],fill='#EDFBFE') # 课程
-                draw.rectangle([(0,y4),(900,y4_2)],fill='rgb(250,254,255)')# 照片
-                draw.rectangle([(0,y5),(900,y5_2)],fill='rgb(250,254,255)') # 能力测评
-                draw.rectangle([(0,y6),(900,y6_2)],fill='rgb(250,254,255)') # logo
+                draw.rectangle([(0,0),(900,y1)],fill='#FF9E11') #乐高机器人课
+                draw.rectangle([(0,y2),(900,y2_2)],fill='#FFFFFF') # 姓名 年龄
+                draw.rectangle([(0,y3),(900,y3_2)],fill='#00B578') # 课程
+                draw.rectangle([(0,y4),(900,y4_2)],fill='#F7F7F7')# 照片
+                draw.rectangle([(0,y5),(900,y5_2)],fill='#006DE3') # 能力测评
+                draw.rectangle([(0,y6),(900,y6_2)],fill='#FFFFFF') # logo
 
 
                 draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill='#FFFFFF') #相框_课程
@@ -268,12 +274,12 @@ class poster:
             elif num==2:
                 img = Image.new("RGB",(900,int(total_len-s4/2)),(255,255,255))
                 draw=ImageDraw.Draw(img)
-                draw.rectangle([(0,0),(900,y1)],fill='rgb(255,255,255)') #乐高机器人课
-                draw.rectangle([(0,y2),(900,y2_2)],fill='rgb(250,254,255)') # 姓名 年龄
-                draw.rectangle([(0,y3),(900,y3_2)],fill='#EDFBFE') # 课程
-                draw.rectangle([(0,y4),(900,y4_2-s4/2)],fill='rgb(250,254,255)')# 照片
-                draw.rectangle([(0,y5),(900,y5_2-s4/2)],fill='rgb(250,254,255)') # 能力测评
-                draw.rectangle([(0,y6),(900,y6_2-s4/2)],fill='rgb(250,254,255)') # logo
+                draw.rectangle([(0,0),(900,y1)],fill='#FF9E11') #乐高机器人课
+                draw.rectangle([(0,y2),(900,y2_2)],fill='#FFFFFF') # 姓名 年龄
+                draw.rectangle([(0,y3),(900,y3_2)],fill='#00B578') # 课程
+                draw.rectangle([(0,y4),(900,y4_2-s4/2)],fill='#F7F7F7')# 照片
+                draw.rectangle([(0,y5-s4/2),(900,y5_2-s4/2)],fill='#006DE3') # 能力测评
+                draw.rectangle([(0,y6-s4/2),(900,y6_2-s4/2)],fill='#FFFFFF') # logo
 
 
                 draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill='#FFFFFF') #相框_课程
@@ -373,19 +379,20 @@ class poster:
             print('    正在置入文本……',end='')
             draw=ImageDraw.Draw(img)        
             
-            draw.text((200,20), '科 学 机 器 人 课', fill = '#DF6D19',font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((350,120), stdName, fill = '#009C76',font=self.fonts('优设标题',60))  #姓名
+            draw.text((200,6), '科 学 机 器 人 课', fill = '#FFFFFF',font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((350,120), stdName, fill = '#00b578',font=self.fonts('汉仪心海行楷w',60))  #姓名
 #             draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=self.fonts('微软雅黑',60))  #年龄    
-            draw.text((280,200), KdgtName, fill = '#009C76',font=self.fonts('汉仪糯米团',33))  #幼儿园
-            draw.text((460,200), ClassName, fill = '#009C76',font=self.fonts('汉仪糯米团',33))  #班级
+            draw.text((280,200), KdgtName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #幼儿园
+            draw.text((460,200), ClassName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #班级
     
-            draw.text((60,290), crs_info[0], fill = '#DF6D19',font=self.fonts('鸿蒙印品',40))  #课程名称  
-            draw.text((60,360), '难度：'+crs_info[3], fill = '#DF6D19',font=self.fonts('鸿蒙印品',22))  #难度
+            draw.text((50,290), '• '+crs_info[0], fill = '#ffffff',font=self.fonts('华康海报体W12(p)',40))  #课程名称  
+            draw.text((50,360), '难度：'+crs_info[3], fill = '#ffffff',font=self.fonts('汉仪锐智w',22))  #难度
+            draw.text((530,630), '使用教具：'+crs_info[4], fill = '#ffffff',font=self.fonts('微软雅黑',22))  #教具
             
-            self.put_txt_img(img,crs_info[1],450,[10,420],25,fill = '#DF6D19',font_name='鸿蒙印品',font_size=28)  #知识点    
+            self.put_txt_img(img,crs_info[1],450,[8,420],25,fill = '#ffffff',font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
-            draw.text((100,650), date_txt, fill = '#DF6D19',font=self.fonts('鸿蒙印品',25))  #日期
+            draw.text((100,630), date_txt, fill = '#ffffff',font=self.fonts('汉仪心海行楷w',35))  #日期
             
     #         draw.text((50,1490), '能力测评', fill = '#6AB34A',font=font_2)  #能力测评
     #         draw.text((50,1560), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
@@ -394,17 +401,17 @@ class poster:
     #         draw.text((50,1710), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
             script=expScript(stdName)
             if self.bg_img_num>3:
-                self.put_txt_img(img,script,780,[60,1470],20,fill = '#009C76',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1440],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1730), '阿晓老师', fill = '#009C76',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,1730), '阿晓老师', fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,1860), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  #日期
+                draw.text((500,1860), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  
             else:
-                self.put_txt_img(img,script,780,[60,1130],20,fill = '#009C76',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1100],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1390), '阿晓老师', fill = '#009C76',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,1390), '阿晓老师', fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,1520), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  #日期
+                draw.text((500,1520), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30)) 
                 
             print('完成')
             
