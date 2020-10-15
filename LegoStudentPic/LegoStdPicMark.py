@@ -1,8 +1,12 @@
 import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../../dzxc'))
+import composing as paraFormat
 import json
 import pandas as pd
 import iptcinfo3
 from PIL import Image,ImageFont,ImageDraw
+from tqdm import tqdm
 import logging
 iptcinfo_logger=logging.getLogger('iptcinfo')
 iptcinfo_logger.setLevel(logging.ERROR)
@@ -10,7 +14,8 @@ iptcinfo_logger.setLevel(logging.ERROR)
 
 class pics:
     def __init__(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.txt'),'r',encoding='utf-8') as f:
+        print('正在初始化参数……',end='')
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
             for line in lines:
@@ -19,19 +24,21 @@ class pics:
             config=json.loads(_line)
         
         self.publicPicDir=config['公共图片']
-        self.StdInfoDir=config['2019科学课签到表']
+        self.StdInfoDir=config['2020乐高课程签到表文件夹']
         self.CrsInfoDir=config['课程信息表']
         self.totalPics=config['照片总文件夹']
+        self.stdPicsDir=config['照片文件夹']
         # print(self.publicPicDir,self.CrsInfo)
+        print('完成')
         
 
     def putCover(self,stdName='韦成宇'):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
-            stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
+            stdFile=['2020乐高课程签到表.xlsx','学生上课签到表']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
             stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
-            stds.rename(columns={'Unnamed: 0':'序号','Unnamed: 1':'姓名首拼','Unnamed: 2':'学生姓名','Unnamed: 3':'上课数量统计'},inplace=True)
+            stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名','Unnamed: 5':'已上课数量'},inplace=True)
             # std=stds[stds['学生姓名']==stdName]
             # std_basic=std[['姓名首拼','学生姓名']]
             # std_crs=std[std.iloc[:,:]=='√'].dropna(axis=1)
@@ -39,7 +46,8 @@ class pics:
             # print(crs)
             return [crs,stds]
 
-        def read_pics_old():
+        def read_pics_new():
+            print('正在读取照片exif标签……',end='')
             lst=read_excel()
             crs,stds=lst[0],lst[1]
             stdList=stds['学生姓名'].tolist()
@@ -48,25 +56,80 @@ class pics:
             infos=[]
             for fileName in os.listdir(self.totalPics):
                 fn=fileName.split('-')
-                crsName=fn[3]
+                crsName=fn[1]
                 real_addr=os.path.join(self.totalPics,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
         
+                # print(tag)
                 if len(tag)>0:
-                    for _tag in tag:
+                    for _tag in tag:                        
                         if _tag in stdList:
+                            # print(_tag)
                             std_name=_tag
-                knlg=crs[crs['实验主题']==crsName]['知识点'].tolist()
-                infos.append([real_addr,std_name,crsName,knlg,fn[0]+'-'+fn[1]+'-'+fn[2]])
-                
+                            knlg=crs[crs['课程名称']==crsName]['知识点'].tolist()[0]
+                            infos.append([real_addr,std_name,crsName,knlg,fileName])
+            print('完成')
             return infos
 
+        def draw(img,w,h,txt):
+            draw=ImageDraw.Draw(img)
+            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#FFFFFF') #背景
+
+            # print(img.size,w,h)
+            title='\n'.join(paraFormat.split_txt_Chn_eng(360,90,txt[1])[0])
+            _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
+            _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logo.png').convert('RGBA')
+            pic_logo=_pic_logo.resize((450,int(450/1.7616)))
+            pic_logo2=_pic_logo2.resize((350,350))
+            r,g,b,a=pic_logo.split()
+            r2,g2,b2,a2=pic_logo2.split()
+            _pic_qrcode=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超视频号二维码2.png')
+            pic_qrcode=_pic_qrcode.resize((350,350))            
+            img.paste(pic_logo,(50,100),mask=a)
+            img.paste(pic_logo2,(60,2550),mask=a2)
+            img.paste(pic_qrcode,(3560,2500))    
+            draw.text((3560,2880), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',40))
+
+            partTitle=1000
+            partKnlg=1500
+            titleSize=300
+            knlgSize=110
+            dateSize=80
+            xTitle=700
+            
+            # txt[1]='恐龙'
+            # print('before  ',titleSize)
+            while len(txt[1])*titleSize>partTitle:
+                titleSize=titleSize-2
+            # print('after  ',titleSize)
+            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
+
+
+            draw.text((xTitle,2400+0.8*(300-titleSize)), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,2800), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
+            paraFormat.put_txt_img(draw,txt[3],partKnlg,[1850,2470],35,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+
         def putCover():
-            infos=read_pics_old()
-            infos=[infos[0]]
-            for info in infos:
+            print('正在处理：')
+            infos=read_pics_new()
+            # print(infos)
+            # infos=[infos[2]]
+            print('正在写入标注信息并按姓名保存到文件夹')
+            for info in tqdm(infos):
+                date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
                 img=Image.open(info[0])
-                bg_h,bg_w=int(img.size[1]*0.2255),img.size[0]
+                bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
+                draw(img,bg_w,bg_h,[info[0],info[2],date_crs,info[3]])
+                saveDir=os.path.join(self.stdPicsDir,info[1])
+                saveName=os.path.join(saveDir,info[4])
+                if not os.path.exists(saveDir):
+                    os.mkdir(saveDir)
+                    img.save(saveName)
+                else:
+                    img.save(saveName)
+
+            print('完成')
                 
 
 
