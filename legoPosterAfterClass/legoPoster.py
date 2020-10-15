@@ -54,7 +54,7 @@ class poster:
             
         logging.info(txts)
         spt=0
-#         logging.info()
+        # logging.info()
         for t in txts:        
             total_len=(self.char_len(t)+len(txts)*6)*font_size
 
@@ -81,7 +81,7 @@ class poster:
                         t_n.append(txt[i*zi_per_line:(i+1)*zi_per_line])
             txt_L.append(t_n)
                         
-#                 print(len(txt[i*zi_per_line:(i+1)*zi_per_line]))
+            # print(len(txt[i*zi_per_line:(i+1)*zi_per_line]))
         logging.info(txt_L)
         return txt_L
     
@@ -101,9 +101,9 @@ class poster:
         else:
             ind='no'
             
-#         txt=self.split_txt(total_dis,font_size,t,Indent='no')
+        # txt=self.split_txt(total_dis,font_size,t,Indent='no')
         txt=composing.split_txt_Chn_eng(total_dis,font_size,t,Indent='yes')
-#         font_sig = self.fonts('丁永康硬笔楷书',40)
+        # font_sig = self.fonts('丁永康硬笔楷书',40)
         num=len(txt)   
         draw=ImageDraw.Draw(img)
    
@@ -115,7 +115,7 @@ class poster:
                 x,y=xy[0],xy[1]+(font_size+dis_line)*n
                 if addSPC=='add_2spaces':   #首行缩进
                     if m==0:    
-#                         tt='  '+tt #首先前面加上两个空格
+                        # tt='  '+tt #首先前面加上两个空格
                         logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
                         logging.info(tt)
                         draw.text((x+font_size*0.2,y), tt, fill = fill,font=fontInput) 
@@ -150,7 +150,7 @@ class poster:
             '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf'            
         }
 
-#       ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
+        # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
 
 
         return ImageFont.truetype(fontList[font_name],font_size)
@@ -381,7 +381,7 @@ class poster:
             
             draw.text((200,6), '科 学 机 器 人 课', fill = '#FFFFFF',font=self.fonts('汉仪超级战甲',75))  #大题目
             draw.text((350,120), stdName, fill = '#00b578',font=self.fonts('汉仪心海行楷w',60))  #姓名
-#             draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=self.fonts('微软雅黑',60))  #年龄    
+            # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=self.fonts('微软雅黑',60))  #年龄    
             draw.text((280,200), KdgtName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #幼儿园
             draw.text((460,200), ClassName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #班级
     
@@ -394,11 +394,11 @@ class poster:
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
             draw.text((100,630), date_txt, fill = '#ffffff',font=self.fonts('汉仪心海行楷w',35))  #日期
             
-    #         draw.text((50,1490), '能力测评', fill = '#6AB34A',font=font_2)  #能力测评
-    #         draw.text((50,1560), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
-    #         draw.text((50,1610), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
-    #         draw.text((50,1660), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
-    #         draw.text((50,1710), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
+            # draw.text((50,1490), '能力测评', fill = '#6AB34A',font=font_2)  #能力测评
+            # draw.text((50,1560), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
+            # draw.text((50,1610), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
+            # draw.text((50,1660), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
+            # draw.text((50,1710), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
             script=expScript(stdName)
             if self.bg_img_num>3:
                 self.put_txt_img(img,script,780,[60,1440],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
@@ -415,9 +415,8 @@ class poster:
                 
             print('完成')
             
-    
+         para=basic_para()        
         
-        para=basic_para()        
         picWid,picX1,picX2,picX3,picX4,picY1,picY2,picY3,picY4,pic0,pic1,pic2,pic3,pic4= \
         para[0],para[1],para[2],para[3],para[4],para[5],para[6],para[7],para[8],para[9],para[10],para[11],para[12],para[13]
         
