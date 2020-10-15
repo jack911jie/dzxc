@@ -1,4 +1,5 @@
 import re
+from PIL import Image,ImageFont,ImageDraw
 import logging
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(lineno)d - %(message)s')
 logger = logging.getLogger(__name__)
@@ -10,6 +11,27 @@ def char_len(txt):
     ziShu_e=len_s-ziShu_z
     total=ziShu_z+ziShu_e*0.5
     return total
+
+def fonts(font_name,font_size):
+    fontList={
+        '腾祥金砖黑简':'c:\\windows\\fonts\\腾祥金砖黑简.TTF',
+        '汉仪糯米团':'j:\\fonts\\HYNuoMiTuanW.ttf',
+        '丁永康硬笔楷书':'j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',
+        '微软雅黑':'i:\\py\\msyh.ttf',
+        '鸿蒙印品':'j:\\fonts\\hongMengHei.ttf',
+        '优设标题':'j:\\fonts\\yousheTitleHei.ttf',
+        '汉仪超级战甲':'j:\\fonts\\HYChaoJiZhanJiaW-2.ttf',
+        '汉仪心海行楷w':'j:\\fonts\\HYXinHaiXingKaiW.ttf',
+        '华康海报体W12(p)':'j:\\fonts\\HuaKangHaiBaoTiW12-P-1.ttf',
+        '汉仪锐智w':'j:\\fonts\\HYRuiZhiW.ttf',
+        '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
+        '楷体':'C:\Windows\Fonts\simkai.ttf'                
+    }
+
+    # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
+
+
+    return ImageFont.truetype(fontList[font_name],font_size)
 
 def split_txt_Chn_eng(wid,font_size,txt_input,Indent='no'):
     
@@ -89,3 +111,49 @@ def split_txt_Chn_eng(wid,font_size,txt_input,Indent='no'):
     
    
     return outTxt 
+
+def put_txt_img(draw,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
+        
+    fontInput=fonts(font_name,font_size)            
+    if addSPC=='add_2spaces': 
+        Indent='yes'
+    else:
+        Indent='no'
+        
+    # txt=self.split_txt(total_dis,font_size,t,Indent='no')
+    txt=split_txt_Chn_eng(total_dis,font_size,t,Indent='no')
+    # font_sig = self.fonts('丁永康硬笔楷书',40)
+    num=len(txt)   
+    # draw=ImageDraw.Draw(img)
+
+    logging.info(txt)
+    n=0
+    for t in txt:              
+        m=0
+        for tt in t:                  
+            x,y=xy[0],xy[1]+(font_size+dis_line)*n
+            if addSPC=='add_2spaces':   #首行缩进
+                if m==0:    
+                    # tt='  '+tt #首先前面加上两个空格
+                    logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
+                    logging.info(tt)
+                    draw.text((x+font_size*0.2,y), tt, fill = fill,font=fontInput) 
+                else:                       
+                    logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
+                    logging.info(tt)
+                    draw.text((x,y), tt, fill = fill,font=fontInput)  
+            else:
+                # logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
+                # logging.info(tt)
+                draw.text((x,y), tt, fill = fill,font=fontInput)  
+
+            m+=1
+            n+=1
+
+def char_len(txt):
+    len_s=len(txt)
+    len_u=len(txt.encode('utf-8'))
+    ziShu_z=(len_u-len_s)/2
+    ziShu_e=len_s-ziShu_z
+    total=ziShu_z+ziShu_e*0.5    
+    return total
