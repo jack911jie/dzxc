@@ -32,7 +32,7 @@ class pics:
         print('完成')
         
 
-    def putCover(self,stdName='韦成宇'):
+    def putCover(self,height=2250):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
             stdFile=['2020乐高课程签到表.xlsx','学生上课签到表']
@@ -47,7 +47,7 @@ class pics:
             return [crs,stds]
 
         def read_pics_new():
-            print('正在读取照片exif标签……',end='')
+            print('正在读取照片……',end='')
             lst=read_excel()
             crs,stds=lst[0],lst[1]
             stdList=stds['学生姓名'].tolist()
@@ -59,8 +59,7 @@ class pics:
                 crsName=fn[1]
                 real_addr=os.path.join(self.totalPics,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
-        
-                # print(tag)
+
                 if len(tag)>0:
                     for _tag in tag:                        
                         if _tag in stdList:
@@ -71,31 +70,64 @@ class pics:
             print('完成')
             return infos
 
-        def draw(img,w,h,txt):
-            draw=ImageDraw.Draw(img)
-            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#FFFFFF') #背景
+        def ResizeCrop(pic,h_min=2250,crop='yes',bigger='yes'):
+            img=Image.open(pic)
+            w,h=img.size
 
+            if h>=2250:
+                if w/h!=0.75:
+                    lth=int(h_min*w/h)
+                    pp=img.resize((lth,h_min))
+                    if crop=='yes':
+                        pp_crop=pp.crop((lth-h_min*4/3,0,lth,h_min)) 
+                        return pp_crop
+                    else:
+                        return pp
+                else:
+                    return img
+            else:
+                if bigger=='yes':
+                    lth=int(h_min*w/h)
+                    ppp=img.resize((lth,h_min))
+                    if crop=='yes':
+                        ppp_crop=ppp.crop((lth-h_min*4/3,0,lth,h_min))         
+                        return ppp_crop
+                    else:
+                        return ppp
+                else:
+                    return 'picture is too small' 
+
+        def ratio(p,rate):
+            k=int(p*rate)
+            return k
+
+        def draw(img,w,h,txt):           
+
+            draw=ImageDraw.Draw(img)
+            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#F9F9FA') #背景
+            r=img.size[1]/3024
             # print(img.size,w,h)
-            title='\n'.join(paraFormat.split_txt_Chn_eng(360,90,txt[1])[0])
+            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logo.png').convert('RGBA')
-            pic_logo=_pic_logo.resize((450,int(450/1.7616)))
-            pic_logo2=_pic_logo2.resize((350,350))
-            r,g,b,a=pic_logo.split()
-            r2,g2,b2,a2=pic_logo2.split()
+            pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
+            pic_logo2=_pic_logo2.resize((ratio(350,r),ratio(350,r)))
+            red,g,b,a=pic_logo.split()
+            red2,g2,b2,a2=pic_logo2.split()
             _pic_qrcode=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超视频号二维码2.png')
-            pic_qrcode=_pic_qrcode.resize((350,350))            
-            img.paste(pic_logo,(50,100),mask=a)
-            img.paste(pic_logo2,(60,2550),mask=a2)
-            img.paste(pic_qrcode,(3560,2500))    
-            draw.text((3560,2880), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',40))
+            # print(ratio(350,r),ratio(350,r))
+            pic_qrcode=_pic_qrcode.resize((ratio(350,r),ratio(350,r)))
+            img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
+            img.paste(pic_logo2,(ratio(60,r),ratio(2550,r)),mask=a2)
+            img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
+            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
 
-            partTitle=1000
-            partKnlg=1500
-            titleSize=300
-            knlgSize=110
-            dateSize=80
-            xTitle=700
+            partTitle=ratio(1000,r)
+            partKnlg=ratio(1500,r)
+            titleSize=ratio(300,r)
+            knlgSize=ratio(110,r)
+            dateSize=ratio(80,r)
+            xTitle=ratio(700,r)
             
             # txt[1]='恐龙'
             # print('before  ',titleSize)
@@ -105,35 +137,47 @@ class pics:
             xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
 
 
-            draw.text((xTitle,2400+0.8*(300-titleSize)), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
-            draw.text((xDate,2800), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
             # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            paraFormat.put_txt_img(draw,txt[3],partKnlg,[1850,2470],35,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            paraFormat.put_txt_img(draw,txt[3],partKnlg,[ratio(1850,r),ratio(2470,r)],35,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
-        def putCover():
-            print('正在处理：')
+        def putCoverToPics():
             infos=read_pics_new()
             # print(infos)
-            # infos=[infos[2]]
-            print('正在写入标注信息并按姓名保存到文件夹')
-            for info in tqdm(infos):
-                date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
-                img=Image.open(info[0])
-                bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
-                draw(img,bg_w,bg_h,[info[0],info[2],date_crs,info[3]])
-                saveDir=os.path.join(self.stdPicsDir,info[1])
-                saveName=os.path.join(saveDir,info[4])
-                if not os.path.exists(saveDir):
-                    os.mkdir(saveDir)
-                    img.save(saveName)
-                else:
-                    img.save(saveName)
+            # infos=[infos[2]]            
+            if infos:
+                print('正在写入标注信息并按姓名保存到文件夹')
+                smallpics=[]
+                for info in tqdm(infos):
+                    date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
+                    # img=Image.open(info[0])
+                    img=ResizeCrop(info[0],h_min=height,bigger='no')
+                    if not isinstance(img,str):
+                        bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
+                        draw(img,bg_w,bg_h,[info[0],info[2],date_crs,info[3]])
+                        saveDir=os.path.join(self.stdPicsDir,info[1])
+                        saveName=os.path.join(saveDir,info[4])
+                        if not os.path.exists(saveDir):
+                            os.mkdir(saveDir)
+                            img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
+                        else:
+                            img.save(saveName,quality=95,subsampling=0)
+                    else:
+                        smallpics.append(info[4])
 
-            print('完成')
+                if smallpics:
+                    msg='完成 {}/{} 个文件。{}个文件大小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
+                    print(msg)
+                print('完成')
+            else:
+                print('无合适的照片')
+
+            
                 
 
 
-        putCover()
+        putCoverToPics()
 
     def code_to_str(self,ss):
         s=ss['keywords']
@@ -148,4 +192,4 @@ class pics:
 
 if __name__=='__main__':
     pic=pics()
-    pic.putCover()
+    pic.putCover(height=2250)
