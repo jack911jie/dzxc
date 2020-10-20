@@ -34,7 +34,8 @@ class picToPPT:
             
             pic_steps=[]
             for blk in os.listdir(os.path.join(self.picSrc,'零件总图')):
-                if ptn_block_list.match(blk) or ptn_block_list2.match(blk):
+                # if ptn_block_list.match(blk) or ptn_block_list2.match(blk):
+                if ptn_block_list2.match(blk):
                     pic_steps.append(os.path.join(self.picSrc,'零件总图',blk))
             pic_steps.sort()
             summary_num=len(pic_steps)
@@ -94,6 +95,6 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('i:/乐高/图纸/034夏天的手摇风扇')
+    mypics=picToPPT('i:/乐高/图纸/035啃骨头的小狗')
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT()
