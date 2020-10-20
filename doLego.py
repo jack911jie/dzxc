@@ -554,12 +554,17 @@ class helpp():
 def run_1(pth,consName,crs_list,s=1):
     if s==1: #仅新建项目
         mylego=LegoCons(pth,consName)
-    elif s==2: #制作影片
+    elif s==2:#改名及输出列表
         mylego=LegoCons(pth,consName)        
-    #     mylego.creatItem()
+        mylego.creatItem()
+        mylego.makeList()
+        mylego.putTag()
+    elif s==3: #制作影片
+        mylego=LegoCons(pth,consName)        
+        # mylego.creatItem()
         # mylego.makeList()
-        # mylego.putTag()
-#         mylego.putTag_wedo_coverpage()
+        mylego.putTag()
+        mylego.putTag_wedo_coverpage()
         mylego.expHTML_lego()    
         myMovie=ConsMovie(pth,consName,crs_list)
         myMovie.exportMovie()
@@ -575,6 +580,6 @@ def run_test():
 if __name__=='__main__':
     #   run_1('I:\\乐高\\图纸','006鸭子','大颗粒课程表.xlsx',2)
 #     run_1('I:\\乐高\\图纸','021天平','9686课程表.xlsx',2)
-    run_1('I:\\乐高\\图纸','034夏天的手摇风扇','课程信息表.xlsx',2)
+    run_1('I:\\乐高\\图纸','035啃骨头的小狗','课程信息表.xlsx',2)
 #     run_export_Poster()
 #     run_test()
