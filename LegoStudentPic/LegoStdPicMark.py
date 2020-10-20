@@ -25,6 +25,8 @@ class pics:
         
         self.publicPicDir=config['公共图片']
         self.StdInfoDir=config['2020乐高课程签到表文件夹']
+        # self.StdInfoDir=config['2019科学课签到表文件夹']
+        
         self.CrsInfoDir=config['课程信息表']
         self.totalPics=config['照片总文件夹']
         self.stdPicsDir=config['照片文件夹']
@@ -36,6 +38,7 @@ class pics:
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
             stdFile=['2020乐高课程签到表.xlsx','学生上课签到表']
+            # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
             stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
             stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名','Unnamed: 5':'已上课数量'},inplace=True)
@@ -51,7 +54,7 @@ class pics:
             lst=read_excel()
             crs,stds=lst[0],lst[1]
             stdList=stds['学生姓名'].tolist()
-            # print(stdList)
+            # print(crs)
 
             infos=[]
             for fileName in os.listdir(self.totalPics):
@@ -59,11 +62,9 @@ class pics:
                 crsName=fn[1]
                 real_addr=os.path.join(self.totalPics,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
-
                 if len(tag)>0:
                     for _tag in tag:                        
                         if _tag in stdList:
-                            # print(_tag)
                             std_name=_tag
                             knlg=crs[crs['课程名称']==crsName]['知识点'].tolist()[0]
                             infos.append([real_addr,std_name,crsName,knlg,fileName])
@@ -109,23 +110,23 @@ class pics:
             # print(img.size,w,h)
             title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
-            _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logo.png').convert('RGBA')
+            _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
-            pic_logo2=_pic_logo2.resize((ratio(350,r),ratio(350,r)))
+            pic_logo2=_pic_logo2.resize((ratio(350,r),ratio(350*46/36,r)))
             red,g,b,a=pic_logo.split()
             red2,g2,b2,a2=pic_logo2.split()
             _pic_qrcode=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超视频号二维码2.png')
             # print(ratio(350,r),ratio(350,r))
             pic_qrcode=_pic_qrcode.resize((ratio(350,r),ratio(350,r)))
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
-            img.paste(pic_logo2,(ratio(60,r),ratio(2550,r)),mask=a2)
+            img.paste(pic_logo2,(ratio(60,r),ratio(2500,r)),mask=a2)
             img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
             draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
             partKnlg=ratio(1500,r)
             titleSize=ratio(300,r)
-            knlgSize=ratio(110,r)
+            knlgSize=ratio(80,r)
             dateSize=ratio(80,r)
             xTitle=ratio(700,r)
             
@@ -140,7 +141,9 @@ class pics:
             draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
             draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
             # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            paraFormat.put_txt_img(draw,txt[3],partKnlg,[ratio(1850,r),ratio(2470,r)],35,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
+            draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2566,r)),'#2A68B1')
+            paraFormat.put_txt_img(draw,txt[3],partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
         def putCoverToPics():
             infos=read_pics_new()
