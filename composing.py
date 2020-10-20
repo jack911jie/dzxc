@@ -25,7 +25,8 @@ def fonts(font_name,font_size):
         '华康海报体W12(p)':'j:\\fonts\\HuaKangHaiBaoTiW12-P-1.ttf',
         '汉仪锐智w':'j:\\fonts\\HYRuiZhiW.ttf',
         '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
-        '楷体':'C:\Windows\Fonts\simkai.ttf'                
+        '楷体':'C:\\Windows\\Fonts\\simkai.ttf',
+        '汉仪字酷堂义山楷w':'j:\\fonts\\HYZiKuTangYiShanKaiW-2.ttf'                    
     }
 
     # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
