@@ -43,5 +43,5 @@ class huashu:
         
 if __name__=='__main__':
     talk=huashu()
-    talk.legoTalk('夏天的手摇风扇')
+    talk.legoTalk('啃骨头的小狗')
     
