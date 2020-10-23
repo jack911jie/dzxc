@@ -2,6 +2,7 @@ import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../../dzxc'))
 import composing as paraFormat
+import re
 import json
 import pandas as pd
 import iptcinfo3
@@ -127,7 +128,7 @@ class pics:
             partKnlg=ratio(1500,r)
             titleSize=ratio(300,r)
             knlgSize=ratio(80,r)
-            dateSize=ratio(80,r)
+            dateSize=ratio(65,r)
             xTitle=ratio(700,r)
             
             # txt[1]='恐龙'
@@ -142,8 +143,10 @@ class pics:
             draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
             # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
             draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
-            draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2566,r)),'#2A68B1')
-            paraFormat.put_txt_img(draw,txt[3],partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2565,r)),'#2A68B1')
+
+            txt3Dot=re.sub('\d.','· ',txt[3]) #将数字替换成点
+            paraFormat.put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
         def putCoverToPics():
             infos=read_pics_new()

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class LegoPics:
     def __init__(self,crsName):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'config.txt'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
             for line in lines:
@@ -23,10 +23,10 @@ class LegoPics:
         self.crsName=crsName
         self.dir=config['乐高照片文件夹']
         self.stu_dir=config['乐高学员文件夹']
-        self.stu_sig=config['2020乐高课程签到表']
+        self.stu_sigDir=config['2020乐高课程签到表文件夹']
 
     def read_sig(self):
-        stdInfo=pd.read_excel(self.stu_sig,sheet_name='学生上课签到表',skiprows=2)
+        stdInfo=pd.read_excel(os.path.join(self.stu_sigDir,'2020乐高课程签到表.xlsx'),sheet_name='学生上课签到表',skiprows=2)
         stdInfo.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名','Unnamed: 5':'已上课数'},inplace=True)
         stdName=stdInfo['学生姓名'].tolist()
         stdPY=stdInfo['姓名首拼'].tolist()
@@ -53,11 +53,11 @@ class LegoPics:
                             if not os.path.exists(stu_pic_dirName):
                                 os.makedirs(stu_pic_dirName)
                                 oldName=os.path.join(self.dir,self.crsName,fn)
-                                newName=os.path.join(self.stu_dir,_tag,fn)
+                                newName=os.path.join(stu_pic_dirName,fn)
                                 shutil.copyfile(oldName,newName)
                             else:
                                 oldName=os.path.join(self.dir,self.crsName,fn)
-                                newName=os.path.join(self.stu_dir,_tag,fn)
+                                newName=os.path.join(stu_pic_dirName,fn)
                                 shutil.copyfile(oldName,newName)
         
 
@@ -79,5 +79,5 @@ def code_to_str(ss):
 
 
 if __name__=='__main__':
-    stu_pics=LegoPics('20201013夏天的手摇风扇')
+    stu_pics=LegoPics('20201020啃骨头的小狗')
     stu_pics.dispatch()
