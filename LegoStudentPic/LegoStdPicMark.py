@@ -35,10 +35,13 @@ class pics:
         print('完成')
         
 
-    def putCover(self,height=2250):
+    def putCover(self,height=2250,weekday=2):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
-            stdFile=['2020乐高课程签到表.xlsx','学生上课签到表']
+            if weekday==2:
+                stdFile=['2020乐高课程签到表（周二）.xlsx','学生上课签到表']
+            elif weekday==6:
+                stdFile=['2020乐高课程签到表（周六）.xlsx','学生上课签到表']
             # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
             stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
