@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(
 logger = logging.getLogger(__name__)
 
 class poster:
-    def __init__(self):
+    def __init__(self,weekday=2,place='超智幼儿园'):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPoster.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
         _line=''
@@ -29,9 +29,16 @@ class poster:
         self.font_dir=config['字体文件夹']
         self.default_font=config['默认字体']         
         self.crsList=config['课程信息表']
-        self.crsStudent=config['学员签到表']
+        
         self.picTitleDir=config['课程标题照片文件夹']
         self.picStdDir=config['学员照片文件夹']
+        self.ConsDir=config['乐高图纸文件夹']
+
+        if weekday==2:
+            self.crsStudent=config['学员签到表w2']
+        elif weekday==6:
+            self.crsStudent=config['学员签到表w6']
+
         
         self.picWid=425 #默认照片富庶
         
@@ -155,7 +162,8 @@ class poster:
 
         return ImageFont.truetype(fontList[font_name],font_size)
     
-    def PosterDraw(self,crs_name,dateInput):
+    def PosterDraw(self,crs_nameInput,dateInput):
+        crs_name=crs_nameInput[3:]
         def basic_para():
             print('正在初始化参数……',end='')
             picWid=self.picWid
@@ -293,7 +301,7 @@ class poster:
         
         def pick_pics(stdName):
             # print('stdname:',stdName)
-            pic_title_addr=os.path.join(self.picTitleDir,str(dateInput)+crs_name,crs_name+'.jpg')  #课程的标题图
+            pic_title_addr=os.path.join(self.ConsDir,crs_nameInput,crs_name+'.jpg')  #课程的标题图
             
             ptn='-.*-'
             pics_for_crs=[]
@@ -312,6 +320,7 @@ class poster:
                 num=4
             else:
                 num=2
+
 
             pics_stds_addrs=random.sample(pics_for_crs,num)
             sorted_pics_stds_addrs=sortPics(pics_stds_addrs)
@@ -386,7 +395,7 @@ class poster:
             draw.text((460,200), ClassName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #班级
     
             draw.text((50,290), '• '+crs_info[0], fill = '#ffffff',font=self.fonts('华康海报体W12(p)',40))  #课程名称  
-            draw.text((50,360), '难度：'+crs_info[3], fill = '#ffffff',font=self.fonts('汉仪锐智w',22))  #难度
+            draw.text((50,360), '难度：'+crs_info[3], fill = '#ffffff',font=self.fonts('汉仪锐智w',25))  #难度
             draw.text((530,630), '使用教具：'+crs_info[4], fill = '#ffffff',font=self.fonts('微软雅黑',22))  #教具
             
             self.put_txt_img(img,crs_info[1],450,[8,420],25,fill = '#ffffff',font_name='汉仪锐智w',font_size=28)  #知识点    
@@ -415,13 +424,15 @@ class poster:
                 
             print('完成')
             
-         para=basic_para()        
+        para=basic_para()        
         
         picWid,picX1,picX2,picX3,picX4,picY1,picY2,picY3,picY4,pic0,pic1,pic2,pic3,pic4= \
         para[0],para[1],para[2],para[3],para[4],para[5],para[6],para[7],para[8],para[9],para[10],para[11],para[12],para[13]
         
         INFO=read_excel()
         std_list,crs_info=INFO[0],INFO[1]
+    
+
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
             # img=basic_bg()
@@ -438,7 +449,7 @@ class poster:
             if not os.path.exists(os.path.join(self.bg,str(dateInput)+crs_name)):
                 os.mkdir(os.path.join(self.bg,str(dateInput)+crs_name))
             
-            img.save(os.path.join(self.bg,str(dateInput)+crs_name,stdName+'-'+str(dateInput)+'-'+crs_name+'.jpg'))
+            img.save(os.path.join(self.bg,str(dateInput)+crs_name,std[2]+stdName+'-'+str(dateInput)+'-'+crs_name+'.jpg'))
             print('完成')
 #             img.show()
 
@@ -447,6 +458,6 @@ class poster:
         
        
 if __name__=='__main__':
-    my=poster()
+    my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('夏天的手摇风扇',20201013)    
+    my.PosterDraw('035啃骨头的小狗',20201020)    
