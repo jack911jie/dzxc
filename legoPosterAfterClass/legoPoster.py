@@ -198,14 +198,13 @@ class poster:
         
         def read_excel():
             print('正在读取学员和课程信息……',end='')
-            df=pd.read_excel(self.crsList)        
+            df=pd.read_excel(self.crsList) 
             crs=df.loc[df['课程名称']==crs_name]   
             knowledge=list(crs['知识点'])
             script=list(crs['话术'])
             dif_level=list(crs['难度'])
             instrument=list(crs['教具'])
-            crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]            
-            # print(crs_info)
+            crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]      
             stars=crs_info[-1].replace('*','★')
             crs_info[-1]=stars 
             
@@ -460,4 +459,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('035啃骨头的小狗',20201020)    
+    my.PosterDraw('037认识零件',20201024)    
