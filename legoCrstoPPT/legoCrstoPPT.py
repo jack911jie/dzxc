@@ -1,4 +1,5 @@
 import os
+import sys
 import platform
 import numpy as np
 import re
@@ -7,20 +8,59 @@ from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Cm,Pt,Cm
 from pptx.dml.color import RGBColor
+from openpyxl import Workbook,load_workbook
 
 class picToPPT:
-    def __init__(self,picSrc):
+    def __init__(self,crsName):
+        self.crsName=crsName
         if platform.system().lower()=='linux':
+            self.picDir='/home/jack/data/乐高/图纸'
             self.template='/home/jack/data/乐高/图纸/template.pptx'
             self.wtmark='/home/jack/data/乐高/图纸/大智小超水印.png'
         else:
+            self.picDir='i:/乐高/图纸'
             self.template='i:/乐高/图纸/template.pptx'
             self.wtmark='i:/乐高/图纸/大智小超水印.png'
-        self.picSrc=picSrc
-    
+        self.picSrc=os.path.join(self.picDir,crsName)
+
+    def test_stepXls(self):
+        xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')
+        if not os.path.exists(xlsName):
+            wb=Workbook()
+            tb=wb.active
+            tb['A1']='序号'
+            tb['B1']='零件名称'
+            row=2
+            for file in os.listdir(self.picSrc):
+                ptn='\d{3}_\dx.png'                
+                if re.match(ptn,file):
+                    tb['A'+str(row)]=row-1
+                    row+=1
+            wb.save(xlsName)
+            print('新建了步骤文件，请在文件中先输入零件名称。')
+            sys.exit(0)
+        else:
+            df=pd.read_excel(xlsName)
+            blockNum=df['零件名称'].count()
+            if blockNum==0:
+                print('未输入零件名称，请先写入。')
+                sys.exit(0)
+
+    def renameFiles(self):
+        print('正在查看是否需要修改文件名……',end='')
+        for file in os.listdir(self.picSrc):
+            if file[-3:].lower()=='png':
+                if len(file)<10:
+                    oldname=os.path.join(self.picSrc,file)
+                    newname=os.path.join(self.picSrc,file.zfill(10))
+                    os.rename(oldname,newname)
+        print('完成')
+
     def ExpPPT(self):
-        print('\n正在处理……',end='')       
-    
+        print('\n正在处理：')   
+
+        self.renameFiles()    
+        self.test_stepXls()    
         def picList():
             ptn_block_list=re.compile(r'\d*_1x_tagged.png')
             ptn_block_list2=re.compile(r'\d*_1x.png')
@@ -46,17 +86,17 @@ class picToPPT:
                 if re.match(ptn,fn):
                     picList.append(os.path.join(self.picSrc,fn))
             picList.sort()
-#             print(picList)
+            #             print(picList)
 
             pic_steps.extend(picList)
     
-#             print(pic_steps)
+            #             print(pic_steps)
     
             return [pic_steps,summary_num]
 
         def picToPPT(picList):
-            step_blkList=pd.read_excel(os.path.join(self.picSrc,self.picSrc.split('/')[-1]+'-步骤零件.xlsx')).replace(np.nan,'')['零件名称'].tolist()
-#             print(step_blkList)
+            step_blkList=pd.read_excel(os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')).replace(np.nan,'')['零件名称'].tolist()
+            #             print(step_blkList)
             
             
             prs=Presentation(self.template)            
@@ -64,37 +104,51 @@ class picToPPT:
             top=Cm(1.4)
             height=Cm(17.69)
             
-#             left_wtmk=Cm(5)
-#             top_wtmk=Cm(5)
+            #             left_wtmk=Cm(5)
+            #             top_wtmk=Cm(5)
             left_wtmk=Cm(0)
             top_wtmk=Cm(1.4)
+
+            lowerPosList_1=['2x16单位黑色板','12单位绿色梁','12单位绿色孔砖']
+            lowerPosList_2=['主机','电机']
             
             for i,img in enumerate(picList[0]):
                 blank_slide_layout=prs.slide_layouts[1]
                 slide=prs.slides.add_slide(blank_slide_layout)
                 pic=slide.shapes.add_picture(img,left,top,height=height)
-                textbox=slide.shapes.add_textbox(Cm(2),Cm(5),Cm(5),Cm(2.5))
-                p = textbox.text_frame.add_paragraph()
                 
-                if i>=picList[1]:
-#                     print(i,i-picList[1])
-                    try:
-                        p.text=step_blkList[i-picList[1]]
-                        p.font.size=Pt(30)
+                
+                if i>=picList[1]: #跳过零件总图的数量
+                #                     print(i,i-picList[1])
+                    try:                        
+                        txt=step_blkList[i-picList[1]] #根据文件内容决定广西框的位置下移程度，以免遮挡零件图片
+                        if txt in lowerPosList_1:
+                            y_textbox=Cm(6)
+                        elif txt in lowerPosList_2:
+                            y_textbox=Cm(7)
+                        else:
+                            y_textbox=Cm(5)
+                        textbox=slide.shapes.add_textbox(Cm(2),y_textbox,Cm(5),Cm(2.5))
+                        p = textbox.text_frame.add_paragraph()
+                        p.line_spacing=1.5 #行间距
+
+
+                        p.text=txt
+                        p.font.size=Pt(24)
                         p.font.color.rgb = RGBColor(22, 56, 153)
                     except:
                         pass
                 
                 pic_wtmark=slide.shapes.add_picture(self.wtmark,left_wtmk,top_wtmk) #加水印
                 
-            newFn=os.path.join(self.picSrc,self.picSrc.split('/')[-1]+'.pptx')
+            newFn=os.path.join(self.picSrc,self.crsName+'.pptx')
             prs.save(newFn)
-            print('完成，文件名：{}'.format(newFn))                              
+            print('ppt已导出完成，文件名：{}'.format(newFn))                              
             
         picList=picList()
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('i:/乐高/图纸/035啃骨头的小狗')
+    mypics=picToPPT('035啃骨头的小狗')
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT()
