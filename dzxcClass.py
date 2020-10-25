@@ -17,8 +17,7 @@ def stdpicWhiteMark():
     pic.putCover(height=2250)
 
 def exportPpt(crsName='037认识零件'):
-    absName='i:/乐高/图纸/'+crsName
-    mypics=legoCrstoPPT.picToPPT(absName)
+    mypics=legoCrstoPPT.picToPPT(crsName)
     mypics.ExpPPT()
 
 def legoPoster(crsName='035啃骨头的小狗',crsDate=20201020,weekday=2):
@@ -35,7 +34,7 @@ def pic_distribute_and_exp_poster(crsDate=20201024,crsName='037认识零件',wee
     picsDistribute(crsName=crsName_distibute,weekday=weekday)
     legoPoster(crsName=crsName,crsDate=crsDate,weekday=weekday)
 
-dolego('038旋转飞椅',2)
+# dolego('038旋转飞椅',2)
 exportPpt('038旋转飞椅')
 # stdpicWhiteMark()
 # pic_distribute_and_exp_poster(crsDate=20201024,crsName='037认识零件',weekday=6)
