@@ -9,6 +9,7 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.util import Cm,Pt,Cm
 from pptx.dml.color import RGBColor
 from openpyxl import Workbook,load_workbook
+from shutil import copyfile,copytree
 
 class picToPPT:
     def __init__(self,crsName):
@@ -22,6 +23,21 @@ class picToPPT:
             self.template='i:/乐高/图纸/template.pptx'
             self.wtmark='i:/乐高/图纸/大智小超水印.png'
         self.picSrc=os.path.join(self.picDir,crsName)
+
+    def makeDirs(self,dirName):
+        if not os.path.exists(dirName):
+            print('新项目，正在创建文件夹……',end='')
+            os.makedirs(dirName)
+            os.makedirs(os.path.join(dirName,'零件总图'))
+            os.makedirs(os.path.join(dirName,'video'))
+            print('创建完成,请在文件夹中放入步骤图片。')
+            sys.exit(0)
+        else:
+            print('已有项目……',end='')
+            files=os.listdir(dirName)
+            if len(files)<3:
+                print('请先做好步骤图片')
+                sys.exit (0)
 
     def test_stepXls(self):
         xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')
@@ -56,9 +72,25 @@ class picToPPT:
                     os.rename(oldname,newname)
         print('完成')
 
-    def ExpPPT(self):
-        print('\n正在处理：')   
+    def copytoCrsDir(self,crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+        desDir=os.path.join(crsPPTDir,self.crsName)
+        if not os.path.exists(desDir):
+            os.makedirs(desDir)
+        
+        oldName_video=os.path.join(self.picSrc,'video')
+        oldName_ppt=os.path.join(self.picSrc,self.crsName+'_00.pptx')
+        newName_video=os.path.join(desDir,'video')
+        newName_ppt=os.path.join(desDir,self.crsName+'.pptx')
 
+        copyfile(oldName_ppt,newName_ppt)
+        if not os.path.exists(newName_video):
+            copytree(oldName_video,newName_video)
+        os.startfile(desDir)
+        os.startfile(newName_ppt)
+    
+    def ExpPPT(self,copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+        print('\n正在处理：')   
+        self.makeDirs(self.picSrc)
         self.renameFiles()    
         self.test_stepXls()    
         def picList():
@@ -141,14 +173,20 @@ class picToPPT:
                 
                 pic_wtmark=slide.shapes.add_picture(self.wtmark,left_wtmk,top_wtmk) #加水印
                 
-            newFn=os.path.join(self.picSrc,self.crsName+'.pptx')
+            newFn=os.path.join(self.picSrc,self.crsName+'_00.pptx')
             prs.save(newFn)
+
+            if copyToCrsDir=='yes':
+                self.copytoCrsDir(crsPPTDir=crsPPTDir)
+
             print('ppt已导出完成，文件名：{}'.format(newFn))                              
             
         picList=picList()
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('035啃骨头的小狗')
+    mypics=picToPPT('038旋转飞椅')
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    mypics.ExpPPT()
+    mypics.ExpPPT(copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    # mypics.makeDirs()
+    # mypics.copytoCrsDir()
