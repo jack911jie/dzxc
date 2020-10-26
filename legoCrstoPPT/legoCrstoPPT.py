@@ -107,7 +107,7 @@ class picToPPT:
             pic_steps=[]
             for blk in os.listdir(os.path.join(self.picSrc,'零件总图')):
                 # if ptn_block_list.match(blk) or ptn_block_list2.match(blk):
-                if ptn_block_list2.match(blk):
+                if ptn_block_list2.match(blk): #找出零件总图的数量
                     pic_steps.append(os.path.join(self.picSrc,'零件总图',blk))
             pic_steps.sort()
             summary_num=len(pic_steps)
