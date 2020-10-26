@@ -1,5 +1,5 @@
 import sys
-sys.path.append('i:/py/dzxc')
+sys.path.append('i:/py/dzxc/module')
 import composing
 import os
 import json
