@@ -185,7 +185,7 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('038旋转飞椅')
+    mypics=picToPPT('L038旋转飞椅')
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT(copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()

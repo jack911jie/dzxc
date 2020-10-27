@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.ERROR, format='%(levelname)s | %(funcName)s - 
 logger = logging.getLogger(__name__)
 
 class LegoPics:
-    def __init__(self,crsName,weekday=2):
+    def __init__(self,crsDate,crsName,weekday=2):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
@@ -19,7 +19,8 @@ class LegoPics:
                 _line=_line+newLine
                 
             config=json.loads(_line)
-            
+
+        self.crsDate=str(crsDate)    
         self.crsName=crsName
         self.dir=config['乐高照片文件夹']
         self.stu_dir=config['乐高学员文件夹']
@@ -46,22 +47,22 @@ class LegoPics:
         stdInfos=self.read_sig(weekday=self.weekday)
         dictPY=stdInfos[0]
         stdNamelist=stdInfos[1]
-        for fn in os.listdir(os.path.join(self.dir,self.crsName)):
+        for fn in os.listdir(os.path.join(self.dir,self.crsDate+'-'+self.crsName)):
             if fn[-3:].lower()=='jpg':
-#                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
-                tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsName,fn)))      
+            #                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
+                tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
                 if len(tag)>0:
                     for _tag in tag:
                         if _tag in stdNamelist:
-                            stu_dirName=os.path.join(self.stu_dir,self.crsName,fn)
+                            stu_dirName=os.path.join(self.stu_dir,self.crsDate+'-'+self.crsName,fn)
                             stu_pic_dirName=os.path.join(self.stu_dir,dictPY[_tag]+_tag)
                             if not os.path.exists(stu_pic_dirName):
                                 os.makedirs(stu_pic_dirName)
-                                oldName=os.path.join(self.dir,self.crsName,fn)
+                                oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
                                 newName=os.path.join(stu_pic_dirName,fn)
                                 shutil.copyfile(oldName,newName)
                             else:
-                                oldName=os.path.join(self.dir,self.crsName,fn)
+                                oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
                                 newName=os.path.join(stu_pic_dirName,fn)
                                 shutil.copyfile(oldName,newName)
         
@@ -84,5 +85,5 @@ def code_to_str(ss):
 
 
 if __name__=='__main__':
-    stu_pics=LegoPics('20201024认识零件',weekday=6)
+    stu_pics=LegoPics(crsDate=20200929,crsName='L033双翼飞机',weekday=6)
     stu_pics.dispatch()

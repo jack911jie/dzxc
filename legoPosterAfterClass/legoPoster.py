@@ -40,7 +40,7 @@ class poster:
             self.crsStudent=config['学员签到表w6']
 
         
-        self.picWid=425 #默认照片富庶
+        self.picWid=425 #默认照片
         
     def pic_resize(self,pic,wid):
         w,h=pic.size
@@ -162,8 +162,9 @@ class poster:
 
         return ImageFont.truetype(fontList[font_name],font_size)
     
-    def PosterDraw(self,crs_nameInput,dateInput):
-        crs_name=crs_nameInput[3:]
+    def PosterDraw(self,crs_nameInput,dateInput,TeacherSig='阿晓老师'):
+        crs_name=crs_nameInput[4:]
+        crs_code=crs_nameInput[0:4]
         def basic_para():
             print('正在初始化参数……',end='')
             picWid=self.picWid
@@ -199,7 +200,7 @@ class poster:
         def read_excel():
             print('正在读取学员和课程信息……',end='')
             df=pd.read_excel(self.crsList) 
-            crs=df.loc[df['课程名称']==crs_name]   
+            crs=df.loc[df['课程编号']==crs_code]   
             knowledge=list(crs['知识点'])
             script=list(crs['话术'])
             dif_level=list(crs['难度'])
@@ -212,7 +213,7 @@ class poster:
             df_stdSig=pd.read_excel(self.crsStudent,sheet_name='学生上课签到表',skiprows=2)
             
             df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名'},inplace=True)
-            Students_sig=df_stdSig.loc[df_stdSig[crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
+            Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
             Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
             Students_List=Students.values.tolist()
             logging.info(Students_List)
@@ -309,7 +310,7 @@ class poster:
             for root,dirs,files in os.walk(os.path.join(self.picStdDir,stdName)):   #学员的照片
                 for file in files:
                     try:
-                        if re.findall(ptn,file)[0][1:-1]==crs_name:
+                        if re.findall(ptn,file)[0][1:-1]==crs_nameInput:
                             pics_for_crs.append(os.path.join(self.picStdDir,stdName,file))
                     except:
                         pass
@@ -319,8 +320,6 @@ class poster:
                 num=4
             else:
                 num=2
-
-
             pics_stds_addrs=random.sample(pics_for_crs,num)
             sorted_pics_stds_addrs=sortPics(pics_stds_addrs)
             pics=[pic_title_addr]
@@ -411,13 +410,13 @@ class poster:
             if self.bg_img_num>3:
                 self.put_txt_img(img,script,780,[60,1440],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1730), '阿晓老师', fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,1730), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
                 draw.text((500,1860), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  
             else:
                 self.put_txt_img(img,script,780,[60,1100],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1390), '阿晓老师', fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,1390), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
                 draw.text((500,1520), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30)) 
                 
@@ -445,10 +444,10 @@ class poster:
             putTxt(img,stdName,stdAge,KdgtName,ClassName)             
             
             print('正在保存 {} 的图片……'.format(std[3]),end='')
-            if not os.path.exists(os.path.join(self.bg,str(dateInput)+crs_name)):
-                os.mkdir(os.path.join(self.bg,str(dateInput)+crs_name))
+            if not os.path.exists(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput)):
+                os.mkdir(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput))
             
-            img.save(os.path.join(self.bg,str(dateInput)+crs_name,std[2]+stdName+'-'+str(dateInput)+'-'+crs_name+'.jpg'))
+            img.save(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')
 #             img.show()
 
@@ -459,4 +458,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('037认识零件',20201024)    
+    my.PosterDraw('L037认识零件',20200922,TeacherSig='阿晓老师')

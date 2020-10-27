@@ -58,19 +58,19 @@ class pics:
             lst=read_excel()
             crs,stds=lst[0],lst[1]
             stdList=stds['学生姓名'].tolist()
-            # print(crs)
 
             infos=[]
             for fileName in os.listdir(self.totalPics):
                 fn=fileName.split('-')
-                crsName=fn[1]
+                crsName=fn[1][4:]
+                crsCode=fn[1][0:4]
                 real_addr=os.path.join(self.totalPics,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
                 if len(tag)>0:
                     for _tag in tag:                        
                         if _tag in stdList:
                             std_name=_tag
-                            knlg=crs[crs['课程名称']==crsName]['知识点'].tolist()[0]
+                            knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
                             infos.append([real_addr,std_name,crsName,knlg,fileName])
             print('完成')
             return infos
