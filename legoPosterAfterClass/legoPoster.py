@@ -430,7 +430,6 @@ class poster:
         INFO=read_excel()
         std_list,crs_info=INFO[0],INFO[1]
     
-
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
             # img=basic_bg()
@@ -458,4 +457,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L037认识零件',20200922,TeacherSig='阿晓老师')
+    my.PosterDraw('L038旋转飞椅',20201027,TeacherSig='阿晓老师')

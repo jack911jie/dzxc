@@ -143,9 +143,11 @@ class picToPPT:
 
             lowerPosList_1=['2x16单位黑色板','12单位绿色梁','12单位绿色孔砖']
             lowerPosList_2=['主机','电机']
-            
-            for i,img in enumerate(picList[0]):
-                blank_slide_layout=prs.slide_layouts[1]
+
+            blank_slide_layout=prs.slide_layouts[1]
+            slide=prs.slides.add_slide(blank_slide_layout)
+            picTitle=slide.shapes.add_picture(os.path.join(self.picSrc,self.crsName[4:]+'.jpg'),left,top,height=height) #加入封面图
+            for i,img in enumerate(picList[0]):                
                 slide=prs.slides.add_slide(blank_slide_layout)
                 pic=slide.shapes.add_picture(img,left,top,height=height)
                 
@@ -162,7 +164,7 @@ class picToPPT:
                             y_textbox=Cm(5)
                         textbox=slide.shapes.add_textbox(Cm(2),y_textbox,Cm(5),Cm(2.5))
                         p = textbox.text_frame.add_paragraph()
-                        p.line_spacing=1.5 #行间距
+                        p.line_spacing=1.2 #行间距
 
 
                         p.text=txt

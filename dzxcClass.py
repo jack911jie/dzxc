@@ -10,9 +10,9 @@ from legoPoster import poster as posterAfterClass
 import LegoStdPicMark
 import legoCrstoPPT
 
-def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='exportList'):
+def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeList'):
     consName=crsName
-    if dealtype=='exportList':
+    if dealtype=='makeList':
         mylego=picToMp4.LegoCons(pth,consName)        
         mylego.creatItem()
         mylego.makeList()
@@ -31,7 +31,7 @@ def stdpicWhiteMark():
     pic=LegoStdPicMark.pics()
     pic.putCover(height=2250)
 
-def exportPpt(crsName='L037认识零件',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
     mypics=legoCrstoPPT.picToPPT(crsName)
     mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
 
@@ -44,7 +44,7 @@ def picsDistribute(crsDate,crsName,weekday):
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,weekday)
     stu_pics.dispatch()
 
-def pic_distribute_and_exp_poster(place='超智幼儿园',crsDate=20200929,crsName='L033双翼飞机',weekday=6,TeacherSig='阿晓老师'):
+def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crsName='L033双翼飞机',weekday=6,TeacherSig='阿晓老师'):
     crsName_distibute=str(crsDate)+crsName[4:]
     picsDistribute(crsDate=crsDate,crsName=crsName,weekday=weekday)
     my=posterAfterClass(weekday=weekday,place=place)  
@@ -55,11 +55,10 @@ def pic_distribute_and_exp_poster(place='超智幼儿园',crsDate=20200929,crsNa
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeMovie')
 
 #将步骤图导出PPT
-# exportPpt('L038旋转飞椅',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+makePpt('L039跳绳的小人',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark()
 
 #按名字分配照片，并生成课后发给家长的照片：
-pic_distribute_and_exp_poster(place='超智幼儿园',crsDate=20201024,crsName='L037认识零件',weekday=6,TeacherSig='阿晓老师')
-
+# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201027,crsName='L038旋转飞椅',weekday=2,TeacherSig='阿晓老师')

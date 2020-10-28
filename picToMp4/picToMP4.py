@@ -128,7 +128,7 @@ class LegoCons:
         draw.text((100,int(img.size[1]*0.3)), crs_age, fill = '#6AB34A',font=font_title2)  #6AB34A  95ff67
         draw.text((100,int(img.size[1]*0.4)), crs_lego, fill = '#6AB34A',font=font_title2)  #6AB34A  95ff67
         draw.text((100,int(img.size[1]*0.5)), crs_intro, fill = '#6AB34A',font=font_info)  #6AB34A  95ff67
-        img.save(os.path.join(self.pth,self.consName,self.consName[3:]+'.jpg'))
+        img.save(os.path.join(self.pth,self.consName,self.consName[3:]+'_cover.jpg'))
         print('完成 \n')        
       
     def makeList(self):
@@ -163,7 +163,7 @@ class LegoCons:
             print('无零件总图')
         totalList.sort()
         
-        outList=[self.consName+'/'+self.consName[3:]+'.jpg']
+        outList=[self.consName+'/'+self.consName[3:]+'_cover.jpg']
         outList.extend(totalList)
         outList.extend(pngList)
 
@@ -576,7 +576,7 @@ def run_1(pth,consName,crs_list,s=1):
         mylego=LegoCons(pth,consName)        
         # mylego.creatItem()
         # mylego.makeList()
-        mylego.putTag()
+        # mylego.putTag()
         mylego.putTag_wedo_coverpage()
         mylego.expHTML_lego()    
         myMovie=ConsMovie(pth,consName,crs_list)
