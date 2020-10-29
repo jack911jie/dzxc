@@ -1,5 +1,7 @@
 import os
 import sys
+sys.path.append('i:/py/dzxc/module')
+from readConfig import readConfig
 import platform
 import numpy as np
 import re
@@ -14,14 +16,17 @@ from shutil import copyfile,copytree
 class picToPPT:
     def __init__(self,crsName):
         self.crsName=crsName
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'crstoPPT.config'))
+
         if platform.system().lower()=='linux':
             self.picDir='/home/jack/data/乐高/图纸'
             self.template='/home/jack/data/乐高/图纸/template.pptx'
             self.wtmark='/home/jack/data/乐高/图纸/大智小超水印.png'
         else:
-            self.picDir='i:/乐高/图纸'
-            self.template='i:/乐高/图纸/template.pptx'
-            self.wtmark='i:/乐高/图纸/大智小超水印.png'
+            self.picDir=config['图纸文件夹']
+            self.template=config['PPT模板']
+            self.wtmark=config['PPT水印']
+            self.legoCodeList=config['乐高零件编号']
         self.picSrc=os.path.join(self.picDir,crsName)
 
     def makeDirs(self,dirName):
@@ -42,16 +47,22 @@ class picToPPT:
     def test_stepXls(self):
         xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')
         if not os.path.exists(xlsName):
+            blNames=self.blockNames()
             wb=Workbook()
             tb=wb.active
             tb['A1']='序号'
             tb['B1']='零件名称'
+            tb['D1']='零件名称（识别）'
             row=2
             for file in os.listdir(self.picSrc):
                 ptn='\d{3}_\dx.png'                
                 if re.match(ptn,file):
                     tb['A'+str(row)]=row-1
                     row+=1
+            
+            for k,blk in enumerate(blNames):
+                tb['D'+str(k+2)]=blk
+
             wb.save(xlsName)
             print('新建了步骤文件，请在文件中先输入零件名称。')
             sys.exit(0)
@@ -87,7 +98,40 @@ class picToPPT:
             copytree(oldName_video,newName_video)
         os.startfile(desDir)
         os.startfile(newName_ppt)
-    
+
+    def blockNames(self):
+        fn=os.path.join(self.picDir,self.crsName,self.crsName[4:]+'.lxfml')
+        bl=pd.read_excel(self.legoCodeList)
+        bl['编号'].astype('object')
+        with open (fn,'r',encoding='utf-8') as f:
+            rl=f.readlines()
+
+        ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
+        ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
+
+        a=[]
+        for line in rl:
+            p=re.findall(ptn1,line)
+            if p:
+                a.append(p[0])
+
+            p=re.findall(ptn2,line)
+            if p:
+                a.append(p[0])
+
+        out=[]
+        for  aa in a:
+            try:
+                aa=int(aa)
+            except:
+                pass
+            try:
+                blkName=bl[bl['编号']==aa]['中文名称'].values.tolist()[0]
+                out.append(blkName)
+            except:
+                out.append(aa)
+        return out
+
     def ExpPPT(self,copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
         print('\n正在处理：')   
         self.makeDirs(self.picSrc)
@@ -188,7 +232,8 @@ class picToPPT:
         
 if __name__=='__main__':
     mypics=picToPPT('L038旋转飞椅')
+    # print(mypics.blockNames())
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    mypics.ExpPPT(copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
