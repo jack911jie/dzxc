@@ -132,7 +132,7 @@ class picToPPT:
                 out.append(aa)
         return out
 
-    def ExpPPT(self,copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+    def ExpPPT(self,copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
         print('\n正在处理：')   
         self.makeDirs(self.picSrc)
         self.renameFiles()    
@@ -185,7 +185,7 @@ class picToPPT:
             left_wtmk=Cm(0)
             top_wtmk=Cm(1.4)
 
-            lowerPosList_1=['2x16单位黑色板','12单位绿色梁','12单位绿色孔砖']
+            lowerPosList_1=['2x16单位黑色板','12单位绿色梁','12单位绿色孔砖','1×16梁']
             lowerPosList_2=['主机','电机']
 
             blank_slide_layout=prs.slide_layouts[1]
