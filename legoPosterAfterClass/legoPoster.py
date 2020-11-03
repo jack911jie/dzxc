@@ -29,6 +29,8 @@ class poster:
         self.font_dir=config['字体文件夹']
         self.default_font=config['默认字体']         
         self.crsList=config['课程信息表']
+        self.weekday=weekday
+        self.eachStd=config['个别学员评语表']
         
         self.picTitleDir=config['课程标题照片文件夹']
         self.picStdDir=config['学员照片文件夹']
@@ -39,7 +41,7 @@ class poster:
         elif weekday==6:
             self.crsStudent=config['学员签到表w6']
 
-        
+        self.PraiseTxt=['你在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','你的课堂表现非常棒，老师给你点个赞！',] 
         self.picWid=425 #默认照片
         
     def pic_resize(self,pic,wid):
@@ -218,8 +220,15 @@ class poster:
             Students_List=Students.values.tolist()
             logging.info(Students_List)
             # logging.info('\n'.join(crs_info))   
+
+            NumtoC={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'}
+            shtName='周'+NumtoC[str(self.weekday)]
+            TeacherCmt=pd.read_excel(self.eachStd,sheet_name=shtName,skiprows=1)
+            TeacherCmt.fillna('-',inplace=True)
+            TeacherCmt.rename(columns={'Unnamed: 0':'姓名首拼','Unnamed: 1':'学生姓名','Unnamed: 2':'昵称','Unnamed: 3':'性别','Unnamed: 4':'优点特性','Unnamed: 5':'缺点特性'},inplace=True)
+
             print('完成')
-            return([Students_List,crs_info])               
+            return([Students_List,crs_info,TeacherCmt])               
         
         def pic_xy(picWid,picHig,x0,y0):
             #白色矩形
@@ -378,8 +387,14 @@ class poster:
             print('完成')
             
         def expScript(name_input):
-            name=name_input
-            script=name+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]
+            stdname=name_input            
+            teacherCmtTxt=teacherCmt[teacherCmt['学生姓名']==stdname][str(dateInput)+'-'+crs_nameInput].values.tolist()[0]
+            prsTxt=random.choice(self.PraiseTxt)
+            if teacherCmtTxt!='-':
+                script=stdname+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+teacherCmtTxt
+            else:
+                script=stdname+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+prsTxt
+
             return script                   
 
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
@@ -428,7 +443,7 @@ class poster:
         para[0],para[1],para[2],para[3],para[4],para[5],para[6],para[7],para[8],para[9],para[10],para[11],para[12],para[13]
         
         INFO=read_excel()
-        std_list,crs_info=INFO[0],INFO[1]
+        std_list,crs_info,teacherCmt=INFO[0],INFO[1],INFO[2]
     
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
@@ -448,7 +463,7 @@ class poster:
             
             img.save(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')
-#             img.show()
+            # img.show()
 
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
@@ -457,4 +472,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L038旋转飞椅',20201027,TeacherSig='阿晓老师')
+    my.PosterDraw('L039跳绳的小人',20201103,TeacherSig='阿晓老师')
