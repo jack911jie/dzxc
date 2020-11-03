@@ -1,5 +1,7 @@
 import os
+import random
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import patches
 plt.rcParams['font.sans-serif']=['SimHei']#中文出现需  u'内容'
@@ -88,6 +90,89 @@ class draw:
         # 显示图形
         plt.show()
 
+    def rose(self):
+        #读取数据
+        data=pd.read_excel('e:\\temp\\海外疫情.xlsx',index_col=0)
+
+        #数据计算，这里只取前20个国家
+        radius = data['累计'][:20]
+        n=radius.count()
+        theta = np.arange(0, 2*np.pi, 2*np.pi/n)+2*np.pi/(2*n)    #360度分成20分，外加偏移
+
+        #在画图时用到的 plt.cm.spring_r(r)   r的范围要求时[0,1]
+        radius_maxmin=(radius-radius.min())/(radius.max()-radius.min())  #x-min/max-min   归一化  
+
+        #画图
+        fig = plt.figure(figsize=(20,5),dpi=256)
+        ax = fig.add_subplot(projection='polar')    #启用极坐标
+        bar = ax.bar(theta, radius,width=2*np.pi/n)
+
+
+        ax.set_theta_zero_location('N')  #分别为N, NW, W, SW, S, SE, E, NE
+        ax.set_rgrids([])    #用于设置极径网格线显示
+        # ax.set_rticks()    #用于设置极径网格线的显示范围
+        # ax.set_theta_direction(-1)    #设置极坐标的正方向
+        ax.set_thetagrids([])  #用于设置极坐标角度网格线显示
+        # ax.set_theta_offset(np.pi/2)       #用于设置角度偏离
+        ax.set_title('新冠肺炎全球疫情形势',fontdict={'fontsize':8})   #设置标题
+
+        #设置扇形各片的颜色
+        for r, bar in zip(radius_maxmin, bar):
+            bar.set_facecolor(plt.cm.spring_r(r))  
+            bar.set_alpha(0.8)
+
+        #设置边框显示    
+        for key, spine in ax.spines.items():  
+            if key=='polar':
+                spine.set_visible(False)
+
+        plt.show()
+
+        #保存图片
+        fig.savefig('COVID.png')
+
+    def rose2(self):
+        # 参考https://www.sohu.com/a/223885806_718302
+        # y=20
+        # x=np.pi/2
+        # w=np.pi/2
+
+        # color=(206/255,32/255,69/255)
+        # edgecolor=(206/255,32/255,69/255)
+
+        # fig=plt.figure(figsize=(13.44,7.5))#建立一个画布
+        # ax=fig.add_subplot(111,projection='polar')#建立一个坐标系，projection='polar'表示极坐标
+        # ax.bar(x=x,height=y,width=w,bottom=10,color=color,edgecolor=color)
+        # # fig.savefig('E:test.png',dpi=400,bbox_inches='tight',transparent=True)
+
+        x1=[np.pi/10+np.pi*i/5 for i in range(1,11)]
+        x2=[np.pi/20+np.pi*i/5 for i in range(1,11)]
+        x3=[3*np.pi/20+np.pi*i/5 for i in range(1,11)]
+        y1=[7000 for i in range(0,10)]
+        y2=[6000 for i in range(0,10)]
+        
+        fig=plt.figure(figsize=(13.44,7.5))
+        ax = fig.add_subplot(111,projection='polar')
+        ax.axis('off')
+        ax.bar(x=x1, height=y1,width=np.pi/5,color=(220/255,222/255,221/255),edgecolor=(204/255,206/255,205/255))
+        ax.bar(x=x1, height=y2,width=np.pi/5,color='w',edgecolor=(204/255,206/255,205/255))
+
+        random.seed(100)
+        y4=[random.randint(4000,5500) for i in range(10)]
+        y5=[random.randint(3000,5000) for i in range(10)]
+        
+        ax.bar(x=x2, height=y4,width=np.pi/10,color=(206/255,32/255,69/255),edgecolor=(206/255,32/255,69/255))
+        ax.bar(x=x3, height=y5,width=np.pi/10,color=(34/255,66/255,123/255),edgecolor=(34/255,66/255,123/255))
+
+        y6=[2000 for i in range(0,10)]
+        ax.bar(x=x1, height=y6,width=np.pi/5,color='w',edgecolor='w')
+
+        plt.show()
+
+
+
+
 if __name__=='__main__':
     pic=draw()
-    pic.radar([3,4,3,4,5,5,2])
+    # pic.radar([3,4,3,4,5,5,2])
+    pic.rose2()
