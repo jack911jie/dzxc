@@ -45,10 +45,11 @@ class picToPPT:
                 sys.exit (0)
 
     def test_stepXls(self):
-        xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')
+        xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm')
         if not os.path.exists(xlsName):
             blNames=self.blockNames()
-            wb=Workbook()
+            copyfile(os.path.join(self.picDir,'ppt_step_Template.xlsm'),xlsName)
+            wb=load_workbook(xlsName,keep_vba=True)
             tb=wb.active
             tb['A1']='序号'
             tb['B1']='零件名称'
@@ -67,7 +68,7 @@ class picToPPT:
             print('新建了步骤文件，请在文件中先输入零件名称。')
             sys.exit(0)
         else:
-            df=pd.read_excel(xlsName)
+            df=pd.read_excel(xlsName,usecols=[0,1])
             blockNum=df['零件名称'].count()
             if blockNum==0:
                 print('未输入零件名称，请先写入。')
@@ -171,7 +172,7 @@ class picToPPT:
             return [pic_steps,summary_num]
 
         def picToPPT(picList):
-            step_blkList=pd.read_excel(os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsx')).replace(np.nan,'')['零件名称'].tolist()
+            step_blkList=pd.read_excel(os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm'),usecols=[0,1]).replace(np.nan,'')['零件名称'].tolist()
             #             print(step_blkList)
             
             
@@ -231,7 +232,7 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L038旋转飞椅')
+    mypics=picToPPT('L041捕鼠夹')
     # print(mypics.blockNames())
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
