@@ -232,7 +232,7 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L041捕鼠夹')
+    mypics=picToPPT('L042玉兔捣药')
     # print(mypics.blockNames())
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
