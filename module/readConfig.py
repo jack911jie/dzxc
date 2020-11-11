@@ -10,3 +10,15 @@ def readConfig(fn):
             _line=_line+newLine
         config=json.loads(_line)
     return(config)
+
+def code_to_str(ss):
+    s=ss['keywords']
+    if isinstance(s,list):
+        out=[]
+        for i in s:
+            out.append(i.decode('utf-8'))
+    else:
+        out=[ss.decode('utf-8')]
+   
+#     print(out)
+    return out

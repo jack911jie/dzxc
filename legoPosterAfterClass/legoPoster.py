@@ -1,6 +1,7 @@
 import sys
 sys.path.append('i:/py/dzxc/module')
 import composing
+import readConfig
 import os
 import json
 import time
@@ -11,6 +12,7 @@ import pandas as pd
 from PIL import Image,ImageDraw,ImageFont
 from tqdm import tqdm
 import exifread
+import iptcinfo3
 
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(lineno)d - %(message)s')
 logger = logging.getLogger(__name__)
@@ -41,7 +43,7 @@ class poster:
         elif weekday==6:
             self.crsStudent=config['学员签到表w6']
 
-        self.PraiseTxt=['你在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','你的课堂表现非常棒，老师给你点个赞！',] 
+        self.PraiseTxt=['你在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','你的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
         
     def pic_resize(self,pic,wid):
@@ -320,11 +322,14 @@ class poster:
                 for file in files:
                     try:
                         if re.findall(ptn,file)[0][1:-1]==crs_nameInput:
-                            pics_for_crs.append(os.path.join(self.picStdDir,stdName,file))
+                            PicTags=readConfig.code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.picStdDir,stdName,file)))
+                            # print('tags:',PicTags)
+                            if '每周课程4+' in PicTags:
+                                pics_for_crs.append(os.path.join(self.picStdDir,stdName,file))
                     except:
                         pass
-            
-            # pics=pick_pics(stdName)
+            # print(pics_for_crs)
+            # pics=pick_pics(stdName)            
             if len(pics_for_crs)>3:
                 num=4
             else:
@@ -468,7 +473,7 @@ class poster:
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
         
-       
+    
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      

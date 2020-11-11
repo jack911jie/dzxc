@@ -145,15 +145,18 @@ class draw:
         # ax.bar(x=x,height=y,width=w,bottom=10,color=color,edgecolor=color)
         # # fig.savefig('E:test.png',dpi=400,bbox_inches='tight',transparent=True)
 
+        
+        
+        fig=plt.figure(figsize=(13.44,7.5))
+        ax = fig.add_subplot(111,projection='polar')
+        ax.axis('off')
+
         x1=[np.pi/10+np.pi*i/5 for i in range(1,11)]
         x2=[np.pi/20+np.pi*i/5 for i in range(1,11)]
         x3=[3*np.pi/20+np.pi*i/5 for i in range(1,11)]
         y1=[7000 for i in range(0,10)]
         y2=[6000 for i in range(0,10)]
         
-        fig=plt.figure(figsize=(13.44,7.5))
-        ax = fig.add_subplot(111,projection='polar')
-        ax.axis('off')
         ax.bar(x=x1, height=y1,width=np.pi/5,color=(220/255,222/255,221/255),edgecolor=(204/255,206/255,205/255))
         ax.bar(x=x1, height=y2,width=np.pi/5,color='w',edgecolor=(204/255,206/255,205/255))
 
