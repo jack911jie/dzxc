@@ -9,6 +9,7 @@ import LegoStudentPicDistribute
 from legoPoster import poster as posterAfterClass
 import LegoStdPicMark
 import legoCrstoPPT
+import iptcinfo3
 
 def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeList'):
     consName=crsName
@@ -22,9 +23,9 @@ def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list=
         mylego.creatItem()
         mylego.makeList()
         mylego.putTag()
-        mylego.putTag_wedo_coverpage()
+        # mylego.putTag_wedo_coverpage() #已不需要这步，第一张片头的字幕在moviepy中添加，不需另外生成一张图片。
         mylego.expHTML_lego()    
-        myMovie=picToMp4.ConsMovie(pth,consName,crs_list)
+        myMovie=picToMp4.ConsMovie(pth,consName)
         myMovie.exportMovie()
 
 def stdpicWhiteMark():
@@ -52,13 +53,14 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
 
 
 #将步骤图生成1分钟视频放上视频号
-# makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeMovie')
+makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='N001电钻',crs_list='课程信息表.xlsx',dealtype='makeMovie')
+
 
 #将步骤图导出PPT
-makePpt('L039跳绳的小人',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L041捕鼠夹',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark()
 
 #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201027,crsName='L038旋转飞椅',weekday=2,TeacherSig='阿晓老师')
+# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201110,crsName='L041捕鼠夹',weekday=2,TeacherSig='阿晓老师')

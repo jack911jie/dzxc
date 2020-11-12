@@ -88,6 +88,13 @@ class LegoCons:
         tag_list=np.array(df.loc[~pd.isna(df['描述'])]).tolist()
         
         print('正在给图片添加文字描述……\n')
+
+        if self.consName[0].upper()=='L': #wedo文字颜色
+            txtColor='#6AB34A'
+        elif self.consName[0].upper()=='N': #9686文字颜色
+            txtColor='#06419a'
+        else:
+            txtColor='#06419a'
         
         font = ImageFont.truetype('C:\Windows\Fonts\msyh.ttc',80)
         
@@ -96,39 +103,40 @@ class LegoCons:
             #     pth=os.path.join(self.pth,lst[0].replace('_tagged.png','.png')) #因makelist()生成的列表为包含了tagged.png的文件名，所以要改回来。
             # else:
             #     pth=os.path.join(self.pth,lst[0])
-            pth=os.path.join(self.pth,lst[0].replace('_tagged.png','.png'))
+            abs_picPath=os.path.join(self.pth,lst[0].replace('_tagged.png','.png'))
             txt=lst[1]
-            print(pth,txt)
-            img=Image.open(pth)
+            # print(abs_picPath,txt)
+            img=Image.open(abs_picPath)
             
             draw = ImageDraw.Draw(img)            
-            draw.text((200,int(img.size[1]*0.87)), txt, fill = '#6AB34A',font=font)  #6AB34A  95ff67
+            draw.text((200,int(img.size[1]*0.87)), txt, fill = txtColor,font=font)  #6AB34A  95ff67
             # NewName=pth.replace('.png','_tagged.png')
             ptn='.*x.png'
-            NewName=re.sub(ptn,pth,pth[:-4]+'_tagged.png')
+            if re.findall(ptn,abs_picPath):
+                NewName=abs_picPath[:-4]+'_tagged.png'
             img.save(NewName)
             #             img.show()       
             #             break
         print('添加文字完成 \n')
     
-    def putTag_wedo_coverpage(self):
+    def putTag_wedo_coverpage(self):    #已不需要这步，第一张片头的字幕在moviepy中添加，不需另外生成一张图片。
         print('正在为封面首图添加知识点……',end='')
         font_title = ImageFont.truetype('j:/fonts/yousheTitleHei.ttf',80)
         font_title2 = ImageFont.truetype('j:/fonts/yousheTitleHei.ttf',30)
         font_info = ImageFont.truetype('j:/fonts/yousheTitleHei.ttf',25)
         # course_file=self.crsInfo
         df=pd.read_excel(self.crsInfo)
-        course_info=df[df['课程名称']==self.consName[3:]].values.tolist()
-        crs_bigtype,crs_type,crs_name,crs_age,crs_star,crs_intro,crs_comments,crs_lego,crs_preperation=course_info[0]
+        course_info=df[df['课程编号']==self.consName[0:4]].values.tolist()
+        crs_bigtype,crs_type,crs_code,crs_name,crs_age,crs_star,crs_intro,crs_comments,crs_lego,crs_preperation=course_info[0]
         crs_age='适合年龄： '+crs_age
         crs_lego='使用教具： '+crs_lego
-        img=Image.open(os.path.join(self.pth,self.consName,self.consName[3:]+'.jpg'))
+        img=Image.open(os.path.join(self.pth,self.consName,self.consName[4:]+'.jpg'))
         draw = ImageDraw.Draw(img)     
         draw.text((100,int(img.size[1]*0.1)), crs_name, fill = '#6AB34A',font=font_title)  #6AB34A  95ff67
         draw.text((100,int(img.size[1]*0.3)), crs_age, fill = '#6AB34A',font=font_title2)  #6AB34A  95ff67
         draw.text((100,int(img.size[1]*0.4)), crs_lego, fill = '#6AB34A',font=font_title2)  #6AB34A  95ff67
         draw.text((100,int(img.size[1]*0.5)), crs_intro, fill = '#6AB34A',font=font_info)  #6AB34A  95ff67
-        img.save(os.path.join(self.pth,self.consName,self.consName[3:]+'_cover.jpg'))
+        img.save(os.path.join(self.pth,self.consName,self.consName[4:]+'_cover.jpg'))
         print('完成 \n')        
       
     def makeList(self):
@@ -163,7 +171,7 @@ class LegoCons:
             print('无零件总图')
         totalList.sort()
         
-        outList=[self.consName+'/'+self.consName[3:]+'_cover.jpg']
+        outList=[self.consName+'/'+self.consName[4:]+'.jpg']
         outList.extend(totalList)
         outList.extend(pngList)
 
@@ -179,21 +187,31 @@ class LegoCons:
         return outList    
     
 class ConsMovie:
-    def __init__(self,pth,consName,crs_list):                 
+    def __init__(self,pth,consName):     
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMP4config.txt'),'r',encoding='utf-8') as f:
+            lines=f.readlines()
+            _line=''
+            for line in lines:
+                newLine=line.strip('\n')
+                _line=_line+newLine
+            config=json.loads(_line)
+
+        self.crs_list=config['课程信息表']   
         self.endV=r'I:\大智小超\公共素材\视频类\片尾01.mp4'
         self.pth=pth
         self.consName=consName
         self.k=1/3 #转场占时长的比例
-        self.crs_listInput=crs_list
-        if self.crs_listInput=='Wedo课程表.xlsx' or self.crs_listInput=='9686课程表.xlsx' or self.crs_listInput=='课程信息表.xlsx':          
+
+        if consName[0].upper()=='N' or consName[0].upper()=='L':          
             self.bgm=r'I:\大智小超\公共素材\声音类\lego_wedo_long.mp3'
-        elif self.crs_listInput=='大颗粒课程表.xlsx':  
+        else:  
             self.bgm=r'I:\大智小超\公共素材\声音类\legoBGM.mp3'    
         
-        self.crs_list=os.path.join('I:\\大智小超\\课程表',crs_list)          
+          
         df=pd.read_excel(self.crs_list)
-        course_info=df[df['课程名称']==self.consName[3:]].values.tolist()
-        self.crs_bigtype,self.crs_type,self.crs_name,self.crs_age,self.crs_star,self.crs_intro,self.comment,self.crs_lego,self.preperation=course_info[0]
+        course_info=df[df['课程编号']==self.consName[0:4]].values.tolist()
+        # print(course_info[0])
+        self.crs_bigtype,self.crs_type,self.crs_code,self.crs_name,self.crs_age,self.crs_star,self.crs_intro,self.comment,self.crs_lego,self.preperation=course_info[0]
         self.crs_age="适合年龄："+self.crs_age
         self.crs_star="搭建难度："+self.crs_star
         self.crs_lego="使用教具："+self.crs_lego
@@ -362,13 +380,13 @@ class ConsMovie:
         return text
     
     def put_cover_text(self,clips):
-        if self.crs_listInput=='Wedo课程表.xlsx' :  
+        if self.consName[0].upper()=='L':  #wedo课程
             crs_h_name=0.05
             crs_h_age=0.3
             crs_h_lego=0.35
             crs_h_intro=0.6
             clr='#6AB34A'
-        elif self.crs_listInput=='9686课程表.xlsx' :
+        elif self.consName[0].upper()=='N': #9686课程
             crs_h_name=0.05
             crs_h_age=0.3
             crs_h_lego=0.35
@@ -579,7 +597,7 @@ def run_1(pth,consName,crs_list,s=1):
         # mylego.putTag()
         mylego.putTag_wedo_coverpage()
         mylego.expHTML_lego()    
-        myMovie=ConsMovie(pth,consName,crs_list)
+        myMovie=ConsMovie(pth,consName)
         myMovie.exportMovie()
     
 def run_export_Poster():
@@ -591,8 +609,8 @@ def run_test():
     mylego.putTag_wedo_coverpage()
 
 if __name__=='__main__':
-    #   run_1('I:\\乐高\\图纸','006鸭子','大颗粒课程表.xlsx',2)
-    #     run_1('I:\\乐高\\图纸','021天平','9686课程表.xlsx',2)
-    run_1('I:\\乐高\\图纸','035啃骨头的小狗','课程信息表.xlsx',3)
+    #   run_1('I:\\乐高\\图纸','006鸭子',2)
+    #     run_1('I:\\乐高\\图纸','021天平',2)
+    run_1('I:\\乐高\\图纸','035啃骨头的小狗',3)
     #     run_export_Poster()
     #     run_test()
