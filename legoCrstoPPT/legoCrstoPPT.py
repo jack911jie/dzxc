@@ -26,7 +26,7 @@ class picToPPT:
             self.picDir=config['图纸文件夹']
             self.template=config['PPT模板']
             self.wtmark=config['PPT水印']
-            self.legoCodeList=config['乐高零件编号']
+            self.legoCodeList=config['wedo零件编号']
         self.picSrc=os.path.join(self.picDir,crsName)
 
     def makeDirs(self,dirName):
@@ -103,7 +103,7 @@ class picToPPT:
     def blockNames(self):
         fn=os.path.join(self.picDir,self.crsName,self.crsName[4:]+'.lxfml')
         bl=pd.read_excel(self.legoCodeList)
-        bl['编号'].astype('object')
+        bl['lxfml编号'].astype('object')
         with open (fn,'r',encoding='utf-8') as f:
             rl=f.readlines()
 
@@ -127,7 +127,7 @@ class picToPPT:
             except:
                 pass
             try:
-                blkName=bl[bl['编号']==aa]['中文名称'].values.tolist()[0]
+                blkName=bl[bl['lxfml编号']==aa]['lxfml显示名称'].values.tolist()[0]
                 out.append(blkName)
             except:
                 out.append(aa)
