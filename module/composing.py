@@ -79,6 +79,8 @@ def split_txt_Chn_eng(wid,font_size,txt_input,Indent='no'):
         for i,t in enumerate(txts):
             txts[i]=chr(12288)+chr(12288)+t
     
+    # print('composing line 82:', txts)
+    
     res = re.compile(r'([\u4e00-\u9fa5])')   
     singleTxts=[]
     for t in txts:
@@ -109,9 +111,12 @@ def split_txt_Chn_eng(wid,font_size,txt_input,Indent='no'):
     for r,split_t in enumerate(split_txt):
         outTxt.append(put_words(split_t,zi_per_line))
         
-    
+    para_num=0
+    for tt in outTxt:
+        for t in tt:
+            para_num+=1
    
-    return outTxt 
+    return [outTxt,para_num] 
 
 def put_txt_img(draw,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
         

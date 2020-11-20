@@ -61,10 +61,10 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
 
 
 #将步骤图导出PPT
-makePpt('L045惊喜盒子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L045惊喜盒子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark()
 
 #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201117,crsName='L045惊喜盒子',TeacherSig='阿晓老师')
+pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201117,crsName='L045惊喜盒子',TeacherSig='阿晓老师')

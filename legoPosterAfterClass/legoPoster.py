@@ -3,6 +3,7 @@ sys.path.append('i:/py/dzxc/module')
 import composing
 import readConfig
 import os
+import numpy as np
 import json
 import time
 import re
@@ -45,6 +46,8 @@ class poster:
 
         self.PraiseTxt=['@同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','@同学的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
+        self.comment_dis_line=25 #老师评论的行间距
+        self.comment_font_size=36 #老师评论的字体大小
         
     def pic_resize(self,pic,wid):
         w,h=pic.size
@@ -113,12 +116,11 @@ class poster:
             ind='no'
             
         # txt=self.split_txt(total_dis,font_size,t,Indent='no')
-        txt=composing.split_txt_Chn_eng(total_dis,font_size,t,Indent='yes')
+        txt,p_num=composing.split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
+
         # font_sig = self.fonts('丁永康硬笔楷书',40)
-        num=len(txt)   
-        draw=ImageDraw.Draw(img)
-   
-        logging.info(txt)
+        draw=ImageDraw.Draw(img)   
+        # logging.info(txt)
         n=0
         for t in txt:              
             m=0
@@ -129,7 +131,7 @@ class poster:
                         # tt='  '+tt #首先前面加上两个空格
                         logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
                         logging.info(tt)
-                        draw.text((x+font_size*0.2,y), tt, fill = fill,font=fontInput) 
+                        draw.text((x-font_size*0.2,y), tt, fill = fill,font=fontInput) 
                     else:                       
                         logging.info('字数：'+str(len(tt))+'，坐标：'+str(x)+','+str(y))
                         logging.info(tt)
@@ -252,8 +254,11 @@ class poster:
             s2=140
             s3=450
             s4=700
-            s5=380
+            self.s4=s4
+            s5=(self.comment_font_size+self.comment_dis_line)*self.para_num+120
+            self.s5=s5
             s6=200
+            self.s6=s6
             sprt=5      
             total_len=s1+s2+s3+s4+s5+s6+sprt*5
 
@@ -267,12 +272,20 @@ class poster:
 
             y4=y3_2+sprt 
             y4_2=y4+s4
+            self.y4=y4
+            self.y4_2=y4_2
 
             y5=y4_2+sprt
             y5_2=y5+s5
+            self.y5=y5
+            self.y5_2=y5_2
 
             y6=y5_2+sprt
-            y6_2=y6+s6       
+            y6_2=y6+s6    
+            self.y6=y6
+            self.y6_2=y6_2   
+
+            
 
             if num==4:
                 img = Image.new("RGB",(900,total_len),(255,255,255))
@@ -366,8 +379,8 @@ class poster:
                 img.paste(pic_02,(pic2[1][0],pic2[1][1]))
                 img.paste(pic_03,(pic3[1][0],pic3[1][1]))
                 img.paste(pic_04,(pic4[1][0],pic4[1][1])) 
-                img.paste(pic_logo,(50,1830),mask=a)
-                img.paste(pic_qrcode,(700,1830))    
+                img.paste(pic_logo,(50,int(self.y5_2+self.s6/2-350/2.76/2)),mask=a)
+                img.paste(pic_qrcode,(700,int(self.y5_2+self.s6/2-130/2)))    
             else:
                 f_crs,f_01,f_02=pics
 
@@ -386,8 +399,9 @@ class poster:
                 img.paste(pic_crs,(pic0[1][0],pic0[1][1]))
                 img.paste(pic_01,(pic1[1][0],pic1[1][1]))
                 img.paste(pic_02,(pic2[1][0],pic2[1][1]))
-                img.paste(pic_logo,(50,1490),mask=a)
-                img.paste(pic_qrcode,(700,1490))    
+
+                img.paste(pic_logo,(50,int(self.y5_2-self.s4/2)+int(self.s6/2-350/2.76/2)),mask=a)
+                img.paste(pic_qrcode,(700,int(self.y5_2-self.s4/2)+int(self.s6/2-130/2)))    
 
             print('完成')
             
@@ -415,11 +429,11 @@ class poster:
             draw.text((280,200), KdgtName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #幼儿园
             draw.text((460,200), ClassName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #班级
     
-            draw.text((50,290), '• '+crs_info[0], fill = '#ffffff',font=self.fonts('华康海报体W12(p)',40))  #课程名称  
+            draw.text((50,290), '• '+crs_info[0]+' •', fill = '#FFE340',font=self.fonts('华康海报体W12(p)',40))  #课程名称  
             draw.text((50,360), '难度：'+crs_info[3], fill = '#ffffff',font=self.fonts('汉仪锐智w',25))  #难度
             draw.text((530,630), '使用教具：'+crs_info[4], fill = '#ffffff',font=self.fonts('微软雅黑',22))  #教具
             
-            self.put_txt_img(img,crs_info[1],450,[8,420],25,fill = '#ffffff',font_name='汉仪锐智w',font_size=28)  #知识点    
+            self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = '#ffffff',font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
             draw.text((100,630), date_txt, fill = '#ffffff',font=self.fonts('汉仪心海行楷w',35))  #日期
@@ -433,15 +447,15 @@ class poster:
             if self.bg_img_num>3:
                 self.put_txt_img(img,script,780,[60,1440],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1730), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-45*2+45/2)), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,1860), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  
+                draw.text((500,int(self.y5_2+self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  
             else:
                 self.put_txt_img(img,script,780,[60,1100],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,1390), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-self.s4/2-45*2+45/2)), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,1520), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30)) 
+                draw.text((500,int(self.y5_2-self.s4/2)+int(self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30)) 
                 
             print('完成')
             
@@ -456,12 +470,18 @@ class poster:
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
             # img=basic_bg()
+            KdgtName,ClassName,stdPY,stdName,stdAge=std[0],std[1],std[2],std[3],'-'
+            totalTxt=expScript(stdName)
+            self.allTxt,self.para_num=composing.split_txt_Chn_eng(wid=780,font_size=self.comment_font_size,txt_input=totalTxt,Indent='yes')
+
+
+
             self.bg_img_num=len(pick_pics(std[2]+std[3]))
             if self.bg_img_num>3:
                 img=basic_bg(4)
             else:
                 img=basic_bg(2)
-            KdgtName,ClassName,stdPY,stdName,stdAge=std[0],std[1],std[2],std[3],'-'
+            
             putImg(img,stdPY+stdName)
             putTxt(img,stdName,stdAge,KdgtName,ClassName)             
             
@@ -480,4 +500,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L039跳绳的小人',20201103,TeacherSig='阿晓老师')
+    my.PosterDraw('L045惊喜盒子',20201117,TeacherSig='阿晓老师')
