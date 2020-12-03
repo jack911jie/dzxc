@@ -539,7 +539,193 @@ class LegoWeekly:
         img.save('./createlogo.png')
         print('……完成\n')
         return img
-    
+
+class BuildAnimation:
+    def __init__(self,crs_name):
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMP4config.txt'),'r',encoding='utf-8') as f:
+            lines=f.readlines()
+            _line=''
+            for line in lines:
+                newLine=line.strip('\n')
+                _line=_line+newLine
+            config=json.loads(_line)
+
+        if crs_name[0].upper()=='N' or crs_name[0].upper()=='L':          
+            self.bgm=r'I:\大智小超\公共素材\声音类\lego_wedo_long.mp3'
+        else:  
+            self.bgm=r'I:\大智小超\公共素材\声音类\legoBGM.mp3'  
+
+        self.endV=r'I:\大智小超\公共素材\视频类\片尾01.mp4'
+        self.crs_list=config['课程信息表']
+        self.src_dir='I:\\乐高\\图纸'
+        self.crs_name=crs_name
+        self.pics_dir=os.path.join(self.src_dir,self.crs_name,'animation')
+        self.crs_code=crs_name[0:4]
+        self.w,self.h=850,480
+        self.drtn=2
+
+    def read_pics(self):
+        pics_list=[]
+
+        for fn in os.listdir(self.pics_dir):
+            pics_list.append(os.path.join(self.pics_dir,fn))
+
+        # print(pics_list)
+        # test=pics_list[20:25]
+        return pics_list
+
+    def read_excel(self):
+        crs_code=self.crs_code
+        df=pd.read_excel(self.crs_list)
+        crs=df.loc[df['课程编号']==crs_code]   
+
+        knowledge=list(crs['知识点'])
+        script=list(crs['话术'])
+        age=list(crs['年龄'])[0]
+        dif_level=list(crs['难度'])
+        instrument=list(crs['教具'])
+        crs_info=[self.crs_name[4:],age,knowledge[0],script[0],dif_level[0],instrument[0]]      
+        stars=crs_info[-1].replace('*','★')
+        crs_info[-1]=stars 
+        return crs_info
+
+
+    def put_cover_text(self,clips):
+        print('正在添加字幕……',end='')
+        if self.crs_name[0].upper()=='L':  #wedo课程
+            crs_h_name=0.05
+            crs_h_age=0.3
+            crs_h_lego=0.4
+            crs_h_intro=0.6
+            clr='#6AB34A'
+        elif self.crs_name[0].upper()=='N': #9686课程
+            crs_h_name=0.05
+            crs_h_age=0.3
+            crs_h_lego=0.35
+            crs_h_intro=0.6
+            clr='#06419A'
+        else:
+            crs_h_name=0.05
+            crs_h_age=0.6
+            crs_h_lego=0.65
+            crs_h_intro=0.8
+            clr='#6AB34A'
+        
+        crs_info=self.read_excel()
+        crs_name,age,knowledge,script,dif_level,instrument=crs_info
+
+        text = TextClip(txt=crs_name, fontsize=70, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_name)).set_duration(self.drtn).set_start(0)
+        clips.append(text)
+        
+        text = TextClip(txt='适合年龄：'+age , fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_age)).set_duration(self.drtn).set_start(0)
+        clips.append(text)
+        
+        text = TextClip(txt='使用教具：'+instrument, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_lego)).set_duration(self.drtn).set_start(0)
+        clips.append(text)
+        
+        text = TextClip(txt=knowledge,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_intro)).set_duration(self.drtn).set_start(0)
+        clips.append(text)
+
+        # cover_clip=CompositeVideoClip(clips)
+
+        # fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation.mp4')
+        # cover_clip.write_videofile(fn)
+
+        print('完成')
+        return clips
+
+    def build_movie(self,total_secs=54):
+        print('正在生成主动画……',end='')
+        w,h=850,480        
+        pics=self.read_pics()
+        drtn=total_secs/len(pics)  #总共54秒
+        clips=[]
+        cover=ImageClip(os.path.join(self.src_dir,self.crs_name,self.crs_name[4:]+'.jpg')).set_fps(25).set_duration(2).resize((w,h))
+        clips.append(cover)
+        # clips=ImageSequenceClip(pics,fps=25)
+        n=0
+        for fn in pics:
+            img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).set_start(2+drtn*n)
+            clips.append(img)
+            n+=1
+        
+        print('完成')
+        return clips
+
+    def put_endvideo(self,clips):
+        print('正在加入片尾、logo……',end='')
+        endvideo=VideoFileClip(self.endV,target_resolution=(self.h,self.w)).set_start(56) # 片尾   分辨率是先写h,再写w  大坑
+        add_end=clips.append(endvideo)
+
+        logo=ImageClip(r"I:\\大智小超\\公共素材\\图片类\\00大智小超科学实验室商标.png") \
+            .set_fps(25).set_duration(54).resize((80,48)).set_position((740,420)) \
+            .set_start(0)
+        clips.append(logo)
+
+        finalclip=CompositeVideoClip(clips)
+        print('完成')
+        return finalclip
+
+
+    def put_bgm(self,finalclip,endvideo_duration=4):
+        print('正在加入背景音乐……',end='')
+        BGM=AudioFileClip(self.bgm).set_duration(finalclip.duration-endvideo_duration).fx(afx.audio_fadeout,0.8)
+        final_audio = CompositeAudioClip([BGM,finalclip.audio])
+        mix=finalclip.set_audio(final_audio)
+        print('完成')
+        return mix
+
+
+    def killProcess(self):
+        # 处理python程序在运行中出现的异常和错误
+        try:
+            # pids方法查看系统全部进程
+            pids = psutil.pids()
+            for pid in pids:
+                # Process方法查看单个进程
+                p = psutil.Process(pid)
+                # print('pid-%s,pname-%s' % (pid, p.name()))
+                # 进程名
+                if p.name() == 'ffmpeg-win64-v4.1.exe':
+                    # 关闭任务 /f是强制执行，/im对应程序名
+                    cmd = 'taskkill /f /im ffmpeg-win64-v4.1.exe  2>nul 1>null'
+                    # python调用Shell脚本执行cmd命令
+                    os.system(cmd)
+        except:
+            pass
+        
+
+    def exp_building_movie(self,exptype='all'):
+        print('正在处理……')
+        
+
+        if exptype=='all':
+            main_movie=self.build_movie()
+            cover_text=self.put_cover_text(main_movie)
+            add_end_video=self.put_endvideo(cover_text)
+            mix=self.put_bgm(add_end_video)
+            fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation.mp4')
+            0
+        elif exptype=='part':
+            main_movie=self.build_movie(total_secs=25)
+            cover_text=self.put_cover_text(main_movie)
+            mix=CompositeVideoClip(cover_text)
+            fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation_only.mp4')
+        else:
+            print('无效参数')
+            sys.exit(0)
+
+        mix.write_videofile(fn)
+        self.killProcess()
+        print('All Done')
+
+
+        
+
 class helpp():
     def __init__(self):
         txt='''
@@ -611,6 +797,9 @@ def run_test():
 if __name__=='__main__':
     #   run_1('I:\\乐高\\图纸','006鸭子',2)
     #     run_1('I:\\乐高\\图纸','021天平',2)
-    run_1('I:\\乐高\\图纸','035啃骨头的小狗',3)
+    # run_1('I:\\乐高\\图纸','035啃骨头的小狗',3)
     #     run_export_Poster()
     #     run_test()
+
+    my=BuildAnimation('L033双翼飞机')
+    my.exp_building_movie(exptype='part')
