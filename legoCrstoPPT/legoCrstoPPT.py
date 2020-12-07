@@ -35,6 +35,7 @@ class picToPPT:
             os.makedirs(dirName)
             os.makedirs(os.path.join(dirName,'零件总图'))
             os.makedirs(os.path.join(dirName,'video'))
+            os.makedirs(os.path.join(dirName,'animation'))
             print('创建完成,请在文件夹中放入步骤图片。')
             sys.exit(0)
         else:
