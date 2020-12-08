@@ -406,7 +406,8 @@ class poster:
             print('完成')
             
         def expScript(name_input):
-            stdname=name_input            
+            stdname=name_input      
+            nickname=teacherCmt[teacherCmt['学生姓名']==stdname]['昵称'].values.tolist()[0]      
             teacherCmtTxt=teacherCmt[teacherCmt['学生姓名']==stdname][str(dateInput)+'-'+crs_nameInput].values.tolist()[0]
             prsTxt=random.choice(self.PraiseTxt)
             if teacherCmtTxt!='-':
@@ -416,6 +417,10 @@ class poster:
 
             if '@' in script:
                 script=script.replace('@',stdname)
+            if '$' in script:
+                if nickname=='-':
+                    nickname=stdname
+                script=script.replace('$',nickname)
 
             return script                   
 
