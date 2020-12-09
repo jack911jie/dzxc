@@ -4,6 +4,7 @@ import logging
 import json
 import shutil
 import pandas as pd
+import re
  
 # logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logging.basicConfig(level=logging.ERROR, format='%(levelname)s | %(funcName)s - 第 %(lineno)d 行 - %(message)s')
@@ -47,12 +48,18 @@ class LegoPics:
         stdInfos=self.read_sig(weekday=self.weekday)
         dictPY=stdInfos[0]
         stdNamelist=stdInfos[1]
+
+        ptn=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+') #标签为“英文+中文”的正则表达式
+
         for fn in os.listdir(os.path.join(self.dir,self.crsDate+'-'+self.crsName)):
             if fn[-3:].lower()=='jpg':
             #                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
                 tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
                 if len(tag)>0:
                     for _tag in tag:
+                        if ptn.match(_tag): #如有“英文+中文”的标签格式，提取中文。
+                             _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+
                         if _tag in stdNamelist:
                             stu_dirName=os.path.join(self.stu_dir,self.crsDate+'-'+self.crsName,fn)
                             stu_pic_dirName=os.path.join(self.stu_dir,dictPY[_tag]+_tag)
