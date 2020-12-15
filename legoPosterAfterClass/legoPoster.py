@@ -415,8 +415,8 @@ class poster:
             else:
                 script=stdname+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+prsTxt
 
-            if '@' in script:
-                script=script.replace('@',stdname)
+            if '#' in script:
+                script=script.replace('#',stdname)
             if '$' in script:
                 if nickname=='-':
                     nickname=stdname
