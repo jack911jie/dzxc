@@ -580,7 +580,7 @@ class BuildAnimation:
         crs=df.loc[df['课程编号']==crs_code]   
 
         knowledge=list(crs['知识点'])
-        script=list(crs['话术'])
+        script=list(crs['课程描述'])
         age=list(crs['年龄'])[0]
         dif_level=list(crs['难度'])
         instrument=list(crs['教具'])

@@ -208,7 +208,7 @@ class poster:
             df=pd.read_excel(self.crsList) 
             crs=df.loc[df['课程编号']==crs_code]   
             knowledge=list(crs['知识点'])
-            script=list(crs['话术'])
+            script=list(crs['课程描述'])
             dif_level=list(crs['难度'])
             instrument=list(crs['教具'])
             crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]      
