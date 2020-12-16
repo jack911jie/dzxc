@@ -44,7 +44,7 @@ class poster:
         elif weekday==6:
             self.crsStudent=config['学员签到表w6']
 
-        self.PraiseTxt=['@同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','@同学的课堂表现非常棒，老师给你点个赞！'] 
+        self.PraiseTxt=['#同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','#同学的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
         self.comment_dis_line=25 #老师评论的行间距
         self.comment_font_size=36 #老师评论的字体大小
