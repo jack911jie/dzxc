@@ -12,6 +12,7 @@ from pptx.util import Cm,Pt,Cm
 from pptx.dml.color import RGBColor
 from openpyxl import Workbook,load_workbook
 from shutil import copyfile,copytree
+import pypinyin
 
 class picToPPT:
     def __init__(self,crsName):
@@ -22,11 +23,13 @@ class picToPPT:
             self.picDir='/home/jack/data/乐高/图纸'
             self.template='/home/jack/data/乐高/图纸/template.pptx'
             self.wtmark='/home/jack/data/乐高/图纸/大智小超水印.png'
+            self.crs_info=''
         else:
             self.picDir=config['图纸文件夹']
             self.template=config['PPT模板']
             self.wtmark=config['PPT水印']
             self.legoCodeList=config['wedo零件编号']
+            self.crs_info=config['课程信息表']
         self.picSrc=os.path.join(self.picDir,crsName)
 
     def makeDirs(self,dirName):
@@ -173,6 +176,18 @@ class picToPPT:
             return [pic_steps,summary_num]
 
         def picToPPT(picList):
+            #读取课程信息表中的知识点和课后问题
+            df=pd.read_excel(self.crs_info)
+            t1=df[df['课程编号']==self.crsName[0:4]]['知识点'].values.tolist()[0]
+            t1=t1[2:]
+            t2=df[df['课程编号']==self.crsName[0:4]]['课后问题'].values.tolist()[0]
+            t2=t2[2:]
+
+            #用空格替换原来的1. 2. 3. 格式
+            ptn=r"\d."
+            txt_knlg=re.sub(ptn,'',t1)
+            txt_quesion=re.sub(ptn,'',t2)
+
             step_blkList=pd.read_excel(os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm'),usecols=[0,1]).replace(np.nan,'')['零件名称'].tolist()
             #             print(step_blkList)
             
@@ -191,8 +206,19 @@ class picToPPT:
             lowerPosList_2=['主机','电机']
 
             blank_slide_layout=prs.slide_layouts[1]
+
             slide=prs.slides.add_slide(blank_slide_layout)
             picTitle=slide.shapes.add_picture(os.path.join(self.picSrc,self.crsName[4:]+'.jpg'),left,top,height=height) #加入封面图
+            slide.shapes._spTree.insert(2, picTitle._element)#将图片放在底层
+            slide.shapes.title.text=self.crsName[4:] #课程名称
+            textbox = slide.shapes.add_textbox(Cm(3),Cm(6),Cm(5),Cm(3))
+            tf = textbox.text_frame
+            para = tf.add_paragraph()    # 新增段落
+            _pinyin=[c[0] for c in pypinyin.pinyin(self.crsName[4:])] #写入标题拼音
+            title_pinyin=' '.join(_pinyin)
+
+            para.text = title_pinyin  # 向段落写入文字
+
             for i,img in enumerate(picList[0]):                
                 slide=prs.slides.add_slide(blank_slide_layout)
                 pic=slide.shapes.add_picture(img,left,top,height=height)
@@ -221,6 +247,16 @@ class picToPPT:
                 
                 pic_wtmark=slide.shapes.add_picture(self.wtmark,left_wtmk,top_wtmk) #加水印
                 
+
+            prs.slides[2].placeholders[1].text=txt_knlg #写入知识点
+            slide=prs.slides.add_slide(blank_slide_layout)
+
+            prs.slides[len(prs.slides)-1].placeholders[0].text='课后问题'  #加入课后问题
+            prs.slides[len(prs.slides)-1].placeholders[1].text=txt_quesion
+
+            slide=prs.slides.add_slide(blank_slide_layout)
+            picTitle=slide.shapes.add_picture(os.path.join(self.picDir,'end_ppt_pic.png'),Cm(0),Cm(1.4),height=Cm(17.69)) #加入收拾零件的图片
+
             newFn=os.path.join(self.picSrc,self.crsName+'_00.pptx')
             prs.save(newFn)
 
