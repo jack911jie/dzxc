@@ -1,7 +1,10 @@
 import os
+import sys
+sys.path.append('i:/py/dzxc/module')
+import readConfig
 import re
 import json
-from moviepy.editor import *
+import moviepy.editor as mpy
 import moviepy.audio.fx.all as afx
 import pandas as pd
 import numpy as np
@@ -241,11 +244,11 @@ class ConsMovie:
         for p in self.lst:
             fn=os.path.join(self.pth,p)
             if n==0:
-                _img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h))
+                _img=mpy.ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h))
                 clips.append(_img)
                 n+=1
             else:
-                _img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).crossfadein(crstime).set_start((drtn-crstime)*n)
+                _img=mpy.ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).crossfadein(crstime).set_start((drtn-crstime)*n)
                 clips.append(_img)
                 n+=1    
                 
@@ -257,7 +260,7 @@ class ConsMovie:
                 
         #加上片尾
         print('正在处理片尾...\n')
-        endvideo=VideoFileClip(self.endV,target_resolution=(h,w)).set_start((drtn-crstime)*n) # 片尾   分辨率是先写h,再写w  大坑
+        endvideo=mpy.VideoFileClip(self.endV,target_resolution=(h,w)).set_start((drtn-crstime)*n) # 片尾   分辨率是先写h,再写w  大坑
         clips.append(endvideo)        
         
         print('正在处理字幕...\n')        
@@ -265,28 +268,28 @@ class ConsMovie:
         
         #text=self.subtitle_right_btm(self.consName[3:],60,w,h)
         #clips.append(text)
-    #         text = TextClip(txt='大智小超科学实验室', fontsize=15, \
+    #         text = mpy.TextClip(txt='大智小超科学实验室', fontsize=15, \
     #                  font='Microsoft-YaHei-&-Microsoft-YaHei-UI',color='#9EACC1') \
     #                 .set_pos((685,445)).set_start(clips[0].duration).set_duration(subtitle_drt)        
     #         clips.append(text)      
                 
         # finalclip = concatenate_videoclips([_img1,_img2])
         
-        logo=ImageClip(r"I:\大智小超\公共素材\图片类\00大智小超科学实验室商标.png") \
+        logo=mpy.ImageClip(r"I:\大智小超\公共素材\图片类\00大智小超科学实验室商标.png") \
             .set_fps(25).set_duration(drt).resize((80,48)).set_position((740,420)) \
             .crossfadein(crstime).set_start(0)
         clips.append(logo)
         
         print('正在拼接视频...\n') 
         
-        finalclip = CompositeVideoClip(clips)
+        finalclip = mpy.CompositeVideoClip(clips)
         
         #加上背景音乐
         print('正在添加背景音乐...\n')
-        BGM=AudioFileClip(self.bgm)
+        BGM=mpy.AudioFileClip(self.bgm)
         print([finalclip.duration,endvideo.duration])
         
-        final_audio = CompositeAudioClip([BGM,finalclip.audio]).set_duration(finalclip.duration-endvideo.duration).fx(afx.audio_fadeout,0.8)
+        final_audio = mpy.CompositeAudioClip([BGM,finalclip.audio]).set_duration(finalclip.duration-endvideo.duration).fx(afx.audio_fadeout,0.8)
         mix=finalclip.set_audio(final_audio)
         totalTime=finalclip.duration
         
@@ -310,11 +313,11 @@ class ConsMovie:
         for p in self.lst:
             fn=os.path.join(self.pth,p)
             if n==0:
-                _img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h))
+                _img=mpy.ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h))
                 clips.append(_img)
                 n+=1
             else:
-                _img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).crossfadein(crstime).set_start((drtn-crstime)*n)
+                _img=mpy.ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).crossfadein(crstime).set_start((drtn-crstime)*n)
                 clips.append(_img)
                 n+=1    
                 
@@ -326,25 +329,25 @@ class ConsMovie:
                 
         #加上片尾
         print('正在处理片尾...\n')
-        endvideo=VideoFileClip(self.endV,target_resolution=(h,w)).set_start((drtn-crstime)*n) # 片尾   分辨率是先写h,再写w  大坑
+        endvideo=mpy.VideoFileClip(self.endV,target_resolution=(h,w)).set_start((drtn-crstime)*n) # 片尾   分辨率是先写h,再写w  大坑
         clips.append(endvideo)        
         
         print('正在处理字幕...\n')
         
         clips=self.put_cover_text(clips) 
         
-        logo=ImageClip(r"I:\大智小超\公共素材\图片类\00大智小超科学实验室商标.png") \
+        logo=mpy.ImageClip(r"I:\大智小超\公共素材\图片类\00大智小超科学实验室商标.png") \
             .set_fps(25).set_duration(drt).resize((80,48)).set_position((740,420)) \
             .crossfadein(crstime).set_start(0)
         clips.append(logo)
         
         print('正在拼接视频...\n')
-        finalclip = CompositeVideoClip(clips)
+        finalclip = mpy.CompositeVideoClip(clips)
         
         #加上背景音乐
         print('正在添加背景音乐...\n')
-        BGM=AudioFileClip(self.bgm).set_duration(finalclip.duration-endvideo.duration).fx(afx.audio_fadeout,0.8)
-        final_audio = CompositeAudioClip([BGM,finalclip.audio])
+        BGM=mpy.AudioFileClip(self.bgm).set_duration(finalclip.duration-endvideo.duration).fx(afx.audio_fadeout,0.8)
+        final_audio = mpy.CompositeAudioClip([BGM,finalclip.audio])
         mix=finalclip.set_audio(final_audio)
         totalTime=finalclip.duration
         
@@ -376,7 +379,7 @@ class ConsMovie:
     def subtitle_right_btm(self,txt,fsz,w,h,drtn):
         x=w-len(txt)*fsz-30
         y=h-fsz-30
-        text = TextClip(txt=txt, fontsize=fsz, font='Microsoft-YaHei-&-Microsoft-YaHei-UI',color='#95ff67').set_pos((x,y)).set_duration(drtn)
+        text = mpy.TextClip(txt=txt, fontsize=fsz, font='Microsoft-YaHei-&-Microsoft-YaHei-UI',color='#95ff67').set_pos((x,y)).set_duration(drtn)
         return text
     
     def put_cover_text(self,clips):
@@ -399,19 +402,19 @@ class ConsMovie:
             crs_h_intro=0.8
             clr='#6AB34A'
         
-        text = TextClip(txt=self.crs_name, fontsize=85, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_name, fontsize=85, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.05,self.h*crs_h_name)).set_duration(self.drtn)
         clips.append(text)
         
-        text = TextClip(txt=self.crs_age, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_age, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.05,self.h*crs_h_age)).set_duration(self.drtn)
         clips.append(text)
         
-        text = TextClip(txt=self.crs_lego, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_lego, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.05,self.h*crs_h_lego)).set_duration(self.drtn)
         clips.append(text)
         
-        text = TextClip(txt=self.crs_intro,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_intro,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.05,self.h*crs_h_intro)).set_duration(self.drtn)
         clips.append(text)
         
@@ -541,7 +544,7 @@ class LegoWeekly:
         return img
 
 class BuildAnimation:
-    def __init__(self,crs_name):
+    def __init__(self,crs_name,save_yn='yes'):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMP4config.txt'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
@@ -563,6 +566,7 @@ class BuildAnimation:
         self.crs_code=crs_name[0:4]
         self.w,self.h=850,480
         self.drtn=2
+        self.save_yn=save_yn
 
     def read_pics(self):
         pics_list=[]
@@ -614,23 +618,23 @@ class BuildAnimation:
         crs_info=self.read_excel()
         crs_name,age,knowledge,script,dif_level,instrument=crs_info
 
-        text = TextClip(txt=crs_name, fontsize=70, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=crs_name, fontsize=70, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_fps(25).set_position((self.w*0.05,self.h*crs_h_name)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
-        text = TextClip(txt='适合年龄：'+age , fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt='适合年龄：'+age , fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_fps(25).set_position((self.w*0.05,self.h*crs_h_age)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
-        text = TextClip(txt='使用教具：'+instrument, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt='使用教具：'+instrument, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_fps(25).set_position((self.w*0.05,self.h*crs_h_lego)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
-        text = TextClip(txt=knowledge,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=knowledge,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_fps(25).set_position((self.w*0.05,self.h*crs_h_intro)).set_duration(self.drtn).set_start(0)
         clips.append(text)
 
-        # cover_clip=CompositeVideoClip(clips)
+        # cover_clip=mpy.CompositeVideoClip(clips)
 
         # fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation.mp4')
         # cover_clip.write_videofile(fn)
@@ -638,18 +642,17 @@ class BuildAnimation:
         print('完成')
         return clips
 
-    def build_movie(self,total_secs=54):
-        print('正在生成主动画……',end='')
-        w,h=850,480        
+    def build_movie(self,total_secs=54,w=850,h=480):
+        print('正在生成主动画……',end='') 
         pics=self.read_pics()
         drtn=total_secs/len(pics)  #总共54秒
         clips=[]
-        cover=ImageClip(os.path.join(self.src_dir,self.crs_name,self.crs_name[4:]+'.jpg')).set_fps(25).set_duration(2).resize((w,h))
+        cover=mpy.ImageClip(os.path.join(self.src_dir,self.crs_name,self.crs_name[4:]+'.jpg')).set_fps(25).set_duration(2).resize((w,h))
         clips.append(cover)
         # clips=ImageSequenceClip(pics,fps=25)
         n=0
         for fn in pics:
-            img=ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).set_start(2+drtn*n)
+            img=mpy.ImageClip(fn).set_fps(25).set_duration(drtn).resize((w,h)).set_start(2+drtn*n)
             clips.append(img)
             n+=1
         
@@ -658,23 +661,23 @@ class BuildAnimation:
 
     def put_endvideo(self,clips):
         print('正在加入片尾、logo……',end='')
-        endvideo=VideoFileClip(self.endV,target_resolution=(self.h,self.w)).set_start(56) # 片尾   分辨率是先写h,再写w  大坑
+        endvideo=mpy.VideoFileClip(self.endV,target_resolution=(self.h,self.w)).set_start(56) # 片尾   分辨率是先写h,再写w  大坑
         add_end=clips.append(endvideo)
 
-        logo=ImageClip(r"I:\\大智小超\\公共素材\\图片类\\00大智小超科学实验室商标.png") \
+        logo=mpy.ImageClip(r"I:\\大智小超\\公共素材\\图片类\\00大智小超科学实验室商标.png") \
             .set_fps(25).set_duration(54).resize((80,48)).set_position((740,420)) \
             .set_start(0)
         clips.append(logo)
 
-        finalclip=CompositeVideoClip(clips)
+        finalclip=mpy.CompositeVideoClip(clips)
         print('完成')
         return finalclip
 
 
     def put_bgm(self,finalclip,endvideo_duration=4):
         print('正在加入背景音乐……',end='')
-        BGM=AudioFileClip(self.bgm).set_duration(finalclip.duration-endvideo_duration).fx(afx.audio_fadeout,0.8)
-        final_audio = CompositeAudioClip([BGM,finalclip.audio])
+        BGM=mpy.AudioFileClip(self.bgm).set_duration(finalclip.duration-endvideo_duration).fx(afx.audio_fadeout,0.8)
+        final_audio = mpy.CompositeAudioClip([BGM,finalclip.audio])
         mix=finalclip.set_audio(final_audio)
         print('完成')
         return mix
@@ -699,32 +702,121 @@ class BuildAnimation:
             pass
         
 
-    def exp_building_movie(self,exptype='all'):
+    def exp_building_movie(self,exptype='all',total_sec_for_part=25):
         print('正在处理……')
         
 
         if exptype=='all':
-            main_movie=self.build_movie()
+            main_movie=self.build_movie(w=850,h=480)
             cover_text=self.put_cover_text(main_movie)
             add_end_video=self.put_endvideo(cover_text)
             mix=self.put_bgm(add_end_video)
             fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation.mp4')
             0
         elif exptype=='part':
-            main_movie=self.build_movie(total_secs=25)
+            main_movie=self.build_movie(total_secs=total_sec_for_part,w=1280,h=720)
             cover_text=self.put_cover_text(main_movie)
-            mix=CompositeVideoClip(cover_text)
+            mix=mpy.CompositeVideoClip(cover_text)
             fn=os.path.join(self.src_dir,self.crs_name,self.crs_name+'_building_animation_only.mp4')
         else:
             print('无效参数')
             sys.exit(0)
 
-        mix.write_videofile(fn)
+        if self.save_yn=='yes':
+            mix.write_videofile(fn)
+        
+        return mix
         self.killProcess()
         print('All Done')
 
+class AnimationAndVideo:
+    # 第二段影片建议在29-44秒之间
+    def __init__(self,crs_name='L056陀螺发射器'):
+        config=readConfig.readConfig(os.path.join(os.path.dirname(__file__),'picToMP4config.txt'))
+        self.bgm_src=config['背景音乐']
+        self.pic_dir=config['图纸文件夹']
+        self.crs_info_src=config['课程信息表']
+        self.crs_name=crs_name
+        self.end_clip_src=config['片尾']
+        self.logo_src=config['logo']
+
+    def read_crs_info(self):
+        df_crs_info=pd.read_excel(self.crs_info_src)
+        crs_info=df_crs_info[df_crs_info['课程编号']==self.crs_name[0:4]]     
+        return crs_info
+
+    def export_mv(self,w=1280,h=720):
+        crs_info=self.read_crs_info()
+
+        clip_02_src=os.path.join(self.pic_dir,self.crs_name,self.crs_name+'_clip_02.mp4')
+        _clip_02_src=mpy.VideoFileClip(clip_02_src,target_resolution=(h,w)).set_start(0)
+        target_sec=56-int(_clip_02_src.duration)
+
+        if _clip_02_src.duration>44:
+            print('第二段影片大于44秒，请先剪裁。')
+            sys.exit(0)
+
+        building_ani_src=os.path.join('i:\\乐高\\图纸',self.crs_name,self.crs_name+'_building_animation_only.mp4')
+        if os.path.exists(building_ani_src):
+            print('目录中已存在搭建动画,将用于合并生成视频号影片。')
+            clip_01_src=os.path.join(self.pic_dir,self.crs_name,self.crs_name+'_building_animation_only.mp4')
+            _clip_01=mpy.VideoFileClip(clip_01_src,target_resolution=(h,w)).set_start(0)
+            acc_clip_01 = _clip_01.fl_time(lambda t:  _clip_01.duration/target_sec*t, apply_to=['mask', 'audio'])
+            clip_01=acc_clip_01.set_duration(target_sec)
+        else:
+            print('目录中无搭建动画，正在生成搭建动画序列……')
+            building_ani=BuildAnimation(crs_name=self.crs_name,save_yn='no')
+            # _clip_01=building_ani.exp_building_movie(exptype='part',total_sec_for_part=target_sec)
+            clip_01=building_ani.exp_building_movie(exptype='part',total_sec_for_part=target_sec)
 
         
+
+        
+        # target_sec=10
+
+        # acc_clip_01 = _clip_01.fl_time(lambda t:  _clip_01.duration/target_sec*t, apply_to=['mask', 'audio'])
+        # clip_01=acc_clip_01.set_duration(target_sec)
+
+        clip_02=mpy.VideoFileClip(clip_02_src,target_resolution=(h,w)).set_start(clip_01.duration)
+
+
+        # bg_time=int(clip_01.duration+clip_02.duration)-2*clip_01.duration/_clip_01.duration
+        bg_time=int(clip_01.duration+clip_02.duration)-2
+        bg=mpy.ColorClip((430,720),color=(0,0,0),ismask=False,duration=bg_time).set_opacity(0.5).set_position((850,0)).set_start(2)
+
+        bg_left=mpy.ColorClip((300,56),color=(51,149,255),ismask=False,duration=bg_time).set_position((275,15)).set_start(2)
+
+        txt_left='科学机器人课'
+        txt_title=self.crs_name[4:]
+        txt_tool='教具：'+crs_info['教具'].values.tolist()[0]
+        txt_big_klg='课程知识点'
+        txt_klg=crs_info['知识点'].values.tolist()[0].split('\n')
+
+        clip_left=mpy.TextClip(txt_left,fontsize=40, font='j:/fonts/hongMengHei.ttf',color='#ffffff').set_position((310,18)).set_duration(bg_time).set_start(2)
+        clip_title=mpy.TextClip(txt_title,fontsize=54, font='j:/fonts/yousheTitleHei.ttf',color='#ffff00').set_position((int(430/2)-int(len(txt_title)*54/2)+860,22)).set_duration(bg_time).set_start(2)
+        clip_tool=mpy.TextClip(txt_tool,fontsize=26, font='j:/fonts/yousheTitleHei.ttf',color='#ffff00').set_position((int(430/2)-int(len(txt_tool)*26/2)+880,110)).set_duration(bg_time).set_start(2)
+        clip_big_klg=mpy.TextClip(txt_big_klg,fontsize=46, font='j:/fonts/HYXinHaiXingKaiW.ttf',color='#ffffff').set_position((int(430/2)-int(len(txt_big_klg)*46/2)+850,350)).set_duration(bg_time).set_start(2)
+        clip_logo=mpy.ImageClip(self.logo_src).set_fps(25).set_position((20,650)).set_duration(56).resize((110,int(110*253/425))).set_start(0)
+
+        clips=[clip_01,clip_02,bg,clip_logo,clip_title,clip_tool,clip_big_klg]
+
+        for n,text in enumerate(txt_klg):            
+            clip_klg=mpy.TextClip(text,fontsize=30, font='j:/fonts/HYXinHaiXingKaiW.ttf',color='#ffffff',align='West').set_position((890,430+n*48)).set_duration(bg_time).set_start(2)
+            clips.append(clip_klg)
+
+        clip_end=mpy.VideoFileClip(self.end_clip_src,target_resolution=(h,w)).set_start(bg_time+2)
+
+        clips_rear=[bg_left,clip_left,clip_end]
+        clips.extend(clips_rear)
+        finalclip=mpy.CompositeVideoClip(clips)
+
+
+        bgm=mpy.AudioFileClip(self.bgm_src).set_duration(finalclip.duration-clip_end.duration).fx(afx.audio_fadeout,0.8)
+        final_audio = mpy.CompositeAudioClip([bgm,finalclip.audio])
+        mix=finalclip.set_audio(final_audio)
+
+        out_mv=os.path.join(self.pic_dir,self.crs_name,self.crs_name+'_视频号.mp4')
+        mix.write_videofile(out_mv)
 
 class helpp():
     def __init__(self):
@@ -801,5 +893,11 @@ if __name__=='__main__':
     #     run_export_Poster()
     #     run_test()
 
-    my=BuildAnimation('L033双翼飞机')
-    my.exp_building_movie(exptype='part')
+    # my=BuildAnimation('L033双翼飞机')
+    # my.exp_building_movie(exptype='part')
+
+    my=AnimationAndVideo(crs_name='L056陀螺发射器')
+    my.export_mv(w=1280,h=720)
+    # k=my.read_crs_info()
+    # p=k['知识点'].values.tolist()[0]
+    # print(p.split('\n'))
