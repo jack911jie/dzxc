@@ -33,7 +33,7 @@ def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list=
             myMovie=picToMp4.ConsMovie(pth,consName)
             myMovie.exportMovie()
 
-def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1):
+def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1,bgm_src='default'):
     # 第二段影片建议在29-44秒之间            
     try:
         if method_merge==1:
@@ -42,10 +42,10 @@ def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1):
                 build_ani=picToMp4.BuildAnimation(crs_name=crs_name)
                 build_ani.exp_building_movie(exptype='part')  #part仅导出动画，无音乐， all导出完成影片。
             my=picToMp4.AnimationAndVideo(crs_name=crs_name)
-            my.export_mv(w=1280,h=720)
+            my.export_mv(w=1280,h=720,bgm_src=bgm_src)
         elif method_merge==2:
             my=picToMp4.AnimationAndVideo(crs_name=crs_name)
-            my.export_mv(w=1280,h=720)
+            my.export_mv(w=1280,h=720,bgm_src=bgm_src)
         else:
             print('无此参数')
     except:
@@ -82,10 +82,10 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
 #将步骤图生成搭建视频，与原拍摄视频合并  拍摄mp4建议29-44秒
-merge_animation_mv(crs_name='L053慢悠悠的大象',method_merge=1) #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。
+# merge_animation_mv(crs_name='L057旋转圣诞树',method_merge=1,bgm_src='e:\\temp\\jinglebells.mp3') #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。
 
 #将步骤图导出PPT
-# makePpt('L046圣诞老人来了',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+makePpt('L057旋转圣诞树',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark()

@@ -403,19 +403,19 @@ class ConsMovie:
             clr='#6AB34A'
         
         text = mpy.TextClip(txt=self.crs_name, fontsize=85, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_pos((self.w*0.05,self.h*crs_h_name)).set_duration(self.drtn)
+                .set_pos((self.w*0.1,self.h*crs_h_name)).set_duration(self.drtn)
         clips.append(text)
         
         text = mpy.TextClip(txt=self.crs_age, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_pos((self.w*0.05,self.h*crs_h_age)).set_duration(self.drtn)
+                .set_pos((self.w*0.1,self.h*crs_h_age)).set_duration(self.drtn)
         clips.append(text)
         
         text = mpy.TextClip(txt=self.crs_lego, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_pos((self.w*0.05,self.h*crs_h_lego)).set_duration(self.drtn)
+                .set_pos((self.w*0.1,self.h*crs_h_lego)).set_duration(self.drtn)
         clips.append(text)
         
         text = mpy.TextClip(txt=self.crs_intro,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_pos((self.w*0.05,self.h*crs_h_intro)).set_duration(self.drtn)
+                .set_pos((self.w*0.1,self.h*crs_h_intro)).set_duration(self.drtn)
         clips.append(text)
         
         return clips       
@@ -619,19 +619,19 @@ class BuildAnimation:
         crs_name,age,knowledge,script,dif_level,instrument=crs_info
 
         text = mpy.TextClip(txt=crs_name, fontsize=70, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_name)).set_duration(self.drtn).set_start(0)
+                .set_fps(25).set_position((self.w*0.1,self.h*crs_h_name)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
         text = mpy.TextClip(txt='适合年龄：'+age , fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_age)).set_duration(self.drtn).set_start(0)
+                .set_fps(25).set_position((self.w*0.1,self.h*crs_h_age)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
         text = mpy.TextClip(txt='使用教具：'+instrument, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_lego)).set_duration(self.drtn).set_start(0)
+                .set_fps(25).set_position((self.w*0.1,self.h*crs_h_lego)).set_duration(self.drtn).set_start(0)
         clips.append(text)
         
         text = mpy.TextClip(txt=knowledge,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
-                .set_fps(25).set_position((self.w*0.05,self.h*crs_h_intro)).set_duration(self.drtn).set_start(0)
+                .set_fps(25).set_position((self.w*0.1,self.h*crs_h_intro)).set_duration(self.drtn).set_start(0)
         clips.append(text)
 
         # cover_clip=mpy.CompositeVideoClip(clips)
@@ -745,7 +745,7 @@ class AnimationAndVideo:
         crs_info=df_crs_info[df_crs_info['课程编号']==self.crs_name[0:4]]     
         return crs_info
 
-    def export_mv(self,w=1280,h=720):
+    def export_mv(self,w=1280,h=720,bgm_src='default'):
         crs_info=self.read_crs_info()
 
         clip_02_src=os.path.join(self.pic_dir,self.crs_name,self.crs_name+'_clip_02.mp4')
@@ -810,8 +810,10 @@ class AnimationAndVideo:
         clips.extend(clips_rear)
         finalclip=mpy.CompositeVideoClip(clips)
 
-
-        bgm=mpy.AudioFileClip(self.bgm_src).set_duration(finalclip.duration-clip_end.duration).fx(afx.audio_fadeout,0.8)
+        if bgm_src=='default':
+            bgm=mpy.AudioFileClip(self.bgm_src).set_duration(finalclip.duration-clip_end.duration).fx(afx.audio_fadeout,0.8)
+        else:
+            bgm=mpy.AudioFileClip(bgm_src).set_duration(finalclip.duration-clip_end.duration).fx(afx.audio_fadeout,0.8)
         final_audio = mpy.CompositeAudioClip([bgm,finalclip.audio])
         mix=finalclip.set_audio(final_audio)
 
@@ -897,7 +899,7 @@ if __name__=='__main__':
     # my.exp_building_movie(exptype='part')
 
     my=AnimationAndVideo(crs_name='L056陀螺发射器')
-    my.export_mv(w=1280,h=720)
+    my.export_mv(w=1280,h=720,bgm_src='default')
     # k=my.read_crs_info()
     # p=k['知识点'].values.tolist()[0]
     # print(p.split('\n'))
