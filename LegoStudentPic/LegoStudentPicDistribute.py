@@ -50,9 +50,13 @@ class LegoPics:
         stdNamelist=stdInfos[1]
 
         ptn=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+') #标签为“英文+中文”的正则表达式
+        ptn_pic_src='[0-9]{8}\-[a-zA-Z].*'
+        lack_stdName=[]
+        match_num=0
+        not_match_num=0
 
         for fn in os.listdir(os.path.join(self.dir,self.crsDate+'-'+self.crsName)):
-            if fn[-3:].lower()=='jpg':
+            if fn[-3:].lower()=='jpg' or fn[-3:].lower()=='jpeg':
             #                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
                 tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
                 if len(tag)>0:
@@ -61,19 +65,33 @@ class LegoPics:
                              _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
 
                         if _tag in stdNamelist:
-                            stu_dirName=os.path.join(self.stu_dir,self.crsDate+'-'+self.crsName,fn)
-                            stu_pic_dirName=os.path.join(self.stu_dir,dictPY[_tag]+_tag)
-                            if not os.path.exists(stu_pic_dirName):
-                                os.makedirs(stu_pic_dirName)
-                                oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
-                                newName=os.path.join(stu_pic_dirName,fn)
-                                shutil.copyfile(oldName,newName)
+                            if re.match(ptn_pic_src,fn):                       
+                                stu_dirName=os.path.join(self.stu_dir,self.crsDate+'-'+self.crsName,fn)
+                                stu_pic_dirName=os.path.join(self.stu_dir,dictPY[_tag]+_tag)
+                                if not os.path.exists(stu_pic_dirName):
+                                    os.makedirs(stu_pic_dirName)
+                                    oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
+                                    newName=os.path.join(stu_pic_dirName,fn)
+                                    shutil.copyfile(oldName,newName)
+                                else:
+                                    oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
+                                    newName=os.path.join(stu_pic_dirName,fn)
+                                    shutil.copyfile(oldName,newName)
+                                match_num+=1
                             else:
-                                oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
-                                newName=os.path.join(stu_pic_dirName,fn)
-                                shutil.copyfile(oldName,newName)
-        
+                                not_match_num+=1
+                        else:
+                            lack_stdName.append(_tag)
 
+
+        if lack_stdName:
+            print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
+        
+        if not_match_num>0:
+            print('已分配{0}个文件到学生姓名的文件夹中，未分配文件： {1} 个，请检查文件名是否已按标准修改。'.format(match_num,not_match_num))
+        else:
+            print('已分配{0}个文件到学生姓名的文件夹中。'.format(match_num))
+        
         print('\n完成')
 
             
