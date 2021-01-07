@@ -191,13 +191,17 @@ class poster:
 
         def sortPics(files):
             newfiles={}
-            for file in files:
-                if file[-3:].lower()=='jpg':
-                    with open(file,'rb') as fd:
+            for fn in files:
+                if fn[-3:].lower()=='jpg':
+                    with open(fn,'rb') as fd:
                         tag=exifread.process_file(fd)
                         t=str(tag['EXIF DateTimeOriginal']).replace(':','-',2)
-                        newfiles[t]=file
-                        # print(t,file)
+                        if t in newfiles.keys():
+                            t=t[0:-2]+str(int(t[-2:])+1).zfill(2)
+                            newfiles[t]=fn
+                        else:
+                            newfiles[t]=fn
+                        # print('exifInfo:',t,fn)
             newList=[]
             for i in sorted(newfiles):
                 newList.append(newfiles[i])
@@ -347,17 +351,20 @@ class poster:
                 num=4
             else:
                 num=2
+
+            # print('number:',num)
             pics_stds_addrs=random.sample(pics_for_crs,num)
+
+            # print(pics_stds_addrs)
             sorted_pics_stds_addrs=sortPics(pics_stds_addrs)
             pics=[pic_title_addr]
-            pics.extend(sorted_pics_stds_addrs)
-            
-            logging.info(pics)
+            pics.extend(sorted_pics_stds_addrs)        
             return pics
         
         def putImg(img,stdName):
             print('    正在置入图片……',end='')
             pics=pick_pics(stdName)
+
             if self.bg_img_num>3:
                 f_crs,f_01,f_02,f_03,f_04=pics
 
@@ -505,4 +512,4 @@ class poster:
 if __name__=='__main__':
     my=poster(weekday=2)
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L045惊喜盒子',20201117,TeacherSig='阿晓老师')
+    my.PosterDraw('L061猫捉老鼠',20210105,TeacherSig='阿晓老师')
