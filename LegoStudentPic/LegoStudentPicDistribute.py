@@ -61,8 +61,11 @@ class LegoPics:
                 tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
                 if len(tag)>0:
                     for _tag in tag:
+                        _tag=_tag.strip()
+                        _tag=_tag.replace(' ','')
                         if ptn.match(_tag): #如有“英文+中文”的标签格式，提取中文。
                              _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                             
 
                         if _tag in stdNamelist:
                             if re.match(ptn_pic_src,fn):                       

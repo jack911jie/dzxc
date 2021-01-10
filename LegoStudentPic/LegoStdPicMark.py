@@ -58,6 +58,8 @@ class pics:
             lst=read_excel()
             crs,stds=lst[0],lst[1]
             stdList=stds['学生姓名'].tolist()
+            ptn_pic_src=re.compile(r'[0-9]{8}\-[a-zA-Z].*')
+            ptn_std_name=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+')
 
             infos=[]
             for fileName in os.listdir(self.totalPics):
@@ -67,12 +69,21 @@ class pics:
                 real_addr=os.path.join(self.totalPics,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
                 if len(tag)>0:
-                    for _tag in tag:                        
+                    for _tag in tag:        
+                        # print(_tag)     
+                        _tag.strip()
+                        _tag=_tag.replace(' ','')           
+                        if ptn_std_name.match(_tag):
+                            _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                        # print('77 _tag:',_tag)
+
                         if _tag in stdList:
+                            # print('80_tag:',_tag)
                             std_name=_tag
                             knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
                             infos.append([real_addr,std_name,crsName,knlg,fileName])
             print('完成')
+            # print('77infos:',infos)
             return infos
 
         def ResizeCrop(pic,h_min=2250,crop='yes',bigger='yes'):
@@ -107,12 +118,14 @@ class pics:
             return k
 
         def draw(img,w,h,txt):           
+            
 
             draw=ImageDraw.Draw(img)
             draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#F9F9FA') #背景
             r=img.size[1]/3024
+    
             # print(img.size,w,h)
-            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0])
+            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
@@ -149,6 +162,7 @@ class pics:
             draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2565,r)),'#2A68B1')
 
             txt3Dot=re.sub('\d.','· ',txt[3]) #将数字替换成点
+            # print('153:',isinstance(txt3Dot,str))
             paraFormat.put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
         def putCoverToPics():
@@ -164,14 +178,19 @@ class pics:
                     img=ResizeCrop(info[0],h_min=height,bigger='no')
                     if not isinstance(img,str):
                         bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
-                        draw(img,bg_w,bg_h,[info[0],info[2],date_crs,info[3]])
+                        txt_write=[info[0],info[2],date_crs,info[3]]
+                        # print('173 txt_write:',txt_write)
+                        draw(img,bg_w,bg_h,txt_write)
                         saveDir=os.path.join(self.stdPicsDir,info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
+                            # print(saveName)
                             os.mkdir(saveDir)
                             img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
                         else:
                             img.save(saveName,quality=95,subsampling=0)
+                            # print(saveName)
+                        # print('生成的照片所在文件夹：{}'.format(saveDir))
                     else:
                         smallpics.append(info[4])
 
