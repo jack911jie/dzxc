@@ -118,7 +118,7 @@ def split_txt_Chn_eng(wid,font_size,txt_input,Indent='no'):
    
     return [outTxt,para_num] 
 
-def put_txt_img(draw,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
+def put_txt_img(draw,tt,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
         
     fontInput=fonts(font_name,font_size)            
     if addSPC=='add_2spaces': 
@@ -127,14 +127,14 @@ def put_txt_img(draw,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='No
         Indent='no'
         
     # txt=self.split_txt(total_dis,font_size,t,Indent='no')
-    txt=split_txt_Chn_eng(total_dis,font_size,t,Indent='no')
+    txt=split_txt_Chn_eng(total_dis,font_size,tt,Indent='no')
     # font_sig = self.fonts('丁永康硬笔楷书',40)
     num=len(txt)   
     # draw=ImageDraw.Draw(img)
 
     logging.info(txt)
     n=0
-    for t in txt:              
+    for t in txt[0]:              
         m=0
         for tt in t:                  
             x,y=xy[0],xy[1]+(font_size+dis_line)*n
