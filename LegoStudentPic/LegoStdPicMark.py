@@ -121,7 +121,7 @@ class pics:
             
 
             draw=ImageDraw.Draw(img)
-            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#F9F9FA') #背景
+            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
             r=img.size[1]/3024
     
             # print(img.size,w,h)
@@ -136,7 +136,7 @@ class pics:
             # print(ratio(350,r),ratio(350,r))
             pic_qrcode=_pic_qrcode.resize((ratio(350,r),ratio(350,r)))
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
-            img.paste(pic_logo2,(ratio(60,r),ratio(2500,r)),mask=a2)
+            img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
             img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
             draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
 
@@ -220,4 +220,4 @@ class pics:
 
 if __name__=='__main__':
     pic=pics()
-    pic.putCover(height=2250)
+    pic.putCover(height=2250,weekday=6)

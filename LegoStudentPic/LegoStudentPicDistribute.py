@@ -27,6 +27,7 @@ class LegoPics:
         self.stu_dir=config['乐高学员文件夹']
         self.stu_sigDir=config['2020乐高课程签到表文件夹']
         self.weekday=weekday
+        self.other_tags=['每周课程4+','每周课程16']
 
     def read_sig(self,weekday):
         if weekday==2:
@@ -84,10 +85,12 @@ class LegoPics:
                             else:
                                 not_match_num+=1
                         else:
-                            lack_stdName.append(_tag)
+                            if _tag not in self.other_tags:
+                                lack_stdName.append(_tag)
 
 
         if lack_stdName:
+
             print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
         
         if not_match_num>0:
