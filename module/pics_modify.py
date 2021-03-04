@@ -1,8 +1,8 @@
 import os
 from PIL import Image,ImageDraw
 
-def circle_corner(img,radii=80):
-        radii=int(img.size[0]*100/4032)
+def circle_corner(img,radii=150):
+        radii=int(img.size[0]*radii/4032)
         # 画圆（用于分离4个角）  
         circle = Image.new('L', (radii * 2, radii * 2), 0)  # 创建黑色方形
         # circle.save('1.jpg','JPEG',qulity=100)
@@ -26,8 +26,5 @@ def circle_corner(img,radii=80):
         img.putalpha(alpha)		# 白色区域透明可见，黑色区域不可见
         # img.save('e:\\temp\\5555.png','PNG',qulity=100)
     
-        return img
-    
-        # img = circle_corner(img, radii)
-        # img.save('result.png', 'png', quality = 100)
         # img.show()
+        return img

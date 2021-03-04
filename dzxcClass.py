@@ -51,9 +51,10 @@ def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1,bgm_src='de
     except:
         print('出错。请检查目录中是否有相应文件。')
 
-def stdpicWhiteMark():
+def stdpicWhiteMark(height=2250,weekday=[2]):
     pic=LegoStdPicMark.pics()
-    pic.putCover(height=2250)
+    for wd in weekday:
+        pic.putCover(height=height,weekday=wd)
 
 def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
     mypics=legoCrstoPPT.picToPPT(crsName)
@@ -82,13 +83,14 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
 #将步骤图生成搭建视频，与原拍摄视频合并  拍摄mp4建议29-44秒
-# merge_animation_mv(crs_name='L057旋转圣诞树',method_merge=1,bgm_src='e:\\temp\\jinglebells.mp3') #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。
-
+#方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
+# merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
+#
 #将步骤图导出PPT
-makePpt('L057旋转圣诞树',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L063汽车雨刮器',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
-# stdpicWhiteMark()
+# stdpicWhiteMark(height=2250,weekday=[2,6])
 
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20201215,crsName='L056陀螺发射器',TeacherSig='阿晓老师')
+# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20210112,crsName='L062翻筋斗小人',TeacherSig='阿晓老师')
