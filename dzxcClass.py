@@ -4,6 +4,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoSt
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoCrstoPPT'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoPosterAfterClass'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMp4'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'poster'))
+import BeforeClass
 import picToMp4
 import LegoStudentPicDistribute
 from legoPoster import poster as posterAfterClass
@@ -78,6 +80,9 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
     my=posterAfterClass(weekday=weekday,place=place)  
     my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig)
 
+def before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs_name_input='L063汽车雨刮器'):
+    my=BeforeClass.LegoClass()
+    my.exp_poster(date_crs_input=date_crs_input,time_crs_input=time_crs_input,crs_name_input=crs_name_input)
 
 #将步骤图生成1分钟视频放上视频号
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
@@ -94,3 +99,6 @@ def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crs
 
 # #按名字分配照片，并生成课后发给家长的照片：
 # pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20210112,crsName='L062翻筋斗小人',TeacherSig='阿晓老师')
+
+# 课前生成海报
+before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs_name_input='L063汽车雨刮器')

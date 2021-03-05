@@ -1,15 +1,31 @@
 import os
 import sys
+sys.path.append('i:/py/dzxc/module')
+import composing
+import WashData
+from readConfig import readConfig
+import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
 
 class dat_summary:
     def __init__(self):
-        pass
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.dazhi'))
+        self.std_dir=config['学生信息文件夹']
+        
+    def std_term_crs(self,std_name='韦宇浠'):
+        std_df=WashData.crs_sig_table(os.path.join(self.std_dir,'2020乐高课程签到表（周二）.xlsx'))
+        std_name=std_name.strip()
+        infos=std_df[std_df['学生姓名']==std_name]
 
-    def rose(self):
-        dat=['理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']
-        score=[3,3,4,5,2,2,3,5]
+    def rose(self,std_name='韦宇浠',weekday=2):
+        df_ability=WashData.std_feedback_ability(os.path.join(self.std_dir,'每周课程反馈','学员课堂学习情况反馈表.xlsx'),weekday=weekday)
+        std_ability=df_ability[df_ability['姓名']==std_name].iloc[:,1:]
+        dat=std_ability.columns.tolist()
+        score=std_ability.iloc[0,:].tolist()
+
+        # dat=['理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']
+        # score=[3,3,4,5,2,2,3,5]
         score.sort()
         theta = np.linspace(0,2*np.pi,len(dat),endpoint=False)    # 360度等分成n份
 
@@ -32,9 +48,10 @@ class dat_summary:
             显示一些简单的中文图例
         '''
         plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
-        ax.set_title('能力测评',fontdict={'fontsize':20,'color':'#3923a8'})
+        title=std_name+'同学能力测评'
+        ax.set_title(title,fontdict={'fontsize':20,'color':'#3923a8'})
         for angle,scores,data in zip(theta,score,dat):
-            ax.text(angle+0.04,scores+0.2,data) 
+            ax.text(angle+0.1,scores+0.2,data) 
             # ax.text(angle+0.04,scores+0.6,str(scores))
 
         ax.axis('off')
@@ -42,9 +59,9 @@ class dat_summary:
         plt.show()
 
 
-        print(len(score))
+        # print(len(score))
 
 
 if __name__=='__main__':
     my=dat_summary()
-    my.rose()
+    my.rose(std_name='陶盛挺',weekday=2)
