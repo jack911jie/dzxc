@@ -222,7 +222,7 @@ class poster:
             df_stdInfo=pd.read_excel(self.crsStudent,sheet_name='学生基本信息表')
             df_stdSig=pd.read_excel(self.crsStudent,sheet_name='学生上课签到表',skiprows=2)
             
-            df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名'},inplace=True)
+            df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名'},inplace=True)
             Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
             Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
             Students_List=Students.values.tolist()
@@ -233,7 +233,7 @@ class poster:
             shtName='周'+NumtoC[str(self.weekday)]
             TeacherCmt=pd.read_excel(self.eachStd,sheet_name=shtName,skiprows=1)
             TeacherCmt.fillna('-',inplace=True)
-            TeacherCmt.rename(columns={'Unnamed: 0':'姓名首拼','Unnamed: 1':'学生姓名','Unnamed: 2':'昵称','Unnamed: 3':'性别','Unnamed: 4':'优点特性','Unnamed: 5':'缺点特性'},inplace=True)
+            TeacherCmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'姓名首拼','Unnamed: 2':'学生姓名','Unnamed: 3':'昵称','Unnamed: 4':'性别','Unnamed: 5':'优点特性','Unnamed: 6':'缺点特性'},inplace=True)
 
             print('完成')
             return([Students_List,crs_info,TeacherCmt])               

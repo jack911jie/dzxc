@@ -45,7 +45,7 @@ class pics:
             # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
             stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
-            stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名','Unnamed: 5':'已上课数量'},inplace=True)
+            stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名','Unnamed: 6':'已上课数量'},inplace=True)
             # std=stds[stds['学生姓名']==stdName]
             # std_basic=std[['姓名首拼','学生姓名']]
             # std_crs=std[std.iloc[:,:]=='√'].dropna(axis=1)

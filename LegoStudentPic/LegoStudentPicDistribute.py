@@ -35,7 +35,7 @@ class LegoPics:
         elif weekday==6:
             sigFile='2020乐高课程签到表（周六）.xlsx'
         stdInfo=pd.read_excel(os.path.join(self.stu_sigDir,sigFile),sheet_name='学生上课签到表',skiprows=2)
-        stdInfo.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'学生姓名','Unnamed: 5':'已上课数'},inplace=True)
+        stdInfo.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名','Unnamed: 6':'已上课数'},inplace=True)
         stdName=stdInfo['学生姓名'].tolist()
         stdPY=stdInfo['姓名首拼'].tolist()
         dictPY={}
