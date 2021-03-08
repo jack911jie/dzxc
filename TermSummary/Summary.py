@@ -3,6 +3,7 @@ import sys
 sys.path.append('i:/py/dzxc/module')
 import composing
 import WashData
+import days_calculate
 from readConfig import readConfig
 import pandas as pd 
 import matplotlib.pyplot as plt
@@ -13,10 +14,11 @@ class dat_summary:
         config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.dazhi'))
         self.std_dir=config['学生信息文件夹']
         
-    def std_term_crs(self,std_name='韦宇浠'):
-        std_df=WashData.crs_sig_table(os.path.join(self.std_dir,'2020乐高课程签到表（周二）.xlsx'))
+    def draw_std_term_crs(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',weekday='2'):
         std_name=std_name.strip()
-        infos=std_df[std_df['学生姓名']==std_name]
+        xls_name=os.path.join(self.std_dir,'2020乐高课程签到表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx')
+        std_term_crs=WashData.std_term_crs(std_name=std_name,start_date=start_date,end_date=end_date,xls=xls_name)
+        print(std_term_crs)
 
     def rose(self,std_name='韦宇浠',weekday=2):
         df_ability=WashData.std_feedback_ability(os.path.join(self.std_dir,'每周课程反馈','学员课堂学习情况反馈表.xlsx'),weekday=weekday)
@@ -64,4 +66,5 @@ class dat_summary:
 
 if __name__=='__main__':
     my=dat_summary()
-    my.rose(std_name='陶盛挺',weekday=2)
+    # my.rose(std_name='陶盛挺',weekday=2)
+    my.draw_std_term_crs(std_name='韦宇浠',start_date='20200922',end_date='20201201',weekday='2')

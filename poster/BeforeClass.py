@@ -55,7 +55,8 @@ class LegoClass:
         # new_img_round.show()
         bg.paste(new_img_round,(int((bg.size[0]-new_img_round.size[0])/2),700),mask=new_img_round)
         jpg=bg.convert('RGB')
-        jpg.save('e:/temp/beforeclass.jpg',quality=85)
+        save_name=os.path.join(self.crs_proj_dir,crs_name_input,crs_name_input+'_'+date_crs_input+'_课前海报.jpg')
+        jpg.save(save_name,quality=85)
         # bg.show()
         print('完成')
 
