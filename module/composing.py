@@ -27,7 +27,8 @@ def fonts(font_name,font_size):
         '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
         '楷体':'C:\\Windows\\Fonts\\simkai.ttf',
         '汉仪字酷堂义山楷w':'j:\\fonts\\HYZiKuTangYiShanKaiW-2.ttf',
-        "上首金牛体":"C:\\Users\\jack9\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ShangShouJinNiuTi-2.ttf"               
+        "上首金牛体":"C:\\Users\\jack9\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ShangShouJinNiuTi-2.ttf",
+        "方正韵动粗黑简":"C:\\Users\\jack9\\AppData\\Local\\Microsoft\\Windows\\Fonts\\FZYunDongCuHei.ttf" 
     }
 
     # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
@@ -128,7 +129,7 @@ def put_txt_img(draw,tt,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='N
         Indent='no'
         
     # txt=self.split_txt(total_dis,font_size,t,Indent='no')
-    txt=split_txt_Chn_eng(total_dis,font_size,tt,Indent='no')
+    txt=split_txt_Chn_eng(total_dis,font_size,tt,Indent=Indent)
     # font_sig = self.fonts('丁永康硬笔楷书',40)
     num=len(txt)   
     # draw=ImageDraw.Draw(img)
