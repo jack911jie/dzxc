@@ -198,14 +198,11 @@ class data_summary:
 
             
             # bg=bg.convert('RGB')
-            # bg.save('e:/temp/kkkk3.jpg',quality=90)
+            # bg.save('e:/temp/kkkk3.jpg',quality=90,subsampling=0)
             bg.show()
 
         draw_crs()
         # crs_pic()
-        
-
-
 
     def rose(self,std_name='韦宇浠',weekday=2):
         df=WashData.std_feedback(os.path.join(self.std_dir,'每周课程反馈','学员课堂学习情况反馈表.xlsx'),weekday=weekday)
@@ -216,8 +213,15 @@ class data_summary:
 
         # dat=['理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']
         # score=[3,3,4,5,2,2,3,5]
-        score.sort()
-        theta = np.linspace(0,2*np.pi,len(dat),endpoint=False)    # 360度等分成n份
+        # score.sort()
+
+        colors=['#0D9482','#7594CA','#E37933','#E24B29','#F4BA19','#D199C3','#6EA647','#21A4DE']
+        df=pd.DataFrame({'dat':dat,'score':score,'colors':colors})
+
+        #排序
+        df.sort_values(by=['score'],inplace=True)
+
+        theta = np.linspace(0,2*np.pi,len(dat),endpoint=False)    # 360度等分成n份,endpoint设置是否封闭
 
         # 设置画布
         fig = plt.figure(figsize=(12,10))
@@ -228,31 +232,43 @@ class data_summary:
         ax.set_theta_zero_location('N') 
 
         # 在极坐标中画柱形图
+        
         ax.bar(theta,
-                score,
+                df['score'].values,
                 width = 0.75,
-                color = np.random.random((len(score),3)),
+                # color = np.random.random((len(score),3)),
+                # color=['#1E4D58','#245C6A','#296C7C','#2F7B8D','#348B9F','#399AB1','#40A9C2','#51B1C8'],
+                color=df['colors'],
                 # labels=str(country_list), 
                 align = 'edge')
+
+        ## 绘制中心空白
+        ax.bar(x=0,    # 柱体的角度坐标
+            height=0.8,    # 柱体的高度, 半径坐标
+            width=np.pi*2,    # 柱体的宽度
+            color='white'
+            )
         ''' 
             显示一些简单的中文图例
         '''
         plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
         title=std_name+'同学能力测评'
         ax.set_title(title,fontdict={'fontsize':20,'color':'#3923a8'})
-        for angle,scores,data in zip(theta,score,dat):
-            ax.text(angle+0.1,scores+0.2,data) 
+        #数据标签坐标附加系数
+        y_k=[0.5,0.4,0.3,0.5,1.2,2,3,1.5]
+        angles=[x*np.pi/8 for x in range(1,2*len(dat),2)]
+        angles[6],angles[7]=angles[6]-np.pi/16,angles[7]-np.pi/16
+        for angle,scores,data,color,k in zip(angles,df['score'].values,df['dat'].values,df['colors'].values,y_k):
+            ax.text(angle,scores+k,data,color=color,fontsize=18) 
             # ax.text(angle+0.04,scores+0.6,str(scores))
 
         ax.axis('off')
-        # plt.savefig('Nightingale_rose.png')
+        # plt.savefig('e:/temp/Nightingale_rose.jpg',pil_kwargs={'quality':90},dpi=300)
         plt.show()
-
-
         # print(len(score))
 
 
 if __name__=='__main__':
     my=data_summary()
-    # my.rose(std_name='陶盛挺',weekday=2)
-    my.exp_poster(std_name='黄建乐',start_date='20200922',end_date='20210309',weekday='6',term='2020秋',tch_name='阿晓老师',k=1.25)
+    my.rose(std_name='韦宇浠',weekday=2)
+    # my.exp_poster(std_name='韦宇浠',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师',k=1.25)

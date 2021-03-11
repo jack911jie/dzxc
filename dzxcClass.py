@@ -5,6 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoCr
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoPosterAfterClass'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMp4'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'poster'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'TermSummary'))
+import Summary_hd
 import BeforeClass
 import picToMp4
 import LegoStudentPicDistribute
@@ -84,6 +86,17 @@ def before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs
     my=BeforeClass.LegoClass()
     my.exp_poster(date_crs_input=date_crs_input,time_crs_input=time_crs_input,crs_name_input=crs_name_input)
 
+def std_grow_book(std_name='韦宇浠',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师',k=1.25):
+    my=Summary_hd.data_summary()
+    # my.rose(std_name=std_name,weekday=weekday)
+    my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
+
+def std_ability_rose(std_name='韦宇浠',weekday='2'):
+    my=Summary_hd.data_summary()
+    my.rose(std_name=std_name,weekday=weekday)
+    # my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
+
+
 #将步骤图生成1分钟视频放上视频号
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
@@ -92,13 +105,19 @@ def before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 #
 #将步骤图导出PPT
-# makePpt('L063汽车雨刮器',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L064屈伸前进的尺蠖',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
 
+#学员成长手册
+# std_grow_book(std_name='韦宇浠',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
+
+#学员能力玫瑰图
+std_ability_rose(std_name='韦宇浠',weekday='2')
+
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20210112,crsName='L062翻筋斗小人',TeacherSig='阿晓老师')
+# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20210306,crsName='L063汽车雨刮器',TeacherSig='阿晓老师')
 
 # 课前生成海报
-before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs_name_input='L063汽车雨刮器')
+# before_class_poster(date_crs_input='20210313',time_crs_input='1100-1230',crs_name_input='L064屈伸前进的尺蠖')
