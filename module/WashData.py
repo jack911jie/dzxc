@@ -64,7 +64,6 @@ def std_term_crs(std_name='韦宇浠',start_date='20000927',end_date='21000105',
 
     return {'std_crs':std_crs,'total_crs':total_crs,'std_info':info_basic}
 
-
 def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx',weekday=2):
     wd='周'+days_calculate.num_to_ch(str(weekday))
     df=pd.read_excel(xls,sheet_name=wd,skiprows=1)
@@ -76,6 +75,28 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
     return {'df_ability':df_ability,'df_term_comment':df_term_comment}
 
+def std_score(std_name='韦宇浠',start_date='20000927',end_date='21000105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\2020乐高课程签到表（周二）.xlsx'):
+    #课堂积分计算
+    def score(sht_name='课堂积分'):
+        df_crs=pd.read_excel(xls,sheet_name=sht_name,skiprows=0,header=None)
+        df_scores=df_crs.iloc[:,6:]
+        crs_names=df_scores.iloc[0,:].str.replace(r'^\d{1,2}$','-',regex=True).dropna()
+        std_scores=df_scores.iloc[2:,:]
+        std_scores=std_scores.iloc[:,[x for x in range(3,std_scores.shape[1],4)]]
+        pre_col_name=['未上课']*std_scores.shape[1]
+        for k,v in enumerate(crs_names.values):
+            pre_col_name[k]=v
+        std_scores.columns=pre_col_name
+        std_info=df_crs.iloc[2:,0:6]
+        std_info.columns=df_crs.iloc[0,0:6].values    
+        res=pd.concat([std_info,std_scores],axis=1)
+        return res
+   
+    std_score_class=score(sht_name='课堂积分')
+    std_score_activity=score(sht_name='活动积分')
+
+    return {'std_score_class':std_score_class,'std_score_activity':std_score_activity}
+
 # def term_summary_txt(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx',weekday=2):
 #     wd='周'+days_calculate.num_to_ch(str(weekday))
 #     df=pd.read_excel(xls,sheet_name=wd,skiprows=1)
@@ -83,5 +104,6 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
 if __name__=='__main__':
     # print(std_feedback())
-    print(std_term_crs())
+    # print(std_term_crs())
     # print(crs_sig_table())
+    print(std_score()['std_score_activity'])
