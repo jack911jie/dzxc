@@ -116,9 +116,9 @@ def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
                      
             df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼', \
                                         'Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名', \
-                                         'Unnamed: 6':'上年课时结余','Unnamed: 7':'购买课时','Unnamed: 8':'购课日期备注', \
-                                             'Unnamed: 9':'目前剩余课时','Unnamed: 10':'上课数量统计汇总'},inplace=True)
-            # print(df_stdSig.columns)
+                                         'Unnamed: 6':'上年课时结余','Unnamed: 7':'购买课时', \
+                                             'Unnamed: 8':'目前剩余课时','Unnamed: 9':'上课数量统计汇总'},inplace=True)
+            print(df_stdSig.columns)
             Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
             Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
             Students_List=Students.values.tolist()
@@ -148,4 +148,4 @@ if __name__=='__main__':
     std_list="/home/jack/data/大智小超/文档表格/2020乐高课程签到表（周二）.xlsx"
     tch_cmt="/home/jack/data/大智小超/文档表格/每周课程反馈/学员课堂学习情况反馈表.xlsx"
     res=comments_after_class('L055螺旋桨飞机',weekday=2,crs_list=crs_list,crs_student=std_list,tch_cmt=tch_cmt)
-    print(res['tch_cmt'])
+    print(res['crs_info'])
