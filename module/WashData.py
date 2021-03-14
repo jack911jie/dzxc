@@ -97,6 +97,42 @@ def std_score(std_name='韦宇浠',start_date='20000927',end_date='21000105',xls
 
     return {'std_score_class':std_score_class,'std_score_activity':std_score_activity}
 
+def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
+            crs_code=crs_name_input[0:4]
+            crs_name=crs_name_input[4:]
+            # print('正在读取学员和课程信息……',end='')
+            df=pd.read_excel(crs_list) 
+            crs=df.loc[df['课程编号']==crs_code]   
+            knowledge=list(crs['知识点'])
+            script=list(crs['课程描述'])
+            dif_level=list(crs['难度'])
+            instrument=list(crs['教具'])
+            crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]      
+            stars=crs_info[-1].replace('*','★')
+            crs_info[-1]=stars 
+            
+            df_stdInfo=pd.read_excel(crs_student,sheet_name='学生基本信息表')
+            df_stdSig=pd.read_excel(crs_student,sheet_name='学生上课签到表',skiprows=2)
+                     
+            df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼', \
+                                        'Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名', \
+                                         'Unnamed: 6':'上年课时结余','Unnamed: 7':'购买课时','Unnamed: 8':'购课日期备注', \
+                                             'Unnamed: 9':'目前剩余课时','Unnamed: 10':'上课数量统计汇总'},inplace=True)
+            # print(df_stdSig.columns)
+            Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
+            Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
+            Students_List=Students.values.tolist()
+
+            NumtoC={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'}
+            shtName='周'+NumtoC[str(weekday)]
+            TeacherCmt=pd.read_excel(tch_cmt,sheet_name=shtName,skiprows=1)
+            TeacherCmt.fillna('-',inplace=True)
+            TeacherCmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'姓名首拼','Unnamed: 2':'学生姓名','Unnamed: 3':'昵称','Unnamed: 4':'性别','Unnamed: 5':'优点特性','Unnamed: 6':'缺点特性'},inplace=True)
+
+            # print('完成')
+            # print(Students_List)
+            return {'std_list':Students_List,'crs_info':crs_info,'tch_cmt':TeacherCmt}    
+
 # def term_summary_txt(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx',weekday=2):
 #     wd='周'+days_calculate.num_to_ch(str(weekday))
 #     df=pd.read_excel(xls,sheet_name=wd,skiprows=1)
@@ -106,4 +142,10 @@ if __name__=='__main__':
     # print(std_feedback())
     # print(std_term_crs())
     # print(crs_sig_table())
-    print(std_score()['std_score_activity'])
+    # print(std_score()['std_score_activity'])
+    
+    crs_list="/home/jack/data/大智小超/文档表格/课程信息表.xlsx"
+    std_list="/home/jack/data/大智小超/文档表格/2020乐高课程签到表（周二）.xlsx"
+    tch_cmt="/home/jack/data/大智小超/文档表格/每周课程反馈/学员课堂学习情况反馈表.xlsx"
+    res=comments_after_class('L055螺旋桨飞机',weekday=2,crs_list=crs_list,crs_student=std_list,tch_cmt=tch_cmt)
+    print(res['tch_cmt'])
