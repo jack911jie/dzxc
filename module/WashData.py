@@ -111,7 +111,7 @@ def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
             stars=crs_info[-1].replace('*','★')
             crs_info[-1]=stars 
             
-            df_stdInfo=pd.read_excel(crs_student,sheet_name='学生基本信息表')
+            df_stdInfo=pd.read_excel(crs_student,sheet_name='学生档案表')
             df_stdSig=pd.read_excel(crs_student,sheet_name='学生上课签到表',skiprows=2)
                      
             df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼', \
