@@ -111,8 +111,14 @@ class picToPPT:
         with open (fn,'r',encoding='utf-8') as f:
             rl=f.readlines()
 
-        ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
-        ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
+        # ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
+        # ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
+        # ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+
+        #studio更新的至2.2.2(1)版本后，lxfml文档结构改变
+        ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\" partType\=)'
+        ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\" partType\=)'
+        ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
 
         a=[]
         for line in rl:
@@ -124,6 +130,10 @@ class picToPPT:
             if p:
                 a.append(p[0])
 
+            p=re.findall(ptn3,line)
+            if p:
+                a.append(p[0])
+                
         out=[]
         for  aa in a:
             try:
@@ -269,7 +279,7 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L042玉兔捣药')
+    mypics=picToPPT('L068厉害的投掷器')
     # print(mypics.blockNames())
 #     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
