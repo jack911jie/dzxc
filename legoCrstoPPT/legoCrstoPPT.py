@@ -1,6 +1,7 @@
 import os
 import sys
-sys.path.append('i:/py/dzxc/module')
+# sys.path.append('i:/py/dzxc/module')
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 from readConfig import readConfig
 import platform
 import numpy as np

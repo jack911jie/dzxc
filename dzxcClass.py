@@ -70,16 +70,16 @@ def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020):
     #     my.PosterDraw('可以伸缩的夹子')      
     my.PosterDraw(crsName,crsDate)    
 
-def picsDistribute(crsDate,crsName):
+def picsDistribute(crsDate,place,crsName,term):
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
-    stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,weekday)
+    stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20200929,crsName='L033双翼飞机',TeacherSig='阿晓老师'):
+def pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate=20200929,crsName='L033双翼飞机',TeacherSig='阿晓老师'):
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
     crsName_distibute=str(crsDate)+crsName[4:]
-    picsDistribute(crsDate=crsDate,crsName=crsName)
-    my=posterAfterClass(weekday=weekday,place=place)  
+    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term)
+    my=posterAfterClass(weekday=weekday,term=term,place_input=place)  
     my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig)
 
 def before_class_poster(date_crs_input='20210306',time_crs_input='1100-1230',crs_name_input='L063汽车雨刮器'):
@@ -105,7 +105,7 @@ def std_ability_rose(std_name='韦宇浠',weekday='2'):
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 #
 #将步骤图导出PPT
-# makePpt('L064屈伸前进的尺蠖',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L068厉害的投掷器',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
@@ -114,10 +114,10 @@ def std_ability_rose(std_name='韦宇浠',weekday='2'):
 # std_grow_book(std_name='韦宇浠',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
 
 #学员能力玫瑰图
-std_ability_rose(std_name='韦宇浠',weekday='2')
+# std_ability_rose(std_name='韦宇浠',weekday='2')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='超智幼儿园',crsDate=20210306,crsName='L063汽车雨刮器',TeacherSig='阿晓老师')
+pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate=20210320,crsName='L068厉害的投掷器',TeacherSig='阿晓老师')
 
 # 课前生成海报
-# before_class_poster(date_crs_input='20210313',time_crs_input='1100-1230',crs_name_input='L064屈伸前进的尺蠖')
+# before_class_poster(date_crs_input='20210320',time_crs_input='1100-1230',crs_name_input='L068厉害的投掷器')
