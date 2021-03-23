@@ -1,5 +1,7 @@
 import sys
 sys.path.append('i:/py/dzxc/module')
+import days_calculate
+import WashData
 import composing
 import readConfig
 import os
@@ -19,7 +21,8 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(
 logger = logging.getLogger(__name__)
 
 class poster:
-    def __init__(self,weekday=2,place='超智幼儿园'):
+    def __init__(self,weekday=2,term='2021春',place_input='5-超智幼儿园'):
+        
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPoster.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
         _line=''
@@ -33,16 +36,22 @@ class poster:
         self.default_font=config['默认字体']         
         self.crsList=config['课程信息表']
         self.weekday=weekday
-        self.eachStd=config['个别学员评语表']
+        # self.eachStd=config['个别学员评语表']
+        # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
+        cmt_table_dir=config['老师评语表文件夹']
+        self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学员课堂学习情况反馈表.xlsx')
         
         self.picTitleDir=config['课程标题照片文件夹']
         self.picStdDir=config['学员照片文件夹']
         self.ConsDir=config['乐高图纸文件夹']
+        self.std_sig_dir=config['学员签到表文件夹']
 
-        if weekday==2:
-            self.crsStudent=config['学员签到表w2']
-        elif weekday==6:
-            self.crsStudent=config['学员签到表w6']
+        # if weekday==2:
+        #     self.crsStudent=config['学员签到表w2']
+        # elif weekday==6:
+        #     self.crsStudent=config['学员签到表w6']
+        wd=days_calculate.num_to_ch(str(weekday))
+        self.crsStudent=os.path.join(self.std_sig_dir,place_input,term+'-乐高课程签到表（周'+wd+'）.xlsx')
 
         self.PraiseTxt=['#同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','#同学的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
@@ -209,34 +218,11 @@ class poster:
         
         def read_excel():
             print('正在读取学员和课程信息……',end='')
-            df=pd.read_excel(self.crsList) 
-            crs=df.loc[df['课程编号']==crs_code]   
-            knowledge=list(crs['知识点'])
-            script=list(crs['课程描述'])
-            dif_level=list(crs['难度'])
-            instrument=list(crs['教具'])
-            crs_info=[crs_name,knowledge[0],script[0],dif_level[0],instrument[0]]      
-            stars=crs_info[-1].replace('*','★')
-            crs_info[-1]=stars 
-            
-            df_stdInfo=pd.read_excel(self.crsStudent,sheet_name='学生基本信息表')
-            df_stdSig=pd.read_excel(self.crsStudent,sheet_name='学生上课签到表',skiprows=2)
-            
-            df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名'},inplace=True)
-            Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
-            Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
-            Students_List=Students.values.tolist()
-            logging.info(Students_List)
-            # logging.info('\n'.join(crs_info))   
-
-            NumtoC={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'}
-            shtName='周'+NumtoC[str(self.weekday)]
-            TeacherCmt=pd.read_excel(self.eachStd,sheet_name=shtName,skiprows=1)
-            TeacherCmt.fillna('-',inplace=True)
-            TeacherCmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'姓名首拼','Unnamed: 2':'学生姓名','Unnamed: 3':'昵称','Unnamed: 4':'性别','Unnamed: 5':'优点特性','Unnamed: 6':'缺点特性'},inplace=True)
-
+            infos=WashData.comments_after_class(crs_name_input=crs_nameInput,weekday=self.weekday, \
+                                                crs_list=self.crsList,crs_student=self.crsStudent, \
+                                                tch_cmt=self.eachStd)
             print('完成')
-            return([Students_List,crs_info,TeacherCmt])               
+            return infos         
         
         def pic_xy(picWid,picHig,x0,y0):
             #白色矩形
@@ -253,7 +239,74 @@ class poster:
 
             return [[int(recX0),int(recY0),int(recX1),int(recY1)],[int(picX0),int(picY0),int(picX1),int(picY1)]]        
         
+        def color_list(list_num='202002'):
+            colors_202002={
+                'title_bg':'#FF9E11',  #乐高机器人课
+                'name':'#FFFFFF', # 姓名 年龄
+                'crs':'#00b578', #课程
+                'pics':'#f7f7f7' ,#照片大框
+                'pics_box':'#ffffff',#照片相框
+                'pic01':'#ffffff',
+                'pic02':'#ffffff',
+                'pic03':'#ffffff',
+                'pic04':'#ffffff',
+                'comments':'#00bde3', #老师评语
+                'logo':'#ffffff', #logo
+                't_title_ke1':'#ffffff',
+                't_title_xue':'#ffffff',
+                't_title_ji':'#ffffff',
+                't_title_qi':'#ffffff',
+                't_title_ren':'#ffffff',
+                't_title_ke4':'#ffffff',
+                't_name':'#00b578',#姓名
+                't_kdgtn':'#00b578',#幼儿园
+                't_class':'#00b578',#班级
+                't_crs':'#FFE340',#课程名称
+                't_diff':'#ffffff',#难度
+                't_tool':'#ffffff',#教具
+                't_knlg':'#ffffff',#知识点
+                't_date':'#ffffff',#日期
+                't_tch_cmt':'#ffffff',#老师评语
+                't_tch_sig':'#ffffff',#签名
+                't_bottom':'#656564' #二维码文字
+            }
+            colors_202101={
+                'title_bg':'#f7f3c3',  #乐高机器人课
+                'name':'#FFFFFF', # 姓名 年龄
+                'crs':'#f1f9ee', #课程
+                'pics':'#f7f7f7' ,#照片大框
+                'pics_box':'#ffffff',#照片相框
+                'pic01':'#ffffff',
+                'pic02':'#ffffff',
+                'pic03':'#ffffff',
+                'pic04':'#ffffff',
+                'comments':'#f9f9f9', #老师评语
+                'logo':'#ffffff', #logo
+                't_title_ke1':'#009ce6',
+                't_title_xue':'#33b171',
+                't_title_ji':'#ef9c10',
+                't_title_qi':'#8bbe19',
+                't_title_ren':'#dc9ee7',
+                't_title_ke4':'#b18046',
+                't_name':'#99633f',#姓名
+                't_kdgtn':'#99633f',#幼儿园
+                't_class':'#99633f',#班级
+                't_crs':'#37a751',#课程名称
+                't_diff':'#8b988e',#难度
+                't_tool':'#8b988e',#教具
+                't_knlg':'#8b988e',#知识点
+                't_date':'#8b988e',#日期
+                't_tch_cmt':'#795022',#老师评语
+                't_tch_sig':'#795022',#签名
+                't_bottom':'#656564' #二维码文字
+            }
+
+            out=eval('colors_'+list_num)
+
+            return out
+        
         def basic_bg(num):
+            color=color_list('202101')
             s1=100
             s2=140
             s3=450
@@ -294,35 +347,35 @@ class poster:
             if num==4:
                 img = Image.new("RGB",(900,total_len),(255,255,255))
                 draw=ImageDraw.Draw(img)
-                draw.rectangle([(0,0),(900,y1)],fill='#FF9E11') #乐高机器人课
-                draw.rectangle([(0,y2),(900,y2_2)],fill='#FFFFFF') # 姓名 年龄
-                draw.rectangle([(0,y3),(900,y3_2)],fill='#00B578') # 课程
-                draw.rectangle([(0,y4),(900,y4_2)],fill='#F7F7F7')# 照片
-                draw.rectangle([(0,y5),(900,y5_2)],fill='#006DE3') # 能力测评
-                draw.rectangle([(0,y6),(900,y6_2)],fill='#FFFFFF') # logo
+                draw.rectangle([(0,0),(900,y1)],fill=color['title_bg']) #乐高机器人课
+                draw.rectangle([(0,y2),(900,y2_2)],fill=color['name']) # 姓名 年龄
+                draw.rectangle([(0,y3),(900,y3_2)],fill=color['crs']) # 课程
+                draw.rectangle([(0,y4),(900,y4_2)],fill=color['pics'])# 照片
+                draw.rectangle([(0,y5),(900,y5_2)],fill=color['comments']) # 能力测评
+                draw.rectangle([(0,y6),(900,y6_2)],fill=color['logo']) # logo
 
 
-                draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill='#FFFFFF') #相框_课程
-                draw.rectangle([(pic1[0][0],pic1[0][1]),(pic1[0][2],pic1[0][3])],fill='#FFFFFF') #相框_1
-                draw.rectangle([(pic2[0][0],pic2[0][1]),(pic2[0][2],pic2[0][3])],fill='#FFFFFF') #相框_2
-                draw.rectangle([(pic3[0][0],pic3[0][1]),(pic3[0][2],pic3[0][3])],fill='#FFFFFF') #相框_3
-                draw.rectangle([(pic4[0][0],pic4[0][1]),(pic4[0][2],pic4[0][3])],fill='#FFFFFF') #相框_4
+                draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill=color['pics_box']) #相框_课程
+                draw.rectangle([(pic1[0][0],pic1[0][1]),(pic1[0][2],pic1[0][3])],fill=color['pic01']) #相框_1
+                draw.rectangle([(pic2[0][0],pic2[0][1]),(pic2[0][2],pic2[0][3])],fill=color['pic02']) #相框_2
+                draw.rectangle([(pic3[0][0],pic3[0][1]),(pic3[0][2],pic3[0][3])],fill=color['pic03']) #相框_3
+                draw.rectangle([(pic4[0][0],pic4[0][1]),(pic4[0][2],pic4[0][3])],fill=color['pic04']) #相框_4
             elif num==2:
                 img = Image.new("RGB",(900,int(total_len-s4/2)),(255,255,255))
                 draw=ImageDraw.Draw(img)
-                draw.rectangle([(0,0),(900,y1)],fill='#FF9E11') #乐高机器人课
-                draw.rectangle([(0,y2),(900,y2_2)],fill='#FFFFFF') # 姓名 年龄
-                draw.rectangle([(0,y3),(900,y3_2)],fill='#00B578') # 课程
-                draw.rectangle([(0,y4),(900,y4_2-s4/2)],fill='#F7F7F7')# 照片
-                draw.rectangle([(0,y5-s4/2),(900,y5_2-s4/2)],fill='#006DE3') # 能力测评
-                draw.rectangle([(0,y6-s4/2),(900,y6_2-s4/2)],fill='#FFFFFF') # logo
+                draw.rectangle([(0,0),(900,y1)],fill=color['title_bg']) #乐高机器人课
+                draw.rectangle([(0,y2),(900,y2_2)],fill=color['name']) # 姓名 年龄
+                draw.rectangle([(0,y3),(900,y3_2)],fill=color['crs']) # 课程
+                draw.rectangle([(0,y4),(900,y4_2-s4/2)],fill=color['pics'])# 照片
+                draw.rectangle([(0,y5-s4/2),(900,y5_2-s4/2)],fill=color['comments']) # 能力测评
+                draw.rectangle([(0,y6-s4/2),(900,y6_2-s4/2)],fill=color['logo']) # logo
 
 
-                draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill='#FFFFFF') #相框_课程
-                draw.rectangle([(pic1[0][0],pic1[0][1]),(pic1[0][2],pic1[0][3])],fill='#FFFFFF') #相框_1
-                draw.rectangle([(pic2[0][0],pic2[0][1]),(pic2[0][2],pic2[0][3])],fill='#FFFFFF') #相框_2
-                # draw.rectangle([(pic3[0][0],pic3[0][1]),(pic3[0][2],pic3[0][3])],fill='#FFFFFF') #相框_3
-                # draw.rectangle([(pic4[0][0],pic4[0][1]),(pic4[0][2],pic4[0][3])],fill='#FFFFFF') #相框_4
+                draw.rectangle([(pic0[0][0],pic0[0][1]),(pic0[0][2],pic0[0][3])],fill=color['pics_box']) #相框_课程
+                draw.rectangle([(pic1[0][0],pic1[0][1]),(pic1[0][2],pic1[0][3])],fill=color['pic01']) #相框_1
+                draw.rectangle([(pic2[0][0],pic2[0][1]),(pic2[0][2],pic2[0][3])],fill=color['pic02']) #相框_2
+                # draw.rectangle([(pic3[0][0],pic3[0][1]),(pic3[0][2],pic3[0][3])],fill=color['pic03']) #相框_3
+                # draw.rectangle([(pic4[0][0],pic4[0][1]),(pic4[0][2],pic4[0][3])],fill=color['pic04']) #相框_4
 
             
             return img  
@@ -433,22 +486,28 @@ class poster:
 
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
             print('    正在置入文本……',end='')
+            color=color_list('202101')
             draw=ImageDraw.Draw(img)        
             
-            draw.text((200,6), '科 学 机 器 人 课', fill = '#FFFFFF',font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((350,120), stdName, fill = '#00b578',font=self.fonts('汉仪心海行楷w',60))  #姓名
+            draw.text((170,5), '科', fill = color['t_title_ke1'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((270,5), '学', fill = color['t_title_xue'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((370,5), '机', fill = color['t_title_ji'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((470,5), '器', fill = color['t_title_qi'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((570,5), '人', fill = color['t_title_ren'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((670,5), '课', fill = color['t_title_ke4'],font=self.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((350,120), stdName, fill =color['t_name'] ,font=self.fonts('汉仪心海行楷w',60))  #姓名
             # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=self.fonts('微软雅黑',60))  #年龄    
-            draw.text((280,200), KdgtName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #幼儿园
-            draw.text((460,200), ClassName, fill = '#00b578',font=self.fonts('杨任东竹石体',33))  #班级
+            draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=self.fonts('杨任东竹石体',33))  #幼儿园
+            draw.text((460,200), ClassName, fill = color['t_class'],font=self.fonts('杨任东竹石体',33))  #班级
     
-            draw.text((50,290), '• '+crs_info[0]+' •', fill = '#FFE340',font=self.fonts('华康海报体W12(p)',40))  #课程名称  
-            draw.text((50,360), '难度：'+crs_info[3], fill = '#ffffff',font=self.fonts('汉仪锐智w',25))  #难度
-            draw.text((530,630), '使用教具：'+crs_info[4], fill = '#ffffff',font=self.fonts('微软雅黑',22))  #教具
+            draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=self.fonts('华康海报体W12(p)',40))  #课程名称  
+            draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=self.fonts('汉仪锐智w',25))  #难度
+            draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=self.fonts('微软雅黑',22))  #教具
             
-            self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = '#ffffff',font_name='汉仪锐智w',font_size=28)  #知识点    
+            self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = color['t_knlg'],font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
-            draw.text((100,630), date_txt, fill = '#ffffff',font=self.fonts('汉仪心海行楷w',35))  #日期
+            draw.text((100,630), date_txt, fill = color['t_date'],font=self.fonts('汉仪心海行楷w',35))  #日期
             
             # draw.text((50,1490), '能力测评', fill = '#6AB34A',font=font_2)  #能力测评
             # draw.text((50,1560), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
@@ -457,17 +516,17 @@ class poster:
             # draw.text((50,1710), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
             script=expScript(stdName)
             if self.bg_img_num>3:
-                self.put_txt_img(img,script,780,[60,1440],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1440],20,fill = color['t_tch_cmt'],font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,int(self.y5_2-45*2+45/2)), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,int(self.y5_2+self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30))  
+                draw.text((500,int(self.y5_2+self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30))  
             else:
-                self.put_txt_img(img,script,780,[60,1100],20,fill = '#ffffff',font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1100],20,fill = color['t_tch_cmt'],font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,int(self.y5_2-self.s4/2-45*2+45/2)), TeacherSig, fill = '#ffffff',font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-self.s4/2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('丁永康硬笔楷书',45) )  #签名    
                 
-                draw.text((500,int(self.y5_2-self.s4/2)+int(self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = '#656564',font=self.fonts('微软雅黑',30)) 
+                draw.text((500,int(self.y5_2-self.s4/2)+int(self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30)) 
                 
             print('完成')
             
@@ -477,7 +536,7 @@ class poster:
         para[0],para[1],para[2],para[3],para[4],para[5],para[6],para[7],para[8],para[9],para[10],para[11],para[12],para[13]
         
         INFO=read_excel()
-        std_list,crs_info,teacherCmt=INFO[0],INFO[1],INFO[2]
+        std_list,crs_info,teacherCmt=INFO['std_list'],INFO['crs_info'],INFO['tch_cmt']
     
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
@@ -510,6 +569,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=2)
+    my=poster(weekday=6,term='2021春')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L061猫捉老鼠',20210105,TeacherSig='阿晓老师')
+    my.PosterDraw('L068厉害的投掷器',20210320,TeacherSig='阿晓老师')
