@@ -44,7 +44,7 @@ class LegoClass:
         draw.text((260,178),date_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,228),time_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,279),addr_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程地点
-        composing.put_txt_img(draw=draw,tt=knlg,total_dis=320,xy=[180,530],dis_line=20, \
+        composing.put_txt_img(draw=draw,tt=knlg,total_dis=360,xy=[180,530],dis_line=20, \
                                 fill='#595757',font_name='丁永康硬笔楷书',font_size=34,addSPC='None') #知识点
 
         _img=Image.open(os.path.join(self.crs_proj_dir,crs_name_input,crs_name_input[4:]+'.jpg'))
@@ -55,7 +55,7 @@ class LegoClass:
         # new_img_round.show()
         bg.paste(new_img_round,(int((bg.size[0]-new_img_round.size[0])/2),700),mask=new_img_round)
         jpg=bg.convert('RGB')
-        save_name=os.path.join(self.crs_proj_dir,crs_name_input,crs_name_input+'_'+date_crs_input+'_课前海报.jpg')
+        save_name=os.path.join(self.crs_proj_dir,crs_name_input,date_crs_input+'_'+crs_name_input+'_课前海报.jpg')
         jpg.save(save_name,quality=85)
         # bg.show()
         print('完成')
