@@ -105,7 +105,7 @@ def std_ability_rose(std_name='韦宇浠',weekday='2'):
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 #
 #将步骤图导出PPT
-# makePpt('L068厉害的投掷器',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L070缝纫机',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
@@ -120,4 +120,4 @@ def std_ability_rose(std_name='韦宇浠',weekday='2'):
 pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate=20210320,crsName='L068厉害的投掷器',TeacherSig='阿晓老师')
 
 # 课前生成海报
-# before_class_poster(date_crs_input='20210320',time_crs_input='1100-1230',crs_name_input='L068厉害的投掷器')
+# before_class_poster(date_crs_input='20210327',time_crs_input='1100-1230',crs_name_input='L065地震啦')

@@ -36,22 +36,23 @@ class poster:
         self.default_font=config['默认字体']         
         self.crsList=config['课程信息表']
         self.weekday=weekday
+        wd=days_calculate.num_to_ch(str(weekday))
         # self.eachStd=config['个别学员评语表']
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
         cmt_table_dir=config['老师评语表文件夹']
-        self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学员课堂学习情况反馈表.xlsx')
+        self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
         
         self.picTitleDir=config['课程标题照片文件夹']
-        self.picStdDir=config['学员照片文件夹']
+        self.picStdDir=config['学生照片文件夹']
         self.ConsDir=config['乐高图纸文件夹']
-        self.std_sig_dir=config['学员签到表文件夹']
+        self.std_sig_dir=config['学生签到表文件夹']
 
         # if weekday==2:
         #     self.crsStudent=config['学员签到表w2']
         # elif weekday==6:
         #     self.crsStudent=config['学员签到表w6']
-        wd=days_calculate.num_to_ch(str(weekday))
-        self.crsStudent=os.path.join(self.std_sig_dir,place_input,term+'-乐高课程签到表（周'+wd+'）.xlsx')
+        
+        self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')
 
         self.PraiseTxt=['#同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','#同学的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
@@ -169,7 +170,11 @@ class poster:
             '汉仪心海行楷w':'j:\\fonts\\HYXinHaiXingKaiW.ttf',
             '华康海报体W12(p)':'j:\\fonts\\HuaKangHaiBaoTiW12-P-1.ttf',
             '汉仪锐智w':'j:\\fonts\\HYRuiZhiW.ttf',
-            '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf'            
+            '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
+            '于洪亮硬笔行楷手写体':'j:\\fonts\\YuHongLiangYingBiXingKaiShouXieTiZhengShiBan-1.ttf',
+            '汉仪林峰体w':'j:\\fonts\\HYLinFengTiW.ttf',
+            '汉仪常江小楷':'j:\\fonts\\HYChangJiangXiaoKaiW.ttf',
+            '汉仪字酷堂经解楷体w':'j:\\fonts\\HYZiKuTangJingJieKaiTiW.ttf'
         }
 
         # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
@@ -469,11 +474,17 @@ class poster:
             stdname=name_input      
             nickname=teacherCmt[teacherCmt['学生姓名']==stdname]['昵称'].values.tolist()[0]      
             teacherCmtTxt=teacherCmt[teacherCmt['学生姓名']==stdname][str(dateInput)+'-'+crs_nameInput].values.tolist()[0]
+            
+            # if teacherCmtTxt=='-':
+            #     teacherCmtTxt=teacherCmt[teacherCmt['学生姓名']=='通用评论'][str(dateInput)+'-'+crs_nameInput].values.tolist()[0]
             prsTxt=random.choice(self.PraiseTxt)
             if teacherCmtTxt!='-':
-                script=stdname+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+teacherCmtTxt
+                script=stdname+'同学在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+teacherCmtTxt
             else:
-                script=stdname+'在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+prsTxt
+                # script=stdname+'同学在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+prsTxt
+                #如果该学生评论为空，则读取通用评论。
+                script=stdname+'同学在“'+crs_info[0]+'”这节课中，'+crs_info[2]+'\n'+teacherCmt[teacherCmt['学生姓名']=='通用评论'][str(dateInput)+'-'+crs_nameInput].values.tolist()[0]
+
 
             if '#' in script:
                 script=script.replace('#',stdname)
@@ -516,15 +527,15 @@ class poster:
             # draw.text((50,1710), 'XX力', fill = '#6AB34A',font=font_3)  #XX力
             script=expScript(stdName)
             if self.bg_img_num>3:
-                self.put_txt_img(img,script,780,[60,1440],20,fill = color['t_tch_cmt'],font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1440],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,int(self.y5_2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('汉仪字酷堂经解楷体w',45) )  #签名    
                 
                 draw.text((500,int(self.y5_2+self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30))  
             else:
-                self.put_txt_img(img,script,780,[60,1100],20,fill = color['t_tch_cmt'],font_name='丁永康硬笔楷书',font_size=36,addSPC='add_2spaces') #老师评语
+                self.put_txt_img(img,script,780,[60,1100],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
 
-                draw.text((650,int(self.y5_2-self.s4/2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('丁永康硬笔楷书',45) )  #签名    
+                draw.text((650,int(self.y5_2-self.s4/2-45*2+45/2)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('汉仪字酷堂经解楷体w',45) )  #签名    
                 
                 draw.text((500,int(self.y5_2-self.s4/2)+int(self.s6/2-30)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30)) 
                 
@@ -557,10 +568,10 @@ class poster:
             putTxt(img,stdName,stdAge,KdgtName,ClassName)             
             
             print('正在保存 {} 的图片……'.format(std[3]),end='')
-            if not os.path.exists(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput)):
-                os.mkdir(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput))
+            if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):
+                os.mkdir(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
             
-            img.save(os.path.join(self.bg,str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
+            img.save(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')
             # img.show()
 
@@ -569,6 +580,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=6,term='2021春')
+    my=poster(weekday=4,term='2021春')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L068厉害的投掷器',20210320,TeacherSig='阿晓老师')
+    my.PosterDraw('L066弹力小车',20210325,TeacherSig='阿晓老师')

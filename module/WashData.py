@@ -114,20 +114,25 @@ def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
             df_stdInfo=pd.read_excel(crs_student,sheet_name='学生档案表')
             df_stdSig=pd.read_excel(crs_student,sheet_name='学生上课签到表',skiprows=2)
                      
-            df_stdSig.rename(columns={'Unnamed: 0':'幼儿园','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼', \
-                                        'Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名', \
-                                         'Unnamed: 6':'上年课时结余','Unnamed: 7':'购买课时', \
-                                             'Unnamed: 8':'目前剩余课时','Unnamed: 9':'上课数量统计汇总'},inplace=True)
+            df_stdSig.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级', \
+                                        'Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名','Unnamed: 5':'昵称', \
+                                         'Unnamed: 6':'性别','Unnamed: 7':'上期课时结余', \
+                                             'Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时','Unnamed: 10':'上课数量统计汇总'},inplace=True)
             # print(df_stdSig.columns)
-            Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['幼儿园','班级','姓名首拼','学生姓名']] #上课的学生名单            
+            # print(df_stdSig)
+            Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
+
+            # print(Students_sig,df_stdInfo)         
             Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
             Students_List=Students.values.tolist()
 
             NumtoC={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'}
-            shtName='周'+NumtoC[str(weekday)]
+            # shtName='周'+NumtoC[str(weekday)]
+            shtName='课堂情况反馈表'
             TeacherCmt=pd.read_excel(tch_cmt,sheet_name=shtName,skiprows=1)
             TeacherCmt.fillna('-',inplace=True)
-            TeacherCmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'姓名首拼','Unnamed: 2':'学生姓名','Unnamed: 3':'昵称','Unnamed: 4':'性别','Unnamed: 5':'优点特性','Unnamed: 6':'缺点特性'},inplace=True)
+            TeacherCmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼', \
+                                        'Unnamed: 4':'学生姓名','Unnamed: 5':'昵称','Unnamed: 6':'性别'},inplace=True)
 
             # print('完成')
             # print(Students_List)
