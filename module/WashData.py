@@ -118,6 +118,7 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     df_verify.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','核销积分','核销日期','兑换礼品','备注']
     df_verify.dropna(how='all',axis=0,inplace=True)
     std_verify_score=df_verify.groupby('学生姓名')['核销积分'].sum()
+    
     std_verify_score=std_verify_score.to_frame()
     std_verify_score.reset_index(inplace=True)
 
@@ -130,12 +131,13 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     std_act_score.reset_index(inplace=True)
 
     df_scores=pd.merge(df_info,std_crs_score,how='left',on='学生姓名')
-    df_scores=pd.merge(df_scores,std_act_score,how='left',on='学生姓名')        
+    df_scores=pd.merge(df_scores,std_act_score,how='left',on='学生姓名')       
     df_scores['总积分']=df_scores.apply(lambda x:x['课堂总积分']+x['活动总积分'],axis=1)
     df_scores=pd.merge(df_scores,std_verify_score,how='left',on='学生姓名')
-    df_scores['剩余积分']=df_scores.apply(lambda x:x['总积分']-x['核销积分'],axis=1)
+    df_scores.iloc[:,5:]=df_scores.iloc[:,5:].fillna(0)     
+    df_scores['剩余积分']=df_scores.apply(lambda x:x['课堂总积分']-x['核销积分'],axis=1)
     df_scores=df_scores.iloc[:,1:]     
-    df_scores.iloc[:,5:]=df_scores.iloc[:,5:].fillna(0)
+    
 
     # print(df_scores)
     return df_scores
