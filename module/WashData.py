@@ -3,8 +3,10 @@ import sys
 sys.path.append('i:/py/dzxc/module')
 import days_calculate
 import pandas as pd 
+import numpy as np
 from datetime import datetime 
 import copy
+import re
 
 def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\2020乐高课程签到表（周二）.xlsx'):
     df=pd.read_excel(xls,sheet_name='学生上课签到表',skiprows=1,header=None)
@@ -75,29 +77,91 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
     return {'df_ability':df_ability,'df_term_comment':df_term_comment}
 
-def std_score(std_name='韦宇浠',start_date='20000927',end_date='21000105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\2020乐高课程签到表（周二）.xlsx'):
-    #课堂积分计算
-    def score(sht_name='课堂积分'):
-        df_crs=pd.read_excel(xls,sheet_name=sht_name,skiprows=0,header=None)
-        df_scores=df_crs.iloc[:,6:]
-        crs_names=df_scores.iloc[0,:].str.replace(r'^\d{1,2}$','-',regex=True).dropna()
-        std_scores=df_scores.iloc[2:,:]
-        std_scores=std_scores.iloc[:,[x for x in range(3,std_scores.shape[1],4)]]
-        pre_col_name=['未上课']*std_scores.shape[1]
-        for k,v in enumerate(crs_names.values):
-            pre_col_name[k]=v
-        std_scores.columns=pre_col_name
-        std_info=df_crs.iloc[2:,0:6]
-        std_info.columns=df_crs.iloc[0,0:6].values    
-        res=pd.concat([std_info,std_scores],axis=1)
-        return res
-   
-    std_score_class=score(sht_name='课堂积分')
-    std_score_activity=score(sht_name='活动积分')
+def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园'):
+    xlsxs=[]
+    for fn in os.listdir(os.path.join(xls_dir,'学生信息表')):
+        if re.match(r'^\d.*-.*）.xlsx',fn):
+            xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
 
-    return {'std_score_class':std_score_class,'std_score_activity':std_score_activity}
+    df_infos=[]
+    df_crss=[]
+    df_acts=[]
+    df_verifys=[]
+    for xlsx in xlsxs:
+        df_infos_pre=pd.read_excel(xlsx,sheet_name='学生档案表',skiprows=1,header=None,usecols=[0,1,2,3,4,5,6])
+        df_crss_pre=pd.read_excel(xlsx,sheet_name='课堂积分',skiprows=2,header=None,usecols=[0,1,2,3,4,5,6,7])
+        df_acts_pre=pd.read_excel(xlsx,sheet_name='活动积分',skiprows=2,header=None,usecols=[0,1,2,3,4,5,6,7])
+        df_verifys_pre=pd.read_excel(xlsx,sheet_name='积分核销表',skiprows=1,header=None)
+        df_infos.append(df_infos_pre)
+        df_crss.append(df_crss_pre)
+        df_acts.append(df_acts_pre)
+        df_verifys.append(df_verifys_pre)
 
-def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
+    df_info=pd.concat(df_infos)
+    df_info.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别']
+    df_info.dropna(how='all',axis=0,inplace=True)
+    df_info=df_info[['ID','机构','姓名首拼','学生姓名','性别']]
+    df_info.drop_duplicates('学生姓名',inplace=True)
+    df_info.reset_index(inplace=True)
+
+    df_crs=pd.concat(df_crss)
+    df_crs.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','课堂总积分']
+    df_crs.dropna(how='all',axis=0,inplace=True)
+    df_crs=df_crs[df_crs['学生姓名']!=0]
+
+    df_act=pd.concat(df_acts)
+    df_act.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','活动总积分']
+    df_act.dropna(how='all',axis=0,inplace=True)
+    df_act=df_act[df_act['学生姓名']!=0]
+
+    df_verify=pd.concat(df_verifys)
+    df_verify.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','核销积分','核销日期','兑换礼品','备注']
+    df_verify.dropna(how='all',axis=0,inplace=True)
+    std_verify_score=df_verify.groupby('学生姓名')['核销积分'].sum()
+    std_verify_score=std_verify_score.to_frame()
+    std_verify_score.reset_index(inplace=True)
+
+    std_crs_score=df_crs.groupby('学生姓名')['课堂总积分'].sum()
+    std_crs_score=std_crs_score.to_frame()
+    std_crs_score.reset_index(inplace=True)
+
+    std_act_score=df_act.groupby('学生姓名')['活动总积分'].sum()
+    std_act_score=std_act_score.to_frame()
+    std_act_score.reset_index(inplace=True)
+
+    df_scores=pd.merge(df_info,std_crs_score,how='left',on='学生姓名')
+    df_scores=pd.merge(df_scores,std_act_score,how='left',on='学生姓名')        
+    df_scores['总积分']=df_scores.apply(lambda x:x['课堂总积分']+x['活动总积分'],axis=1)
+    df_scores=pd.merge(df_scores,std_verify_score,how='left',on='学生姓名')
+    df_scores['剩余积分']=df_scores.apply(lambda x:x['总积分']-x['核销积分'],axis=1)
+    df_scores=df_scores.iloc[:,1:]     
+    df_scores.iloc[:,5:]=df_scores.iloc[:,5:].fillna(0)
+
+    # print(df_scores)
+    return df_scores
+
+def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx'):
+    df=pd.read_excel(xls,sheet_name='课堂积分',header=None)
+    date_crs=df.iloc[0,8:]   
+    #将数字改为nan后去掉nan，只保留有课程名称的记录     
+    date_crs=date_crs.apply(lambda x : np.nan if isinstance(x, int) else x) 
+    date_crs.dropna(inplace=True)
+
+    std_all_crs_scores=df.iloc[2:,:]
+    remain_col_nums=[3+4*x for x in range(date_crs.shape[0])]
+    std_scores=std_all_crs_scores.iloc[:,8:]
+    std_scores=std_scores.iloc[:,remain_col_nums]
+    std_info=std_all_crs_scores.iloc[:,:8]
+    std_this_scores=pd.concat([std_info,std_scores],axis=1)
+
+    col_names=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','课堂总积分']
+    col_names.extend(date_crs.tolist())
+    std_this_scores.columns=col_names
+    # print(std_this_scores)
+
+    return std_this_scores
+
+def comments_after_class(crs_name_input,weekday,crs_list,std_info,tch_cmt):
             crs_code=crs_name_input[0:4]
             crs_name=crs_name_input[4:]
             # print('正在读取学员和课程信息……',end='')
@@ -111,8 +175,8 @@ def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
             stars=crs_info[-1].replace('*','★')
             crs_info[-1]=stars 
             
-            df_stdInfo=pd.read_excel(crs_student,sheet_name='学生档案表')
-            df_stdSig=pd.read_excel(crs_student,sheet_name='学生上课签到表',skiprows=2)
+            df_stdInfo=pd.read_excel(std_info,sheet_name='学生档案表')
+            df_stdSig=pd.read_excel(std_info,sheet_name='学生上课签到表',skiprows=2)
                      
             df_stdSig.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级', \
                                         'Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名','Unnamed: 5':'昵称', \
@@ -142,15 +206,55 @@ def comments_after_class(crs_name_input,weekday,crs_list,crs_student,tch_cmt):
 #     wd='周'+days_calculate.num_to_ch(str(weekday))
 #     df=pd.read_excel(xls,sheet_name=wd,skiprows=1)
 
+def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\学生信息表'):
+    fns=os.listdir(tb_dir)
+    xlsxs=[]
+    for fn in fns:
+        if re.match(r'^\d.*-.*）.xlsx',fn):
+            xlsxs.append(os.path.join(tb_dir,fn))
+    
+    # dfs.to_excel('e:/temp/kp.xlsx')
+    # print(dfs)
+    # print(df_ticks.iloc[3,0])
+    # print(xlsxs,'\n')
+    all_tables=[]
+    for xlsx in xlsxs:        
+        df_total=pd.read_excel(xlsx,sheet_name='学生上课签到表',header=None)
+        df_basic=df_total.iloc[3:,0:7]
+        df_ticks=df_total.iloc[3:,11:].copy()
+        df_titles=df_total.iloc[2,11:]
+        df_dates=df_total.iloc[1,11:]
+
+        for i in range(0,df_ticks.shape[0]):
+            for j in range(0,df_ticks.shape[1]):        
+                    if df_ticks.iloc[i,j]=='√':
+                        df_ticks.iloc[i,j]=df_titles.tolist()[j]
+        df_ticks.columns=df_dates.tolist()
+        df_basic.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别']
+        # df_basic=df_basic.reset_index()
+        dfs=pd.concat([df_basic,df_ticks],axis=1)
+        dfs=dfs.reset_index(drop=True)
+        dfs.dropna(how='all',axis=1,inplace=True)
+        dfs.dropna(how='all',axis=0,inplace=True)
+        all_tables.append(dfs)
+    
+    for k,tb in enumerate(all_tables):
+        print(k,'\n',tb)
+
+    # df_all=pd.concat(all_tables,ignore_index=True)
+    # df_all.to_excel('e:/temp/kkkdd.xlsx')
 
 if __name__=='__main__':
     # print(std_feedback())
     # print(std_term_crs())
     # print(crs_sig_table())
-    # print(std_score()['std_score_activity'])
-    
-    crs_list="/home/jack/data/大智小超/文档表格/课程信息表.xlsx"
-    std_list="/home/jack/data/大智小超/文档表格/2020乐高课程签到表（周二）.xlsx"
-    tch_cmt="/home/jack/data/大智小超/文档表格/每周课程反馈/学员课堂学习情况反馈表.xlsx"
-    res=comments_after_class('L055螺旋桨飞机',weekday=2,crs_list=crs_list,crs_student=std_list,tch_cmt=tch_cmt)
-    print(res['crs_info'])
+    print(std_all_scores())
+    # print(std_score_this_crs())
+
+    # crs_list="/home/jack/data/大智小超/文档表格/课程信息表.xlsx"
+    # std_list="/home/jack/data/大智小超/文档表格/2020乐高课程签到表（周二）.xlsx"
+    # tch_cmt="/home/jack/data/大智小超/文档表格/每周课程反馈/学员课堂学习情况反馈表.xlsx"
+    # res=comments_after_class('L055螺旋桨飞机',weekday=2,crs_list=crs_list,crs_student=std_list,tch_cmt=tch_cmt)
+    # print(res['crs_info'])
+
+    # multi_std_infos()
