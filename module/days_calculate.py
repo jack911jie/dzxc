@@ -19,5 +19,10 @@ def calculate_days(date_input='20181215'):
 
 
 def num_to_ch(num):
-    wd={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日',}
+    if isinstance(num,str):
+        wd={'1':'一','2':'二','3':'三','4':'四','5':'五','6':'六','7':'日'}
+    elif isinstance(num,int):
+        wd={1:'一',2:'二',3:'三',4:'四',5:'五',6:'六',7:'日'}
+    else:
+        wd='不是星期数'
     return wd[num]

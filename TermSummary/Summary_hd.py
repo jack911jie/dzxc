@@ -15,20 +15,44 @@ class data_summary:
         config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.dazhi'))
         self.std_dir=config['学生信息文件夹']
         self.design_dir=config['图纸文件夹']
-        self.feedback_xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx'
+        self.feedback_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈'
+        self.term_pic_dir='I:\\乐高\\学员上课总结\\学员阶段总结'
 
         font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
         self.font=composing.fonts
         
-    def draw_std_term_crs(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',weekday='2'):
-        std_name=std_name.strip()
-        xls_name=os.path.join(self.std_dir,'2020乐高课程签到表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx')
-        std_term_crs=WashData.std_term_crs(std_name=std_name,start_date=start_date,end_date=end_date,xls=xls_name)
-        return std_term_crs
+    def get_std_term_crs(self,std_name='韦宇浠',tb_list=[['2020秋','w2'],['2021春','w4']],start_date='20200901',end_date='20210521'):
 
-    def exp_poster(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',weekday='2',term='2020秋',tch_name='阿晓老师',k=1):
-        info=self.draw_std_term_crs(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday)
+        print('    正在读取 {} 的数据……'.format(std_name),end='')
+        std_name=std_name.strip()
+        std_term_crs=[]
+        for tb in tb_list:
+            term,weekday=tb[0],tb[1][-1]
+            xls_name=os.path.join(self.std_dir,'学生信息表',term+'-学生信息表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx') 
+            std_term_crs_pre=WashData.std_term_crs(std_name=std_name,start_date=start_date,end_date=end_date,xls=xls_name)
+            std_term_crs.append(std_term_crs_pre)
+
+        df_std_crss=[]
+        df_total_crss=[]
+        for df_std_term_crs in std_term_crs:
+            df_std_crss.append(df_std_term_crs['std_crs'])  
+            df_total_crss.append(df_std_term_crs['total_crs'])
+        
+        df_std_crs=pd.concat(df_std_crss)
+        df_std_crs.dropna(axis=0,inplace=True)
+        df_std_crs.reset_index(inplace=True)
+        df_total_crs=pd.concat(df_total_crss,ignore_index=True)
+
+        # print(df_std_crs,'\n',df_total_crs)
+
+        res_std_term_crs={'total_crs':df_total_crs,'std_crs':df_std_crs,'std_info':std_term_crs[0]['std_info']}
+        print('完成')
+        return res_std_term_crs
+
+    def exp_poster(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',cmt_date='20210407',tb_list=[['2020秋','w2'],['2021春','w4']],tch_name='阿晓老师',k=1):
+        print('正在处理……')
+        info=self.get_std_term_crs(std_name=std_name,tb_list=tb_list,start_date=start_date,end_date=end_date)
         total_crs=info['total_crs']
         total_crs.dropna(inplace=True)
         std_crs=info['std_crs']
@@ -50,9 +74,12 @@ class data_summary:
         std_school=std_info['机构'].values[0]
         std_class=std_info['班级'].values[0]
 
-        comments=WashData.std_feedback(std_name=std_name,xls=self.feedback_xls,weekday=weekday)['df_term_comment']
         #学生学期末评语
-        comments_for_std=comments[comments['姓名']==std_name][term+'学期总结'].values.tolist()[0].replace('#',std_name)
+        term,weekday=tb_list[-1][0],tb_list[-1][1][1]
+        wd=days_calculate.num_to_ch(weekday)
+        xls=os.path.join(self.feedback_dir,term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
+        comments=WashData.std_feedback(std_name=std_name,xls=xls)['df_term_comment']    
+        comments_for_std=comments[comments['学生姓名']==std_name][term+'学期总结-'+str(cmt_date)].values.tolist()[0].replace('#',std_name)
         std_crs_num=std_crs.shape[0]
         if  total_crs_num==std_crs_num:            
             std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了全部课程的学习！'.format(std_name,total_crs_num)
@@ -138,6 +165,8 @@ class data_summary:
             return crs_bg
 
         def draw_crs():
+            print('正在生成图片……',end='')
+
             #使用并改变母函数的变量
             nonlocal y_left_up
             bg=draw_bg()
@@ -197,9 +226,11 @@ class data_summary:
             draw.text((int(380*k),int((y_logo+10))), '长按二维码 → \n关注视频号 →', fill = '#8E9184',font=self.font('微软雅黑',25))
 
             
-            # bg=bg.convert('RGB')
-            # bg.save('e:/temp/kkkk3.jpg',quality=90,subsampling=0)
-            bg.show()
+            bg=bg.convert('RGB')
+            savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'阶段小结.jpg')
+            bg.save(savename,quality=90,subsampling=0)
+            # bg.show()
+            print('图片保存完成，保存路径：{}'.format(savename))
 
         draw_crs()
         # crs_pic()
@@ -270,5 +301,7 @@ class data_summary:
 
 if __name__=='__main__':
     my=data_summary()
-    my.rose(std_name='韦宇浠',weekday=2)
-    # my.exp_poster(std_name='韦宇浠',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师',k=1.25)
+    # res=my.get_std_term_crs()
+    # print(res)
+    # my.rose(std_name='韦宇浠',weekday=2)
+    my.exp_poster(std_name='黄建乐',start_date='20200922',end_date='20210407',cmt_date='20210313',tb_list=[['2020秋','w6'],['2021春','w6']],tch_name='阿晓老师',k=1.25)
