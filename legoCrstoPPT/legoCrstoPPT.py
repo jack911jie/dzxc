@@ -262,7 +262,7 @@ class picToPPT:
             prs.slides[2].placeholders[1].text=txt_knlg #写入知识点
             slide=prs.slides.add_slide(blank_slide_layout)
 
-            prs.slides[len(prs.slides)-1].placeholders[0].text='课后问题'  #加入课后问题
+            prs.slides[len(prs.slides)-1].placeholders[0].text='课堂分享'  #加入课堂分享
             prs.slides[len(prs.slides)-1].placeholders[1].text=txt_quesion
 
             slide=prs.slides.add_slide(blank_slide_layout)
