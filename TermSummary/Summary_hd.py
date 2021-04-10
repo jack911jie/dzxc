@@ -50,7 +50,8 @@ class data_summary:
         print('完成')
         return res_std_term_crs
 
-    def exp_poster(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',cmt_date='20210407',tb_list=[['2020秋','w2'],['2021春','w4']],tch_name='阿晓老师',k=1):
+    def exp_poster(self,std_name='韦宇浠',start_date='20200930',end_date='20210121',cmt_date='20210407', \
+                    tb_list=[['2020秋','w2'],['2021春','w4']],tch_name='阿晓老师',mode='all',k=1):
         print('正在处理……')
         info=self.get_std_term_crs(std_name=std_name,tb_list=tb_list,start_date=start_date,end_date=end_date)
         total_crs=info['total_crs']
@@ -81,10 +82,17 @@ class data_summary:
         comments=WashData.std_feedback(std_name=std_name,xls=xls)['df_term_comment']    
         comments_for_std=comments[comments['学生姓名']==std_name][term+'学期总结-'+str(cmt_date)].values.tolist()[0].replace('#',std_name)
         std_crs_num=std_crs.shape[0]
-        if  total_crs_num==std_crs_num:            
-            std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了全部课程的学习！'.format(std_name,total_crs_num)
-        else:
-             std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了{2} 节课的学习，请假{3} 节。'.format(std_name,total_crs_num,std_crs_num,total_crs_num-std_crs_num)
+        if  mode=='part':
+            if  total_crs_num==std_crs_num:            
+                std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了全部课程的学习！'.format(std_name,total_crs_num)
+            else:
+                std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了{2} 节课的学习，请假{3} 节。'.format(std_name,total_crs_num,std_crs_num,total_crs_num-std_crs_num)
+        elif mode=='all':
+            # if  total_crs_num==std_crs_num:            
+            std_crs_num_txt='{0}已经完成了{1} 节科学机器人课程的学习！'.format(std_name,total_crs_num)
+            # else:
+                # std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了{2} 节课的学习，请假{3} 节。'.format(std_name,total_crs_num,std_crs_num,total_crs_num-std_crs_num)
+      
         comments_for_std=std_crs_num_txt+'\n'+comments_for_std
         font_size_cmt=int(30*k)
         prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
@@ -301,7 +309,10 @@ class data_summary:
 
 if __name__=='__main__':
     my=data_summary()
-    # res=my.get_std_term_crs()
-    # print(res)
+    # res=my.get_std_term_crs(std_name='韦华晋',tb_list=[['2020秋','w6'],['2021春','w6']],start_date='20200901',end_date='20210521')
+    # print(res['total_crs'],'\n',res['std_crs'])
     # my.rose(std_name='韦宇浠',weekday=2)
-    my.exp_poster(std_name='黄建乐',start_date='20200922',end_date='20210407',cmt_date='20210313',tb_list=[['2020秋','w6'],['2021春','w6']],tch_name='阿晓老师',k=1.25)
+    ns=['黄建乐','韦华晋']
+    for n in ns:
+        my.exp_poster(std_name=n,start_date='20200822',end_date='20210410', \
+                    cmt_date='20210410',tb_list=[['2020秋','w6'],['2021春','w6']],tch_name='阿晓老师', mode='all',k=1.25)
