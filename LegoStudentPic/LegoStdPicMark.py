@@ -35,7 +35,7 @@ class pics:
         print('完成')
         
 
-    def putCover(self,height=2250,weekday=2):
+    def putCover(self,height=2250,term='2020秋',weekday=2):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
             if weekday==2:
@@ -62,11 +62,12 @@ class pics:
             ptn_std_name=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+')
 
             infos=[]
-            for fileName in os.listdir(self.totalPics):
+            total_pics_dir=os.path.join(self.totalPics,term,'总')
+            for fileName in os.listdir(total_pics_dir):
                 fn=fileName.split('-')
                 crsName=fn[1][4:]
                 crsCode=fn[1][0:4]
-                real_addr=os.path.join(self.totalPics,fileName)
+                real_addr=os.path.join(total_pics_dir,fileName)
                 tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
                 if len(tag)>0:
                     for _tag in tag:        
@@ -118,8 +119,6 @@ class pics:
             return k
 
         def draw(img,w,h,txt):           
-            
-
             draw=ImageDraw.Draw(img)
             draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
             r=img.size[1]/3024
@@ -181,7 +180,7 @@ class pics:
                         txt_write=[info[0],info[2],date_crs,info[3]]
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,info[1])
+                        saveDir=os.path.join(self.stdPicsDir,term,info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
                             # print(saveName)
@@ -191,6 +190,7 @@ class pics:
                             img.save(saveName,quality=95,subsampling=0)
                             # print(saveName)
                         # print('生成的照片所在文件夹：{}'.format(saveDir))
+                        # print('测试保存:',saveName)
                     else:
                         smallpics.append(info[4])
 
@@ -200,10 +200,6 @@ class pics:
                 print('完成')
             else:
                 print('无合适的照片')
-
-            
-                
-
 
         putCoverToPics()
 
@@ -220,4 +216,4 @@ class pics:
 
 if __name__=='__main__':
     pic=pics()
-    pic.putCover(height=2250,weekday=6)
+    pic.putCover(height=2250,term='2020秋',weekday=6)
