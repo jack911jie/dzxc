@@ -225,7 +225,7 @@ class poster:
         
         def read_excel():
             print('正在读取学员和课程信息……',end='')
-            infos=WashData.comments_after_class(crs_name_input=crs_nameInput,weekday=self.weekday, \
+            infos=WashData.comments_after_class(cmt_date=str(dateInput),crs_name_input=crs_nameInput,weekday=self.weekday, \
                                                 crs_list=self.crsList,std_info=self.crsStudent, \
                                                 tch_cmt=self.eachStd)
             print('完成')

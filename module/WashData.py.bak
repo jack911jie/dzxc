@@ -8,40 +8,31 @@ from datetime import datetime
 import copy
 import re
 
-# def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2020秋-学生信息表（周二）.xlsx'):
-def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx'):
+def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周四）.xlsx'):
     df=pd.read_excel(xls,sheet_name='学生上课签到表',skiprows=1,header=None)
-    # df.iloc[0]=df.iloc[0].map(lambda x:str(x)[0:10])#将原有的时间格式变为字符串格式2
+    df.iloc[0]=df.iloc[0].map(lambda x:str(x)[0:10])#将原有的时间格式变为字符串格式
     left_11=pd.Series(['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','上年课时结余','购买课时','目前剩余课时','上课数量统计汇总'])
     # new_title=left_6.append(df.iloc[0].str.cat(df.iloc[1],sep=',')[6:]).tolist() #构建新的表头，使用了函数 df.iloc[0].str.cat
-    # title_time=left_11.append(df.iloc[0][11:].apply([0:8])).tolist()
-    title_time=df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[0:8])
-
-    title_time=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[0:8])).tolist()
-
-    title_crs=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[9:])).tolist()
+    title_time=left_11.append(df.iloc[0][11:]).tolist()
+    title_crs=left_11.append(df.iloc[1][11:]).tolist()
     
-
     #学生实际上的课表
-    df_std=df.iloc[1:]
+    df_std=df.iloc[2:]
     df_std_new=df_std.copy()
-    
     df_std_new.columns=title_time
 
     for i in range(0,df_std_new.shape[0]):
-        for j in range(11,df_std_new.shape[1]):
+        for j in range(6,df_std_new.shape[1]):
             if df_std_new.iloc[i,j]=='√':
-                df_std_new.iloc[i,j]=title_crs[11:][j-11]
+                df_std_new.iloc[i,j]=title_crs[6:][j-6]
     
     #总课表
-    df_crs_0=df.iloc[0,11:].copy().T
-    df_crs_0.fillna('-',inplace=True)
-    df_crs=df_crs_0.apply(lambda x: x if x=='-' else x[0:8]).to_frame()
-    df_crs.columns=['上课日期']
-    df_crs['课程名称']=df_crs_0.apply(lambda x: x if x=='-' else x[9:])
-    df_crs.reset_index(inplace=True,drop=True)
-    df_crs.replace('-',np.nan,inplace=True)
-    
+    df_crs_0=df.iloc[0:2,:].copy().T
+    df_crs=df_crs_0.iloc[11:,:]
+    # print(df_crs)
+    df_crs.columns=['上课日期','课程名称']
+
+
     return {'total_crs':df_crs,'std_crs':df_std_new}
 
 def std_term_crs(std_name='韦宇浠',start_date='20000927',end_date='21000105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2020秋-学生信息表（周二）.xlsx'):
@@ -179,7 +170,7 @@ def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
 
     return std_this_scores
 
-def comments_after_class(cmt_date,crs_name_input,weekday,crs_list,std_info,tch_cmt):
+def comments_after_class(crs_name_input,weekday,crs_list,std_info,tch_cmt):
     crs_code=crs_name_input[0:4]
     crs_name=crs_name_input[4:]
     # print('正在读取学员和课程信息……',end='')
@@ -194,17 +185,16 @@ def comments_after_class(cmt_date,crs_name_input,weekday,crs_list,std_info,tch_c
     crs_info[-1]=stars 
     
     df_stdInfo=pd.read_excel(std_info,sheet_name='学生档案表')
-    df_stdSig=pd.read_excel(std_info,sheet_name='学生上课签到表',skiprows=1)
+    df_stdSig=pd.read_excel(std_info,sheet_name='学生上课签到表',skiprows=2)
                 
     df_stdSig.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级', \
                                 'Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名','Unnamed: 5':'昵称', \
                                     'Unnamed: 6':'性别','Unnamed: 7':'上期课时结余', \
                                         'Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时','Unnamed: 10':'上课数量统计汇总'},inplace=True)
     # print(df_stdSig.columns)
-    # print(df_stdSig.columns)
-    Students_sig=df_stdSig.loc[df_stdSig[cmt_date+'-'+crs_code+crs_name]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
-    # Students_sig=df_stdSig.loc[df_stdSig.iloc[:,11:]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
-    # print(Students_sig)
+    # print(df_stdSig)
+    Students_sig=df_stdSig.loc[df_stdSig[crs_code+crs_name]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
+
     # print(Students_sig,df_stdInfo)         
     Students=pd.merge(Students_sig,df_stdInfo,on='学生姓名',how='left') #根据学生名单获取学生信息
     Students_List=Students.values.tolist()
@@ -266,15 +256,14 @@ def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
 if __name__=='__main__':
     # print(std_feedback())
     # print(std_term_crs())
-    # k=crs_sig_table()
-    # print(k['total_crs'])
+    print(crs_sig_table())
     # print(std_all_scores())
     # print(std_score_this_crs())
 
-    crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
-    std_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx"
-    tch_cmt="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周一）.xlsx"
-    res=comments_after_class(cmt_date='20210329',crs_name_input='L040认识零件（二）',weekday=1,crs_list=crs_list,std_info=std_list,tch_cmt=tch_cmt)
-    print(res['tch_cmt'])
+    # crs_list="/home/jack/data/大智小超/文档表格/课程信息表.xlsx"
+    # std_list="/home/jack/data/大智小超/文档表格/2020乐高课程签到表（周二）.xlsx"
+    # tch_cmt="/home/jack/data/大智小超/文档表格/每周课程反馈/学员课堂学习情况反馈表.xlsx"
+    # res=comments_after_class('L055螺旋桨飞机',weekday=2,crs_list=crs_list,crs_student=std_list,tch_cmt=tch_cmt)
+    # print(res['crs_info'])
 
     # multi_std_infos()
