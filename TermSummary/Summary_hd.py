@@ -14,14 +14,14 @@ from PIL import Image,ImageDraw,ImageFont,ImageEnhance
 
 class data_summary:
     def __init__(self):
-        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.mi'))
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.dazhi'))
         self.std_dir=config['学生信息文件夹']
         self.design_dir=config['图纸文件夹']
         self.feedback_dir=config['学生课程反馈表文件夹']
         self.public_dir=config['公共素材文件夹']
         self.term_pic_dir='I:\\乐高\\学员上课总结\\学员阶段总结'
 
-        font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','mi_fonts.config'))
+        font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
         self.font=composing.fonts
         
@@ -303,7 +303,7 @@ class data_summary:
                     # std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了{2} 节课的学习，请假{3} 节。'.format(std_name,total_crs_num,std_crs_num,total_crs_num-std_crs_num)
         
             # comments_for_std=std_crs_num_txt+'\n'+comments_for_std
-            font_size_cmt=int(60*k)
+            font_size_cmt=int(50*k)
             prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
             #评语标题高度
             ht_cmt_title=int(60*k)
@@ -331,21 +331,24 @@ class data_summary:
             # y_crs_title=
 
             #课程格最左上角坐标        
-            y_left_up=940
+            y_left_up=900
 
             #评语绿底右下坐标
             y_cmt_bg=y_left_up+ht_crs+gap_0+ht_cmt_title+ht_prgh+30
             # draw.rectangle([(int(36*k),y_left_up+gap_0+ht_cmt_title+10),(int(684*k),y_cmt_bg)],fill='#F3F3E4')
 
             def draw_bg():
-                bg=Image.new('RGBA',(2481,3508),'#8ecbde')
+                bg=Image.new('RGBA',(2481,3508),'#7197b4')
                 draw=ImageDraw.Draw(bg)
                 #白底
                 draw.rectangle([(50,54),(2431,3454)],fill='#FFFFFF')
                 #评论大框
-                draw.rectangle([(166,1916),(2315,3182)],fill='#FFFFFF',outline='#8ecbde',width=2)
+                draw.rectangle([(166,1916),(2315,3182)],fill='#FFFFFF',outline='#7197b4',width=2)
                 #玫瑰图底色
                 draw.rectangle([(1595,1936),(2295,3155)],fill='#f0f8fb')
+                draw.rectangle([(1635,2695),(2255,2855)],fill='#ffffff')
+                draw.rectangle([(1635,2975),(2255,3125)],fill='#ffffff')
+
                 return bg   
 
 
@@ -358,7 +361,7 @@ class data_summary:
                 sub_set=sub_set.append(std_crs)
                 sub_set.drop_duplicates(subset=['课程名称'],keep=False,inplace=True)
 
-                crs_bg=Image.new('RGB',(wid_crs,ht_crs),'#8ecbde')
+                crs_bg=Image.new('RGB',(wid_crs,ht_crs),'#7197b4')
                 crs_name=total_crs.iloc[odr,:]['课程名称']
                 crs_date=total_crs.iloc[odr,:]['上课日期']
                 crs_pic=Image.open(os.path.join(self.design_dir,crs_name,crs_name[4:]+'.jpg'))
@@ -419,47 +422,86 @@ class data_summary:
 
                 #二维码，logo
                 _pic_logo=Image.open(os.path.join(self.public_dir,'图片类','大智小超新logo.png')).convert('RGBA')
-                pic_logo=_pic_logo.resize((int(210*k),int(210*k/2.76)))
+                pic_logo=_pic_logo.resize((int(330*k),int(330*k/2.76)))
                 r,g,b,a=pic_logo.split()
 
-                y_logo=int((ht_total_bg-140))
+                y_logo=int((ht_total_bg-240))
 
                 _pic_qrcode=Image.open(os.path.join(self.public_dir,'图片类','大智小超视频号二维码2.png'))
-                pic_qrcode=_pic_qrcode.resize((int(100*k),int(100*k)))
+                pic_qrcode=_pic_qrcode.resize((int(210*k),int(210*k)))
 
-                bg.paste(pic_logo,(int(40*k),int(y_logo+10)),mask=a)
-                bg.paste(pic_qrcode,(int(580*k),int(y_logo-10)))
+                bg.paste(pic_logo,(int(130*k),int(y_logo+10)),mask=a)
+                bg.paste(pic_qrcode,(int(2190*k),int(y_logo-40)))
 
                 #玫瑰图
-                rose_mat=self.rose(std_name=std_name,xls=xls)
+                rose=self.rose(std_name=std_name,xls=xls)
+                rose_mat=rose['chart']
                 rose_pic=pic_transfer.mat_to_pil_img(rose_mat)
                 rose_pic=rose_pic.resize((640,640*rose_pic.size[1]//rose_pic.size[0]))
                 rose_pic=rose_pic.crop((0,0,620,640))
                 bg.paste(rose_pic,(1635,1966))
 
+                rose_data=rose['data']
+                
+                #最高和高低的两个能力名称
+                abl_btm=[rose_data[0][0],rose_data[1][0]]
+                abl_top=[rose_data[6][0],rose_data[7][0]]
+
                 #文字部分
                 #标题
-                draw.text((int(840*k),int(101*k)),'科学机器人课',fill='#8ecbde',font=self.font('汉仪超级战甲',int(78*k))) 
+                draw.text((int(1020*k),int(101*k)),'科学机器人课',fill='#7197b4',font=self.font('方正韵动粗黑简',int(78*k))) 
+                draw.text((int(890*k),int(220*k)),'课程学习报告',fill='#7197b4',font=self.font('方正韵动粗黑简',int(120*k))) 
                 #姓名班级
-                draw.text((int(1012*k),int(531*k)),std_name,fill='#3e3a39',font=self.font('汉仪字酷堂义山楷w',int(60*k))) 
+                ftsz_name=120
+                x_name=(2481-ftsz_name*len(std_name))//2
+                draw.text((int(x_name),int(481*k)),std_name,fill='#3e3a39',font=self.font('汉仪字酷堂义山楷w',int(ftsz_name*k))) 
                 # draw.text((int(400*k*0.9),int(182*k*0.9)),std_school+' '+std_class,fill='#6C8466',font=self.font('汉仪字酷堂义山楷w',int(30*k))) 
+
+                #课程信息
+
+                # print(total_crs)
+                prd=total_crs['上课日期'].apply(lambda x:x.strftime('%Y-%m-%d')).tolist()
+                mth_start=prd[0].split('-')[0]+'年'+prd[0].split('-')[1]+'月'
+                mth_end=prd[-1].split('-')[0]+'年'+prd[-1].split('-')[1]+'月'
+                prd_txt='{}-{}'.format(mth_start,mth_end)
                 std_crs_finish_number=len(std_crs) if len(std_crs)<=16 else 16
-                draw.text((213,785),'你已完成大智小超科学实验室的{}节科学机器人课程。'.format(std_crs_finish_number),fill='#3e3a39',font=self.font('鸿蒙印品',int(35*k))) 
-                draw.text((1030,1754),'阶段评语',fill='#8ecbde',font=self.font('鸿蒙印品',int(35*k))) 
+ 
+                draw.text((930,680),prd_txt,fill='#7197b4',font=self.font('方正韵动粗黑简',int(50*k))) 
+                # draw.text((820,730),'在大智小超科学实验室学习',fill='#7197b4',font=self.font('方正韵动粗黑简',int(50*k))) 
+                draw.text((700,770),'完成了{}节科学机器人课程的学习'.format(std_crs_finish_number),fill='#7197b4',font=self.font('方正韵动粗黑简',int(72*k))) 
+                draw.text((980,1774),'学习情况总结',fill='#7197b4',font=self.font('优设标题',int(90*k))) 
+                #能力描述
+                # format(abl_top[0],abl_top[1],abl_btm[0],abl_btm[1])
+                draw.text((1790,2625),'你现在最棒的能力',fill='#9f9c9c',font=self.font('优设标题',int(50*k))) 
+                draw.text((1750,2905),'还可以再提升的能力',fill='#9f9c9c',font=self.font('优设标题',int(50*k))) 
+                draw.text((1750,2715),'• '+abl_top[1],fill=rose_data[-1][2],font=self.font('微软雅黑',int(70*k))) 
+                draw.text((1750,2995),'• '+abl_btm[0],fill=rose_data[0][2],font=self.font('微软雅黑',int(70*k)))                
+
+                # composing.put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
+                #                     xy=[1750,2705],dis_line=int(23*k),fill='#7197b4', \
+                #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
+                # composing.put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
+                #                     xy=[1750,2995],dis_line=int(23*k),fill='#7197b4', \
+                #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
 
                 #评语
                 composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(1343*k*0.95), \
-                                    xy=[218,1955],dis_line=int(33*k),fill='#3e3a39', \
+                                    xy=[218,1955],dis_line=int(23*k),fill='#3e3a39', \
                                     font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
 
-                # draw.text((int(520*k),int((y_cmt_bg-46))),tch_name,fill='#595757',font=self.font('丁永康硬笔楷f书',35)) 
+                #签名
+                draw.text((1200,3025),tch_name,fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(70*k))) 
+                draw.text((1250,3120),cmt_date[0:4]+'.'+cmt_date[4:6]+'.'+cmt_date[6:],fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(50*k))) 
+
+                #slogan
+                draw.text((600,3300),'让孩子从小玩科学，爱科学，学科学。',fill='#c23030',font=self.font('楷体',int(82*k))) 
 
                 # draw.text((int(380*k),int((y_logo+10))), '长按二维码 → \n关注视频号 →', fill = '#8E9184',font=self.font('微软雅黑',25))
 
                 
                 bg=bg.convert('RGB')
-                # savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'阶段小结.jpg')
-                savename=os.path.join('d:/temp/',std_name+'.jpg')
+                savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'-课程学习报告.jpg')
+                # savename=os.path.join('e:/temp/',std_name+'.jpg')
                 # bg.save(savename,quality=90,subsampling=0)
                 bg.save(savename,quality=95,dpi=(300,300))
                 # bg.show()
@@ -520,18 +562,18 @@ class data_summary:
         title=std_name+'同学能力测评'
         # ax.set_title(title,fontdict={'fontsize':20,'color':'#3923a8'})
         #数据标签坐标附加系数
-        y_k=[0.5,0.4,0.3,0.5,1.2,2,3,1.5]
+        y_k=[0.5,0.4,0.3,0.6,1.2,2.4,3.0,1.5]
         angles=[x*np.pi/8 for x in range(1,2*len(dat),2)]
         angles[6],angles[7]=angles[6]-np.pi/16,angles[7]-np.pi/16
         for angle,scores,data,color,k in zip(angles,df['score'].values,df['dat'].values,df['colors'].values,y_k):
-            ax.text(angle,scores+k,data,color=color,fontsize=26) 
+            ax.text(angle,scores+k,data,color=color,fontsize=28) 
             # ax.text(angle+0.04,scores+0.6,str(scores))
 
         ax.axis('off')
         # plt.savefig('e:/temp/Nightingale_rose.jpg',pil_kwargs={'quality':90},dpi=300)
         # plt.show()
         # print(len(score))
-        return fig
+        return {'chart':fig,'data':df.values}
 
 
 
@@ -540,7 +582,7 @@ if __name__=='__main__':
     # res=my.get_std_term_crs(std_name='韦华晋',tb_list=[['2020秋','w6'],['2021春','w6']],start_date='20200901',end_date='20210521')
     # print(res['total_crs'],'\n',res['std_crs'])
     # my.rose(std_name='韦宇浠',weekday=2)
-    ns=['梁健华','黄建乐','韦华晋']
+    ns=['韦华晋','黄建乐']
     for n in ns:
         my.exp_a4_16(std_name=n,start_date='20200801',end_date='20210510', \
                     cmt_date='20210410',tb_list=[['2020秋','w6'],['2021春','w6']], \
