@@ -60,9 +60,11 @@ def stdpicWhiteMark(height=2250,weekday=[2]):
     for wd in weekday:
         pic.putCover(height=height,weekday=wd)
 
-def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no'):
     mypics=legoCrstoPPT.picToPPT(crsName)
     mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
+    if pos_pic=='yes':
+        mypics.inner_box_pos(save='yes')
 
 def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020):
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
@@ -75,7 +77,9 @@ def picsDistribute(crsDate,place,crsName,term):
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate=20200929,crsName='L033双翼飞机',TeacherSig='阿晓老师'):
+def pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',TeacherSig='阿晓老师'):
+    crsDate=crsDate_name.split('-')[0]
+    crsName=crsDate_name.split('-')[1]
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
     crsName_distibute=str(crsDate)+crsName[4:]
     picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term)
@@ -113,16 +117,16 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 #
 #将步骤图导出PPT
-# makePpt('L020可以伸缩的夹子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+# makePpt('L074小青蛙',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
 
 #16节课/或阶段课程学习报告
-stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_date='20210510', cmt_date='20210410', \
-            tb_list=[['2020秋','w6'],['2021春','w6']], \
-            tch_name='阿晓老师', \
-            mode='only16', k=1)
+# stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_date='20210510', cmt_date='20210410', \
+#             tb_list=[['2020秋','w6'],['2021春','w6']], \
+#             tch_name='阿晓老师', \
+#             mode='only16', k=1)
 
 #学员成长手册
 # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
@@ -131,7 +135,7 @@ stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_dat
 # std_ability_rose(std_name='韦宇浠',weekday='2')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate=20210412,crsName='L020可以伸缩的夹子',TeacherSig='阿晓老师')
+pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate_name='20210422-L074小青蛙',TeacherSig='阿晓老师')
 
 # 课前生成海报
 # before_class_poster(date_crs_input='20210410',time_crs_input='1100-1230',crs_name_input='L072摇头风扇')

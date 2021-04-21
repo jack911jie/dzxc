@@ -3,6 +3,7 @@ import sys
 # sys.path.append('i:/py/dzxc/module')
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 from readConfig import readConfig
+from PIL import Image,ImageDraw,ImageFont
 import platform
 import numpy as np
 import re
@@ -31,7 +32,9 @@ class picToPPT:
             self.wtmark=config['PPT水印']
             self.legoCodeList=config['wedo零件编号']
             self.crs_info=config['课程信息表']
+            self.box_pos_pic=os.path.join(config['盒子位置图文件夹'],'盒子位置编号图.jpg')
         self.picSrc=os.path.join(self.picDir,crsName)
+        # self.block_names=self.blockNames()
 
     def makeDirs(self,dirName):
         if not os.path.exists(dirName):
@@ -53,12 +56,14 @@ class picToPPT:
         xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm')
         if not os.path.exists(xlsName):
             blNames=self.blockNames()
+            # blNames=self.block_names
             copyfile(os.path.join(self.picDir,'ppt_step_Template.xlsm'),xlsName)
             wb=load_workbook(xlsName,keep_vba=True)
             tb=wb.active
             tb['A1']='序号'
             tb['B1']='零件名称'
             tb['D1']='零件名称（识别）'
+            tb['E1']='零件位置'
             row=2
             for file in os.listdir(self.picSrc):
                 ptn='\d{3}_\dx.png'                
@@ -67,8 +72,9 @@ class picToPPT:
                     row+=1
             
             for k,blk in enumerate(blNames):
-                tb['D'+str(k+2)]=blk
-
+                tb['D'+str(k+2)]=blk[0]
+                tb['E'+str(k+2)]=blk[1]
+                
             wb.save(xlsName)
             print('新建了步骤文件，请在文件中先输入零件名称。')
             sys.exit(0)
@@ -143,10 +149,61 @@ class picToPPT:
                 pass
             try:
                 blkName=bl[bl['lxfml编号']==aa]['lxfml显示名称'].values.tolist()[0]
-                out.append(blkName)
+                blk_pos=bl[bl['lxfml编号']==aa]['位置'].values.tolist()[0]
+                out.append([blkName,blk_pos])
             except:
-                out.append(aa)
+                if aa!=19079:
+                    out.append([aa,'-'])
+
+        # print('out',out)
+        # self.block_names=out
         return out
+
+    def inner_box_pos(self,save='yes'):
+        block_names_file=self.blockNames()
+        box_pic_jpg=self.box_pos_pic
+        df=pd.DataFrame(block_names_file)
+        df.columns=['零件名称','位置']
+        gp=df.groupby(['位置']).count()
+        pos=list(gp.index)
+        values=[]
+        for v in gp.values:
+            values.append(v[0])
+        df_pos=pd.DataFrame({'位置':pos,'数量':values})
+        font_size_pos_1=200
+        font_size_pos_2=150
+        pos_data={
+            '0-0':[2086,2432,font_size_pos_1],
+            '1-1':[3032,1737,font_size_pos_1],
+            '1-2':[3032,1023,font_size_pos_1],
+            '1-3':[3032,276,font_size_pos_1],
+            '2-1':[2432,1494,font_size_pos_2],
+            '2-2':[2432,615,font_size_pos_2],
+            '2-3':[2432,186,font_size_pos_2],
+            '3-1':[2048,1494,font_size_pos_2],
+            '3-2':[2048,615,font_size_pos_2],
+            '3-3':[2048,186,font_size_pos_2],
+            '4-1':[1340,1446,font_size_pos_1],
+            '4-2':[1340,372,font_size_pos_1],
+            '5-1':[434,1683,font_size_pos_1],
+            '5-2':[434,486,font_size_pos_1]  
+        }
+
+        bg=Image.open(box_pic_jpg)
+        draw=ImageDraw.Draw(bg)
+        for pos_num in df_pos['位置'].tolist():
+            # if pos_num!='0-0':
+                # print(df_pos[df_pos['位置']==pos_num]['数量'].values)
+            draw.text((pos_data[pos_num][0],pos_data[pos_num][1]),str(df_pos[df_pos['位置']==pos_num]['数量'].values[0]),fill='red',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',pos_data[pos_num][2]))
+            draw.text((100,2462),'总数：'+str(df.shape[0]),fill='#6074b7',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',110))
+
+        if save=='yes':
+            savename=os.path.join(self.picSrc,self.crsName+'_零件位置图.jpg')
+            bg.save(savename)
+            print('零件位置图已经保存至 {}'.format(savename))
+        else:
+            print('仅显示，未保存。')
+            bg.show()
 
     def ExpPPT(self,copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
         print('\n正在处理：')   
@@ -238,7 +295,7 @@ class picToPPT:
                 if i>=picList[1]: #跳过零件总图的数量
                 #                     print(i,i-picList[1])
                     try:                        
-                        txt=step_blkList[i-picList[1]] #根据文件内容决定广西框的位置下移程度，以免遮挡零件图片
+                        txt=step_blkList[i-picList[1]] #根据文件内容决定文本框的位置下移程度，以免遮挡零件图片
                         if txt in lowerPosList_1:
                             y_textbox=Cm(6)
                         elif txt in lowerPosList_2:
@@ -280,9 +337,11 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L068厉害的投掷器')
+    mypics=picToPPT('L073觅食的小猪')
+    mypics.inner_box_pos()
     # print(mypics.blockNames())
-#     mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    # k=mypics.blockNames()   
+    # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
+    # mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()
     # mypics.copytoCrsDir()

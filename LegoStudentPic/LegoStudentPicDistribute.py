@@ -101,9 +101,9 @@ class LegoPics:
                             if _tag not in self.other_tags:
                                 lack_stdName.append(_tag)
 
-
+        # print(lack_stdName)
         if lack_stdName:
-            except_list=['积分记录','老师指导']
+            except_list=['积分记录','老师指导','阅读']
             for lack_n in lack_stdName:            
                 if lack_n not in except_list:
                     print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
