@@ -619,19 +619,19 @@ class poster:
 
             #评语&积分
             script=expScript(stdName)
+            std_scores=get_std_scores(date_input=dateInput,crs_name=crs_nameInput,std_name=stdName,df_this_crs_score=df_std_scores)
+            std_this_score=std_scores['std_this_score']
+            crs_total_sc=std_scores['std_all_scores']['crs_sc']
+            remain_sc=std_scores['std_all_scores']['remain_sc']
+            vrfy_sc=std_scores['std_all_scores']['vrfy_sc']
+            script=script.replace('*',str(std_this_score))
+
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
             draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
             draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30)) 
             draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=self.fonts('汉仪糯米团',45))  #我的课堂情况
             draw.text((60,self.y_score+5), '我的积分', fill = color['t_scores_title'],font=self.fonts('汉仪糯米团',45))  #我的积分
             draw.text((120,self.y_score+120), '本节课积分', fill = color['t_scores_left'],font=self.fonts('汉仪糯米团',45))  #本节课积分
-                
-            std_scores=get_std_scores(date_input=dateInput,crs_name=crs_nameInput,std_name=stdName,df_this_crs_score=df_std_scores)
-            std_this_score=std_scores['std_this_score']
-            crs_total_sc=std_scores['std_all_scores']['crs_sc']
-            remain_sc=std_scores['std_all_scores']['remain_sc']
-            vrfy_sc=std_scores['std_all_scores']['vrfy_sc']
-
 
             draw.text((210,self.y_score+200), str(std_this_score)+'分', fill = color['t_scores_left'],font=self.fonts('汉仪糯米团',75))  #本节课积分
             draw.text((490,self.y_score+160),'可兑换积分：'+str(int(remain_sc))+' 分', fill = color['t_scores_right'],font=self.fonts('优设标题',35))  #可兑换积分
@@ -681,6 +681,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=1,term='2021春')
+    my=poster(weekday=4,term='2021春')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L040认识零件（二）',20210329,TeacherSig='阿晓老师')
+    my.PosterDraw('L074小青蛙',20210422,TeacherSig='阿晓老师')
