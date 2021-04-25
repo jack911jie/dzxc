@@ -254,7 +254,7 @@ class picToPPT:
             #用空格替换原来的1. 2. 3. 格式
             ptn=r"\d."
             txt_knlg=re.sub(ptn,'',t1)
-            txt_quesion=re.sub(ptn,'',t2)
+            txt_question=re.sub(ptn,'',t2)
 
             step_blkList=pd.read_excel(os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm'),usecols=[0,1]).replace(np.nan,'')['零件名称'].tolist()
             #             print(step_blkList)
@@ -287,11 +287,24 @@ class picToPPT:
 
             para.text = title_pinyin  # 向段落写入文字
 
+            #写入零件数及步数
+            slide=prs.slides.add_slide(blank_slide_layout)
+            t_blk_num=df[df['课程编号']==self.crsName[0:4]]['零件数'].values.tolist()[0]
+            t_step_num=df[df['课程编号']==self.crsName[0:4]]['步数'].values.tolist()[0]
+            t_blk_step='完成搭建需要{}步\n一共需要{}个零件'.format(int(t_step_num),int(t_blk_num))
+            slide.shapes.placeholders[0].text='步数和零件数'
+            slide.shapes.placeholders[1].text_frame.text=t_blk_step 
+
+            for pgh in slide.shapes.placeholders[1].text_frame.paragraphs:
+                for run in pgh.runs:
+                    run.font.size=Pt(40)
+
+
             for i,img in enumerate(picList[0]):                
                 slide=prs.slides.add_slide(blank_slide_layout)
                 pic=slide.shapes.add_picture(img,left,top,height=height)
                 
-                
+               
                 if i>=picList[1]: #跳过零件总图的数量
                 #                     print(i,i-picList[1])
                     try:                        
@@ -320,7 +333,10 @@ class picToPPT:
             slide=prs.slides.add_slide(blank_slide_layout)
 
             prs.slides[len(prs.slides)-1].placeholders[0].text='课堂分享'  #加入课堂分享
-            prs.slides[len(prs.slides)-1].placeholders[1].text=txt_quesion
+            prs.slides[len(prs.slides)-1].placeholders[1].text=txt_question
+            for pgh in prs.slides[len(prs.slides)-1].placeholders[1].text_frame.paragraphs:
+                for run in pgh.runs:    
+                    run.font.size=Pt(32)
 
             slide=prs.slides.add_slide(blank_slide_layout)
             picTitle=slide.shapes.add_picture(os.path.join(self.picDir,'end_ppt_pic.png'),Cm(0),Cm(1.4),height=Cm(17.69)) #加入收拾零件的图片
@@ -337,11 +353,11 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L073觅食的小猪')
-    mypics.inner_box_pos()
+    mypics=picToPPT('L026跷跷板')
+    # mypics.inner_box_pos()
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    # mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
