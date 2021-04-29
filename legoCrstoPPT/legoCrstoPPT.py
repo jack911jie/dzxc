@@ -191,7 +191,9 @@ class picToPPT:
 
         bg=Image.open(box_pic_jpg)
         draw=ImageDraw.Draw(bg)
-        for pos_num in df_pos['位置'].tolist():
+        pos_dat=df_pos.loc[df_pos['位置']!='-']
+
+        for pos_num in pos_dat['位置'].tolist():
             # if pos_num!='0-0':
                 # print(df_pos[df_pos['位置']==pos_num]['数量'].values)
             draw.text((pos_data[pos_num][0],pos_data[pos_num][1]),str(df_pos[df_pos['位置']==pos_num]['数量'].values[0]),fill='red',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',pos_data[pos_num][2]))
@@ -278,7 +280,7 @@ class picToPPT:
             slide=prs.slides.add_slide(blank_slide_layout)
             picTitle=slide.shapes.add_picture(os.path.join(self.picSrc,self.crsName[4:]+'.jpg'),left,top,height=height) #加入封面图
             slide.shapes._spTree.insert(2, picTitle._element)#将图片放在底层
-            slide.shapes.title.text=self.crsName[4:] #课程名称
+            slide.shapes.title.text=self.crsName[4:] #课程名称 
             textbox = slide.shapes.add_textbox(Cm(3),Cm(6),Cm(5),Cm(3))
             tf = textbox.text_frame
             para = tf.add_paragraph()    # 新增段落
@@ -353,11 +355,11 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L026跷跷板')
-    # mypics.inner_box_pos()
+    mypics=picToPPT('L079扫地车')
+    mypics.inner_box_pos()
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    # mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
