@@ -3,6 +3,8 @@ import sys
 sys.path.append('i:/py/dzxc/module')
 import days_calculate
 import pandas as pd 
+pd.set_option('display.unicode.ambiguous_as_wide', True)
+pd.set_option('display.unicode.east_asian_width', True)
 import numpy as np
 from datetime import datetime 
 import copy

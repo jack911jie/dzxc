@@ -6,6 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoPo
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'picToMp4'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'poster'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'TermSummary'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'module'))
 import Summary_hd
 import BeforeClass
 import picToMp4
@@ -13,8 +14,19 @@ import LegoStudentPicDistribute
 from legoPoster import poster as posterAfterClass
 import LegoStdPicMark
 import legoCrstoPPT
+import WashData
 import iptcinfo3
 from datetime import datetime
+
+def view_score(std_name):
+
+    if std_name:
+        df_score=WashData.std_all_scores()
+        std_score=df_score[df_score['学生姓名']==std_name]
+        print(std_score)
+    else:
+        df_score=WashData.std_all_scores()
+        print(df_score)
 
 def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeList',src='ldcad'):
     consName=crsName
@@ -95,9 +107,9 @@ def std_grow_book(std_name='韦宇浠',start_date='20200922',end_date='20210309'
     # my.rose(std_name=std_name,weekday=weekday)
     my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
 
-def std_ability_rose(std_name='韦宇浠',weekday='2'):
+def std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6'):
     my=Summary_hd.data_summary()
-    my.rose(std_name=std_name,weekday=weekday)
+    pic=my.rose(std_name=std_name,xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周六）.xlsx')
     # my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
 
 def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_date='20210510', \
@@ -109,22 +121,25 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
                     cmt_date=cmt_date,tb_list=tb_list, \
                     tch_name=tch_name,mode=mode,k=k)
 
+#查看积分
+view_score(std_name='')
+
 #将步骤图生成1分钟视频放上视频号
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
 #将步骤图生成搭建视频，与原拍摄视频合并  拍摄mp4建议29-44秒
 #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
-#
+
 #将步骤图导出PPT
-# makePpt('L074小青蛙',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes')
+# makePpt('L084蒸汽火车',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
 
 #16节课/或阶段课程学习报告
 # stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_date='20210510', cmt_date='20210410', \
-#             tb_list=[['2020秋','w6'],['2021春','w6']], \
+#             tb_list=[['2020秋','w6'],['2021春','w6']], \ 
 #             tch_name='阿晓老师', \
 #             mode='only16', k=1)
 
@@ -132,10 +147,12 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
 
 #学员能力玫瑰图
-# std_ability_rose(std_name='韦宇浠',weekday='2')
+# std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate_name='20210422-L074小青蛙',TeacherSig='阿晓老师')
+# pics_distribute_and_make_poster(place='5-超智幼儿园', term='2021春',crsDate_name='20210522-L084蒸汽火车',TeacherSig='阿晓老师')  
 
 # 课前生成海报
-# before_class_poster(date_crs_input='20210410',time_crs_input='1100-1230',crs_name_input='L072摇头风扇')
+# before_class_poster(date_crs_input='20210522',time_crs_input='1100-1230',crs_name_input='L084蒸汽火车')
+
+ 
