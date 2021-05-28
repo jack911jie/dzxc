@@ -205,7 +205,7 @@ def comments_after_class(cmt_date,crs_name_input,weekday,crs_list,std_info,tch_c
                                         'Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时','Unnamed: 10':'上课数量统计汇总'},inplace=True)
     # print(df_stdSig.columns)
     # print(df_stdSig.columns)
-    Students_sig=df_stdSig.loc[df_stdSig[cmt_date+'-'+crs_code+crs_name]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
+    Students_sig=df_stdSig.loc[df_stdSig[cmt_date+'-'+crs_code+crs_name].isin(['√','*'])][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单
     # Students_sig=df_stdSig.loc[df_stdSig.iloc[:,11:]=='√'][['机构','班级','姓名首拼','学生姓名']] #上课的学生名单   
     # print(Students_sig)
     # print(Students_sig,df_stdInfo)         
