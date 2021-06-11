@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.ERROR, format='%(levelname)s | %(funcName)s - 
 logger = logging.getLogger(__name__)
 
 class LegoPics:
-    def __init__(self,crsDate,crsName,place_input='5-超智幼儿园',weekday=2,term='2020秋'):
+    def __init__(self,crsDate,crsName,place_input='001-超智幼儿园',weekday=2,term='2020秋'):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''

@@ -570,7 +570,7 @@ class data_summary:
             # ax.text(angle+0.04,scores+0.6,str(scores))
 
         ax.axis('off')
-        # plt.savefig('e:/temp/Nightingale_rose.jpg',pil_kwargs={'quality':90},dpi=300)
+        # plt.savefig('e:/temp/Nightingale_rose_wcy.jpg',pil_kwargs={'quality':90},dpi=300)
         # plt.show()
         # print(len(score))
         return {'chart':fig,'data':df.values}

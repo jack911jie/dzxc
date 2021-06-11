@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(
 logger = logging.getLogger(__name__)
 
 class poster:
-    def __init__(self,weekday=2,term='2021春',place_input='5-超智幼儿园'):
+    def __init__(self,weekday=2,term='2021春',place_input='001-超智幼儿园'):
         
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPoster.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
@@ -37,7 +37,7 @@ class poster:
         self.crsList=config['课程信息表']
         self.weekday=weekday
         # self.eachStd=config['个别学员评语表']
-        # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
+        # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
         cmt_table_dir=config['老师评语表文件夹']
         self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学员课堂学习情况反馈表.xlsx')
         

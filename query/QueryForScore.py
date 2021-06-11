@@ -8,7 +8,7 @@ import WashData
 
 class query:
     def __init__(self):
-        self.std_in_class_list='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\学生分班表.xlsx'
+        self.std_in_class_list='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\学生分班表.xlsx'
 
     def query_for_scores(self,std_input=''):
         df_score=WashData.std_all_scores()

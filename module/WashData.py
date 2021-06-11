@@ -10,7 +10,7 @@ from datetime import datetime
 import copy
 import re
 
-# def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2020秋-学生信息表（周二）.xlsx'):
+# def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2020秋-学生信息表（周二）.xlsx'):
 def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx'):
     df=pd.read_excel(xls,sheet_name='学生上课签到表',skiprows=1,header=None)
     # df.iloc[0]=df.iloc[0].map(lambda x:str(x)[0:10])#将原有的时间格式变为字符串格式2
@@ -46,7 +46,7 @@ def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx')
     
     return {'total_crs':df_crs,'std_crs':df_std_new}
 
-def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',xls='D:\\Documents\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周六）.xlsx'):
+def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',xls='D:\\Documents\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周六）.xlsx'):
     df=crs_sig_table(xls=xls)   
     std_df=df['std_crs']
     std_name=std_name.strip()
@@ -81,7 +81,7 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
 
     return {'std_crs':std_crs,'total_crs':total_crs,'std_info':info_basic}
 
-def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\2020秋-学生课堂学习情况反馈表（周二）.xlsx'):
+def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\2020秋-学生课堂学习情况反馈表（周二）.xlsx'):
     # wd='周'+days_calculate.num_to_ch(str(weekday))
     df_cmt=pd.read_excel(xls,sheet_name='课堂情况反馈表',skiprows=1)
     df_cmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
@@ -96,7 +96,7 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
     return {'df_ability':df_ability,'df_term_comment':df_term_comment}
 
-def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园'):
+def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园'):
     xlsxs=[]
     for fn in os.listdir(os.path.join(xls_dir,'学生信息表')):
         if re.match(r'^\d.*-.*）.xlsx',fn):
@@ -161,7 +161,7 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     # print(df_scores)
     return df_scores
 
-def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx'):
+def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx'):
     df=pd.read_excel(xls,sheet_name='课堂积分',header=None)
     date_crs=df.iloc[0,8:]   
     #将数字改为nan后去掉nan，只保留有课程名称的记录     
@@ -224,11 +224,11 @@ def comments_after_class(cmt_date,crs_name_input,weekday,crs_list,std_info,tch_c
     # print(Students_List)
     return {'std_list':Students_List,'crs_info':crs_info,'tch_cmt':TeacherCmt}    
 
-# def term_summary_txt(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx',weekday=2):
+# def term_summary_txt(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx',weekday=2):
 #     wd='周'+days_calculate.num_to_ch(str(weekday))
 #     df=pd.read_excel(xls,sheet_name=wd,skiprows=1)
 
-def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\学生信息表'):
+def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\学生信息表'):
     fns=os.listdir(tb_dir)
     xlsxs=[]
     for fn in fns:
@@ -275,8 +275,8 @@ if __name__=='__main__':
     # print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
-    # std_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx"
-    # tch_cmt="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周一）.xlsx"
+    # std_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx"
+    # tch_cmt="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周一）.xlsx"
     # res=comments_after_class(cmt_date='20210329',crs_name_input='L040认识零件（二）',weekday=1,crs_list=crs_list,std_info=std_list,tch_cmt=tch_cmt)
     # print(res['tch_cmt'])
 

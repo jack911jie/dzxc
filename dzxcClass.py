@@ -24,6 +24,7 @@ def view_score(std_name='w401',sort_by='剩余积分'):
     res=myQuery.query_for_scores(std_name)
     res.sort_values(by=sort_by,inplace=True)
     print(res)
+    # print(datetime.now().strftime('%Y-%m-%d'))
 
 def makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L017毛毛虫',crs_list='课程信息表.xlsx',dealtype='makeList',src='ldcad'):
     consName=crsName
@@ -92,7 +93,7 @@ def picsDistribute(crsDate,place,crsName,term):
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='5-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',TeacherSig='阿晓老师'):
+def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',TeacherSig='阿晓老师'):
     crsDate=crsDate_name.split('-')[0]
     crsName=crsDate_name.split('-')[1]
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
@@ -112,7 +113,7 @@ def std_grow_book(std_name='韦宇浠',start_date='20200922',end_date='20210309'
 
 def std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6'):
     my=Summary_hd.data_summary()
-    pic=my.rose(std_name=std_name,xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\5-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周六）.xlsx')
+    pic=my.rose(std_name=std_name,xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周六）.xlsx')
     # my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
 
 def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_date='20210510', \
@@ -125,7 +126,7 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
                     tch_name=tch_name,mode=mode,k=k)
 
 # #查看积分
-view_score(std_name='w401',sort_by='剩余积分')
+# view_score(std_name='w401',sort_by='剩余积分')
 
 #将步骤图生成1分钟视频放上视频号
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
@@ -135,7 +136,7 @@ view_score(std_name='w401',sort_by='剩余积分')
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 
 #将步骤图导出PPT
-# makePpt('L085手动小叉车',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes')
+# makePpt('L091端午划龙舟',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
@@ -153,9 +154,9 @@ view_score(std_name='w401',sort_by='剩余积分')
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='5-超智幼儿园', term='2021春',crsDate_name='20210524-L062翻筋斗小人',TeacherSig='阿晓老师')  
+pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210610-L089慢悠悠的海龟',TeacherSig='阿晓老师')  
 
 # 课前生成海报
-# before_class_poster(date_crs_input='20210522',time_crs_input='1100-1230',crs_name_input='L084蒸汽火车')
+# before_class_poster(date_crs_input='20210612',time_crs_input='1100-1230',crs_name_input='L091端午划龙舟')
 
  

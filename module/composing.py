@@ -27,8 +27,8 @@ def fonts(font_name,font_size):
         '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
         '楷体':'C:\\Windows\\Fonts\\simkai.ttf',
         '汉仪字酷堂义山楷w':'j:\\fonts\\HYZiKuTangYiShanKaiW-2.ttf',
-        "上首金牛体":"C:\\Users\\jack9\\AppData\\Local\\Microsoft\\Windows\\Fonts\\ShangShouJinNiuTi-2.ttf",
-        "方正韵动粗黑简":"C:\\Users\\jack9\\AppData\\Local\\Microsoft\\Windows\\Fonts\\FZYunDongCuHei.ttf" 
+        "上首金牛体":"J:\\fonts\\ShangShouJinNiuTi-2.ttf",
+        "方正韵动粗黑简":"J:\\fonts\\FZYunDongCuHei.ttf" 
     }
 
     # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)

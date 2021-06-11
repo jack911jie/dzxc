@@ -355,7 +355,7 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L079扫地车')
+    mypics=picToPPT('L023不倒翁')
     mypics.inner_box_pos()
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
