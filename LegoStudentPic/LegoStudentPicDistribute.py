@@ -27,7 +27,9 @@ class LegoPics:
         self.crsDate=str(crsDate)    
         self.crsName=crsName
         self.dir=config['乐高照片文件夹']
+        self.dir=self.dir.replace('$',place_input)
         self.stu_dir=config['乐高学员文件夹']
+        self.stu_dir=self.stu_dir.replace('$',place_input)
         self.stu_sigDir=config['2020乐高课程签到表文件夹']
         self.weekday=weekday
         self.other_tags=['每周课程4+','每周课程16']
@@ -57,7 +59,7 @@ class LegoPics:
         return [dictPY,stdName]
         
     def dispatch(self):
-        print('将打标签的照片分配到“I:\\每周乐高课_学员”中……')
+        print('将打标签的照片分配到“I:\\每周乐高课_学员\\{}”中……'.format(self.place))
         stdInfos=self.read_sig(weekday=self.weekday)
 
         dictPY=stdInfos[0]

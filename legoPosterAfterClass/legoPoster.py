@@ -32,6 +32,7 @@ class poster:
         config=json.loads(_line)
 
         self.bg=config['导出文件夹']
+        self.bg=self.bg.replace('$',place_input)
         self.font_dir=config['字体文件夹']
         self.default_font=config['默认字体']         
         self.crsList=config['课程信息表']
@@ -45,7 +46,9 @@ class poster:
         self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
         
         self.picTitleDir=config['课程标题照片文件夹']
+        self.picTitleDir=self.picTitleDir.replace('$',place_input)
         self.picStdDir=config['学生照片文件夹']
+        self.picStdDir=self.picStdDir.replace('$',place_input)
         self.ConsDir=config['乐高图纸文件夹']
         self.std_sig_dir=config['学生签到表文件夹']
 
