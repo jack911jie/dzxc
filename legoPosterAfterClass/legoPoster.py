@@ -1,10 +1,11 @@
+import os
 import sys
-sys.path.append('i:/py/dzxc/module')
+# print(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file))),'module'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 import days_calculate
 import WashData
 import composing
 import readConfig
-import os
 import numpy as np
 import json
 import time
@@ -51,6 +52,7 @@ class poster:
         self.picStdDir=self.picStdDir.replace('$',place_input)
         self.ConsDir=config['乐高图纸文件夹']
         self.std_sig_dir=config['学生签到表文件夹']
+        self.public_pic_dir=config['公共素材']
 
         # if weekday==2:
         #     self.crsStudent=config['学员签到表w2']
@@ -124,7 +126,7 @@ class poster:
 
     def put_txt_img(self,img,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
         
-        fontInput=self.fonts(font_name,font_size)            
+        fontInput=composing.fonts(font_name,font_size)            
         if addSPC=='add_2spaces': 
             ind='yes'
         else:
@@ -133,7 +135,7 @@ class poster:
         # txt=self.split_txt(total_dis,font_size,t,Indent='no')
         txt,p_num=composing.split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
 
-        # font_sig = self.fonts('丁永康硬笔楷书',40)
+        # font_sig = composing.fonts('丁永康硬笔楷书',40)
         draw=ImageDraw.Draw(img)   
         # logging.info(txt)
         n=0
@@ -504,14 +506,14 @@ class poster:
                 pic_02=self.pic_resize(Image.open(f_02),picWid)
                 pic_03=self.pic_resize(Image.open(f_03),picWid)
                 pic_04=self.pic_resize(Image.open(f_04),picWid)
-                _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超新logo.png').convert('RGBA')
+                _pic_logo=Image.open(os.path.join(self.public_pic_dir,'大智小超新logo.png')).convert('RGBA')
                 pic_logo=_pic_logo.resize((350,int(350/2.76)))
                 r,g,b,a=pic_logo.split()
 
-                _pic_qrcode=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超视频号二维码2.png')
+                _pic_qrcode=Image.open(os.path.join(self.public_pic_dir,'大智小超视频号二维码2.png'))
                 pic_qrcode=_pic_qrcode.resize((130,130))
 
-                _pic_award=Image.open('I:\\大智小超\\公共素材\\图片类\\奖状.png')
+                _pic_award=Image.open(os.path.join(self.public_pic_dir,'奖状.png'))
                 pic_award=_pic_award.resize((420,420*261//419))
                 r_ad,g_ad,b_ad,a_ad=pic_award.split()
                 
@@ -531,14 +533,14 @@ class poster:
                 pic_01=self.pic_resize(Image.open(f_01),picWid)
                 pic_02=self.pic_resize(Image.open(f_02),picWid)
 
-                _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超新logo.png').convert('RGBA')
+                _pic_logo=Image.open(os.path.join(self.public_pic_dir,'大智小超新logo.png')).convert('RGBA')
                 pic_logo=_pic_logo.resize((350,int(350/2.76)))
                 r,g,b,a=pic_logo.split()
 
-                _pic_qrcode=Image.open('I:\\大智小超\\公共素材\\图片类\\大智小超视频号二维码2.png')
+                _pic_qrcode=Image.open(os.path.join(self.public_pic_dir,'大智小超视频号二维码2.png'))
                 pic_qrcode=_pic_qrcode.resize((130,130))
 
-                _pic_award=Image.open('I:\\大智小超\\公共素材\\图片类\\奖状.png')
+                _pic_award=Image.open(os.path.join(self.public_pic_dir,'奖状.png'))
                 pic_award=_pic_award.resize((420,420*261//419))
                 r_ad,g_ad,b_ad,a_ad=pic_award.split()
                 
@@ -600,25 +602,25 @@ class poster:
             color=color_list('202101')
             draw=ImageDraw.Draw(img)        
             
-            draw.text((170,5), '科', fill = color['t_title_ke1'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((270,5), '学', fill = color['t_title_xue'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((370,5), '机', fill = color['t_title_ji'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((470,5), '器', fill = color['t_title_qi'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((570,5), '人', fill = color['t_title_ren'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((670,5), '课', fill = color['t_title_ke4'],font=self.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((350,120), stdName, fill =color['t_name'] ,font=self.fonts('汉仪心海行楷w',60))  #姓名
-            # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=self.fonts('微软雅黑',60))  #年龄    
-            draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=self.fonts('杨任东竹石体',33))  #幼儿园
-            draw.text((460,200), ClassName, fill = color['t_class'],font=self.fonts('杨任东竹石体',33))  #班级
+            draw.text((170,5), '科', fill = color['t_title_ke1'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((270,5), '学', fill = color['t_title_xue'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((370,5), '机', fill = color['t_title_ji'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((470,5), '器', fill = color['t_title_qi'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((570,5), '人', fill = color['t_title_ren'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((670,5), '课', fill = color['t_title_ke4'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            draw.text((350,120), stdName, fill =color['t_name'] ,font=composing.fonts('汉仪心海行楷w',60))  #姓名
+            # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=composing.fonts('微软雅黑',60))  #年龄    
+            draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=composing.fonts('杨任东竹石体',33))  #幼儿园
+            draw.text((460,200), ClassName, fill = color['t_class'],font=composing.fonts('杨任东竹石体',33))  #班级
     
-            draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=self.fonts('华康海报体W12(p)',40))  #课程名称  
-            draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=self.fonts('汉仪锐智w',25))  #难度
-            draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=self.fonts('微软雅黑',22))  #教具
+            draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=composing.fonts('华康海报体W12(p)',40))  #课程名称  
+            draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=composing.fonts('汉仪锐智w',25))  #难度
+            draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=composing.fonts('微软雅黑',22))  #教具
             
             self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = color['t_knlg'],font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
-            draw.text((100,630), date_txt, fill = color['t_date'],font=self.fonts('汉仪心海行楷w',35))  #日期           
+            draw.text((100,630), date_txt, fill = color['t_date'],font=composing.fonts('汉仪心海行楷w',35))  #日期           
 
             #评语&积分
             script=expScript(stdName)
@@ -630,16 +632,16 @@ class poster:
             script=script.replace('*',str(std_this_score))
 
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
-            draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=self.fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
-            draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=self.fonts('微软雅黑',30)) 
-            draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=self.fonts('汉仪糯米团',45))  #我的课堂情况
-            draw.text((60,self.y_score+5), '我的积分', fill = color['t_scores_title'],font=self.fonts('汉仪糯米团',45))  #我的积分
-            draw.text((120,self.y_score+120), '本节课积分', fill = color['t_scores_left'],font=self.fonts('汉仪糯米团',45))  #本节课积分
+            draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=composing.fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
+            draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=composing.fonts('微软雅黑',30)) 
+            draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=composing.fonts('汉仪糯米团',45))  #我的课堂情况
+            draw.text((60,self.y_score+5), '我的积分', fill = color['t_scores_title'],font=composing.fonts('汉仪糯米团',45))  #我的积分
+            draw.text((120,self.y_score+120), '本节课积分', fill = color['t_scores_left'],font=composing.fonts('汉仪糯米团',45))  #本节课积分
 
-            draw.text((210,self.y_score+200), str(std_this_score)+'分', fill = color['t_scores_left'],font=self.fonts('汉仪糯米团',75))  #本节课积分
-            draw.text((490,self.y_score+160),'可兑换积分：'+str(int(remain_sc))+' 分', fill = color['t_scores_right'],font=self.fonts('优设标题',35))  #可兑换积分
-            draw.text((490,self.y_score+210), '累计积分：'+str(int(crs_total_sc))+' 分', fill = color['t_scores_right'],font=self.fonts('优设标题',35))  #累计总积分
-            draw.text((490,self.y_score+260), '已兑换积分：'+str(int(vrfy_sc))+' 分', fill = color['t_scores_right'],font=self.fonts('优设标题',35))  #消耗积分
+            draw.text((210,self.y_score+200), str(std_this_score)+'分', fill = color['t_scores_left'],font=composing.fonts('汉仪糯米团',75))  #本节课积分
+            draw.text((490,self.y_score+160),'可兑换积分：'+str(int(remain_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #可兑换积分
+            draw.text((490,self.y_score+210), '累计积分：'+str(int(crs_total_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #累计总积分
+            draw.text((490,self.y_score+260), '已兑换积分：'+str(int(vrfy_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #消耗积分
             
            
             print('完成')
@@ -673,7 +675,7 @@ class poster:
             
             print('正在保存 {} 的图片……'.format(std[3]),end='')
             if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):
-                os.mkdir(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
+                os.makedirs(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
             
             img.save(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')

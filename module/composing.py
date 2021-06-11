@@ -1,4 +1,6 @@
+import os
 import re
+import json
 from PIL import Image,ImageFont,ImageDraw
 import logging
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(lineno)d - %(message)s')
@@ -13,26 +15,14 @@ def char_len(txt):
     return total
 
 def fonts(font_name,font_size):
-    fontList={
-        '腾祥金砖黑简':'c:\\windows\\fonts\\腾祥金砖黑简.TTF',
-        '汉仪糯米团':'j:\\fonts\\HYNuoMiTuanW.ttf',
-        '丁永康硬笔楷书':'j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',
-        '微软雅黑':'i:\\py\\msyh.ttf',
-        '鸿蒙印品':'j:\\fonts\\hongMengHei.ttf',
-        '优设标题':'j:\\fonts\\yousheTitleHei.ttf',
-        '汉仪超级战甲':'j:\\fonts\\HYChaoJiZhanJiaW-2.ttf',
-        '汉仪心海行楷w':'j:\\fonts\\HYXinHaiXingKaiW.ttf',
-        '华康海报体W12(p)':'j:\\fonts\\HuaKangHaiBaoTiW12-P-1.ttf',
-        '汉仪锐智w':'j:\\fonts\\HYRuiZhiW.ttf',
-        '杨任东竹石体':'j:\\fonts\\yangrendongzhushi-Regular.ttf',
-        '楷体':'C:\\Windows\\Fonts\\simkai.ttf',
-        '汉仪字酷堂义山楷w':'j:\\fonts\\HYZiKuTangYiShanKaiW-2.ttf',
-        "上首金牛体":"J:\\fonts\\ShangShouJinNiuTi-2.ttf",
-        "方正韵动粗黑简":"J:\\fonts\\FZYunDongCuHei.ttf" 
-    }
-
-    # ImageFont.truetype('j:\\fonts\\2012DingYongKangYingBiKaiShuXinBan-2.ttf',font_size)
-
+    with open(os.path.join(os.path.dirname(__file__),'fonts_list.config'),'r',encoding='utf-8') as f:
+        lines=f.readlines()
+        _line=''
+        for line in lines:
+            newLine=line.strip('\n')
+            _line=_line+newLine
+        fontList=json.loads(_line)
+    
 
     return ImageFont.truetype(fontList[font_name],font_size)
 

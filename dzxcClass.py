@@ -154,7 +154,7 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210610-L089慢悠悠的海龟',TeacherSig='阿晓老师')  
+pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210607-L087旋转太阳花',TeacherSig='阿晓老师')  
 
 # 课前生成海报
 # before_class_poster(date_crs_input='20210612',time_crs_input='1100-1230',crs_name_input='L091端午划龙舟')
