@@ -14,7 +14,7 @@ from PIL import Image,ImageDraw,ImageFont,ImageEnhance
 
 class data_summary:
     def __init__(self):
-        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','term_summary_config.dazhi'))
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','TermSummary.config'))
         self.std_dir=config['学生信息文件夹']
         self.design_dir=config['图纸文件夹']
         self.feedback_dir=config['学生课程反馈表文件夹']

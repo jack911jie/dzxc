@@ -9,7 +9,7 @@ def readConfig(fn):
             newLine=line.strip('\n')
             _line=_line+newLine
         config=json.loads(_line)
-    return(config)
+    return config
 
 def code_to_str(ss):
     s=ss['keywords']

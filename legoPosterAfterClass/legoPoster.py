@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class poster:
     def __init__(self,weekday=2,term='2021春',place_input='001-超智幼儿园'):
         
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPoster.config'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPosterAfterClass.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
         _line=''
         for line in lines:

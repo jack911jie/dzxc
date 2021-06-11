@@ -19,7 +19,7 @@ import pypinyin
 class picToPPT:
     def __init__(self,crsName):
         self.crsName=crsName
-        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'crstoPPT.config'))
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'legoCrstoPPT.config'))
 
         if platform.system().lower()=='linux':
             self.picDir='/home/jack/data/乐高/图纸'

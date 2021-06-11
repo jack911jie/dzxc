@@ -2,16 +2,21 @@ import os
 import sys
 from numpy.lib.arraysetops import isin
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),'module'))
+import WashData
+import readConfig
 import pandas as pd 
 import re
-import WashData
 
 class query:
-    def __init__(self):
-        self.std_in_class_list='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\学生分班表.xlsx'
+    def __init__(self,place_input='001-超智幼儿园'):
+        config=readConfig.readConfig(os.path.join(os.path.dirname(__file__),'query.config'))
+        self.std_in_class_list=config['学生分班表']
+        self.std_in_class_list=self.std_in_class_list.replace('$',place_input)
+        self.std_info_dir=config['机构文件夹']
+        self.std_info_dir=self.std_info_dir.replace('$',place_input)
 
     def query_for_scores(self,std_input=''):
-        df_score=WashData.std_all_scores()
+        df_score=WashData.std_all_scores(self.std_info_dir)
         if isinstance(std_input,str):
             if re.match(r'w\d{3}',std_input):
                 std_names_read=pd.read_excel(self.std_in_class_list)
