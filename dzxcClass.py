@@ -125,9 +125,12 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
                     cmt_date=cmt_date,tb_list=tb_list, \
                     tch_name=tch_name,mode=mode,k=k)
 
+<<<<<<< HEAD
 # #查看积分
 # view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分')
 
+=======
+>>>>>>> 381daf8e7bca0c92d354bf1b55fdfbb0d26b4d2a
 #将步骤图生成1分钟视频放上视频号
 # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
@@ -135,8 +138,6 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
 # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 
-#将步骤图导出PPT
-# makePpt('L091端午划龙舟',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no')
 
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
@@ -153,8 +154,18 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 #学员能力玫瑰图
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
+#将步骤图导出PPT
+makePpt('L094游泳的鲨鱼',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes')
+
+# #查看积分
+# view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分')
+
 # #按名字分配照片，并生成课后发给家长的照片：
+<<<<<<< HEAD
 pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210612-L091端午划龙舟',TeacherSig='阿晓老师')  
+=======
+# pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210612-L091端午划龙舟',TeacherSig='阿晓老师')  
+>>>>>>> 381daf8e7bca0c92d354bf1b55fdfbb0d26b4d2a
 
 # 课前生成海报
 # before_class_poster(date_crs_input='20210612',time_crs_input='1100-1230',crs_name_input='L091端午划龙舟')
