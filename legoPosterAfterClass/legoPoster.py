@@ -677,12 +677,14 @@ class poster:
             if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):
                 os.makedirs(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
             
-            img.save(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
+            save_dir=os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)
+            img.save(os.path.join(save_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')
             # img.show()
 
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
+        os.startfile(save_dir)
         
     
 if __name__=='__main__':
