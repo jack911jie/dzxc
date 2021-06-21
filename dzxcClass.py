@@ -70,13 +70,13 @@ def stdpicWhiteMark(height=2250,weekday=[2]):
     for wd in weekday:
         pic.putCover(height=height,weekday=wd)
 
-def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no'):    
+def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new'):    
     mypics=legoCrstoPPT.picToPPT(crsName)
     if pos_pic=='yes':        
         mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
-        mypics.inner_box_pos(save='yes')
+        mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
     elif pos_pic=='pos_pic_only':
-        mypics.inner_box_pos(save='yes')
+        mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
     elif pos_pic=='no':
         mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
     else:
@@ -151,13 +151,13 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-# makePpt('L094游泳的鲨鱼',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes')
+makePpt('L047扑腾的鸭子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
-# view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分')
+#view_score(place_input='001-超智幼儿园',std_name='w601',sort_by='剩余积分')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210617-L092游泳的海豚',TeacherSig='阿晓老师')  
+# pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210619-L094游泳的鲨鱼',TeacherSig='阿晓老师')  
 
 # 课前生成海报
 # before_class_poster(crsDate_name='20210619-L094游泳的鲨鱼',time_crs_input='1100-1230')

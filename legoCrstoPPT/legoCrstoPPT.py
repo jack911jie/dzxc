@@ -111,21 +111,26 @@ class picToPPT:
         os.startfile(desDir)
         os.startfile(newName_ppt)
 
-    def blockNames(self):
+    def blockNames(self,mode='new'):
         fn=os.path.join(self.picDir,self.crsName,self.crsName[4:]+'.lxfml')
         bl=pd.read_excel(self.legoCodeList)
         bl['lxfml编号'].astype('object')
         with open (fn,'r',encoding='utf-8') as f:
             rl=f.readlines()
 
-        # ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
-        # ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
-        # ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
-
-        #studio更新的至2.2.2(1)版本后，lxfml文档结构改变
-        ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\" partType\=)'
-        ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\" partType\=)'
-        ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+          
+        if mode=='old':
+            ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
+            ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
+            ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+        elif mode=='new':
+            #studio更新的至2.2.2(1)版本后，lxfml文档结构改变
+            ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\" partType\=)'
+            ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\" partType\=)'
+            ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+        else:
+            print('lxfml文件的内容不能识别')
+            exit()
 
         a=[]
         for line in rl:
@@ -159,8 +164,8 @@ class picToPPT:
         # self.block_names=out
         return out
 
-    def inner_box_pos(self,save='yes'):
-        block_names_file=self.blockNames()
+    def inner_box_pos(self,save='yes',lxfml_mode='new'):
+        block_names_file=self.blockNames(mode=lxfml_mode)
         box_pic_jpg=self.box_pos_pic
         df=pd.DataFrame(block_names_file)
         df.columns=['零件名称','位置']
@@ -356,7 +361,7 @@ class picToPPT:
         
 if __name__=='__main__':
     mypics=picToPPT('L023不倒翁')
-    mypics.inner_box_pos()
+    mypics.inner_box_pos(save='yes',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
