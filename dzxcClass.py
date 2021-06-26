@@ -88,8 +88,11 @@ def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020):
     #     my.PosterDraw('可以伸缩的夹子')      
     my.PosterDraw(crsName,crsDate)    
 
-def picsDistribute(crsDate,place,crsName,term):
-    weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
+def picsDistribute(crsDate,place,crsName,term,force_weekday=0):
+    if force_weekday==0:
+        weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通过日期计算星期
+    else:
+        weekday=force_weekday
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term)
     stu_pics.dispatch()
 
@@ -101,7 +104,7 @@ def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',c
     else:
         weekday=force_weekday
     crsName_distibute=str(crsDate)+crsName[4:]
-    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term)
+    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term,force_weekday=force_weekday)
     my=posterAfterClass(weekday=weekday,term=term,place_input=place)  
     my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig)
 
