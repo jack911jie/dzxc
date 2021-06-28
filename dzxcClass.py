@@ -157,13 +157,13 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-# makePpt('L098起重机',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new')
+makePpt('L099避障狮身人面像',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
 # view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210625-L098起重机',force_weekday=1,TeacherSig='阿晓老师')  
+# pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210628-L048小小大力士',force_weekday=0,TeacherSig='阿晓老师')  
 
 # 课前生成海报
 # before_class_poster(crsDate_name='20210626-L096蛰人的蝎子',time_crs_input='1100-1230')
