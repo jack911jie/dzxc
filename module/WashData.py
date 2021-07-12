@@ -127,6 +127,7 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     df_crs.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','课堂总积分']
     df_crs.dropna(how='all',axis=0,inplace=True)
     df_crs=df_crs[df_crs['学生姓名']!=0]
+    # print(df_crs)
 
     df_act=pd.concat(df_acts)
     df_act.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','活动总积分']
@@ -268,10 +269,10 @@ def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
 
 if __name__=='__main__':
     # print(std_feedback())
-    print(std_term_crs())
+    # print(std_term_crs())
     # k=crs_sig_table()
     # print(k['total_crs'])
-    # print(std_all_scores())
+    print(std_all_scores())
     # print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
