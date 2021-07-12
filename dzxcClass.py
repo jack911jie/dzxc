@@ -73,14 +73,14 @@ def stdpicWhiteMark(height=2250,weekday=[2]):
 def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new'):    
     mypics=legoCrstoPPT.picToPPT(crsName)
     if pos_pic=='yes':        
-        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
+        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
         mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
     elif pos_pic=='pos_pic_only':
         mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
     elif pos_pic=='no':
-        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
+        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
     else:
-        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,crsPPTDir=crsPPTDir)
+        mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
 
 def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020):
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
@@ -166,6 +166,6 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210712-L039跳舞的小人',force_weekday=0,TeacherSig='阿晓老师')  
 
 # 课前生成海报
-# before_class_poster(crsDate_name='20210626-L096蛰人的蝎子',time_crs_input='1100-1230')
+# before_class_poster(crsDate_name='20210703-L100拍翅膀的猫头鹰',time_crs_input='1100-1230')
 
  

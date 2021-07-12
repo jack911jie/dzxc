@@ -118,7 +118,6 @@ class picToPPT:
         with open (fn,'r',encoding='utf-8') as f:
             rl=f.readlines()
 
-          
         if mode=='old':
             ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
             ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
