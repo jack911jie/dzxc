@@ -1,8 +1,12 @@
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../../dzxc/module'))
+import readConfig
 import composing as paraFormat
+import pics_modify
+import days_calculate
 import re
+from datetime import datetime
 import json
 import pandas as pd
 import iptcinfo3
@@ -214,6 +218,95 @@ class pics:
     
         return out
 
+class SimpleMark:
+    def __init__(self,place_input='001-超智幼儿园'):
+        config=readConfig.readConfig(os.path.join(os.path.dirname(__file__),'LegoStdPicMark.config'))
+        self.std_pic_dir=config['乐高学员文件夹']
+        self.std_pic_dir= self.std_pic_dir.replace('$',place_input)
+        self.place_input=place_input
+        self.public_pic_dir=config['公共图片']
+        self.save_dir=config['生成照片文件夹']
+        self.sig_table_dir=config['学员签到表文件夹']
+        logo=Image.open(os.path.join(self.public_pic_dir,'01大智小超科学实验室商标.png'))
+        self.logo=logo.resize((200*1988//1181,200))
+        r,g,b,self.a=self.logo.split()
+
+    def put_mark(self,img_src='e:\\temp\\每周乐高课_学员\\LBC陆炳辰\\20210701-L097会投掷的车-006.JPG'):
+        txt=img_src.split('\\')[-1][:-4].split('-')
+        crs_name=txt[1][4:]
+        crs_date=txt[0][0:4]+'-'+txt[0][4:6]+'-'+txt[0][6:]
+        
+        font_size=140
+        mk_bg_wid=400+(len(crs_name)+1)*font_size
+        mk_bg=Image.new('RGBA',(mk_bg_wid,260),'#FFA833')    
+        mk_bg.paste(self.logo,(30,30),mask=self.a)
+        draw=ImageDraw.Draw(mk_bg)
+        draw.text((360,30),'·'+crs_name,fill='#FFFFFF',font=paraFormat.fonts('华文新魏',font_size))
+        date_size=40
+        draw.text(((mk_bg_wid-370-paraFormat.char_len(crs_date))//2+300,190),crs_date,fill='#FFFFFF',font=paraFormat.fonts('方正韵动粗黑简',date_size))
+
+        mk_bg=pics_modify.circle_corner(mk_bg,radii=150)
+        # mk_bg.show()
+        r2,g2,b2,a2=mk_bg.split()
+        img=Image.open(img_src)
+        #缩放至固定的分辨率
+        if img.size[0]!=4032:
+            img=img.resize((4032,3024))
+        img.paste(mk_bg,(80,2600),mask=a2)
+        return img
+
+    def pick_pics(self,std_name='LWL廖韦朗',start_date='20210103',end_date='20210506'):
+        pic_list=[]
+        for fn in os.listdir(os.path.join(self.std_pic_dir,std_name)):
+            date_s = datetime.strptime(start_date, "%Y%m%d") 
+            date_e = datetime.strptime(end_date, "%Y%m%d")  
+            date_pic=datetime.strptime(fn[:8],"%Y%m%d") 
+            if date_pic>=date_s and date_pic<=date_e:
+                pic_list.append(os.path.join(self.std_pic_dir,std_name,fn))
+
+        return pic_list
+
+    def put_simple_marks(self,std_name_list=['LWL廖韦朗'],start_date='20210103',end_date='20210506'):
+        print('正在给照片加标签')
+        for std_name in std_name_list:
+            print('正在处理 {} 的照片……'.format(std_name),end='')
+            pic_list=self.pick_pics(std_name,start_date=start_date,end_date=end_date)
+            save_dir=os.path.join(self.save_dir,std_name)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+            for pic in pic_list:
+                fn=pic.split('\\')[-1][:-4]+'_mark.jpg'
+                img=self.put_mark(pic)                
+                img.save(os.path.join(save_dir,fn),quality=95,subsampling=0)
+            print('完成')
+        os.startfile(self.save_dir)
+    
+    def put(self,term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506'):
+        xlsxs=[]
+        print('\n正在生成学员列表……',end='')
+        for wd in weekdays:
+            wd=days_calculate.num_to_ch(wd)
+            fn=term+'-'+'学生信息表（周'+wd+'）.xlsx'
+            xls=os.path.join(self.sig_table_dir,self.place_input,'学生信息表',fn)
+            xlsxs.append(xls)
+        
+        std_list=[]
+        for xlsx in xlsxs:  
+            df=pd.read_excel(xlsx,sheet_name='学生档案表')
+            std_name_pre=df['姓名首拼'].str.cat(df['学生姓名'])
+            std_name=std_name_pre.to_list()
+            std_list.extend(std_name)
+        # print(std_list)
+        print('完成\n')
+
+        self.put_simple_marks(std_name_list=std_list,start_date=start_date,end_date=end_date)
+        print('完成')
+
 if __name__=='__main__':
-    pic=pics()
-    pic.putCover(height=2250,term='2020秋',weekday=6)
+    # pic=pics()
+    # pic.putCover(height=2250,term='2020秋',weekday=6)
+
+    pic=SimpleMark(place_input='001-超智幼儿园')
+    # pic.put_mark()
+    # pic.put_simple_marks(std_name_list=['LWL廖韦朗','LBC陆炳辰'],start_date='20210103',end_date='20210506')
+    pic.put(term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506')

@@ -70,6 +70,10 @@ def stdpicWhiteMark(height=2250,weekday=[2]):
     for wd in weekday:
         pic.putCover(height=height,weekday=wd)
 
+def stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506'):
+    pic=LegoStdPicMark.SimpleMark(place_input=place_input)
+    pic.put(term=term,weekdays=weekdays,start_date=start_date,end_date=end_date)
+
 def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new'):    
     mypics=legoCrstoPPT.picToPPT(crsName)
     if pos_pic=='yes':        
@@ -144,6 +148,9 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 #学期末为照片加上灰背景及知识点等
 # stdpicWhiteMark(height=2250,weekday=[2,6])
 
+#学期末为照片加上黄色背景
+stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[1,4],start_date='20210303',end_date='20210806')
+
 #16节课/或阶段课程学习报告
 # stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_date='20210510', cmt_date='20210410', \
 #             tb_list=[['2020秋','w6'],['2021春','w6']], \ 
@@ -157,13 +164,13 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-# makePpt('L039跳绳的小人',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new')
+# makePpt('L103摩托车骑士',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
 # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210712-L039跳绳的小人',force_weekday=0,TeacherSig='阿晓老师')  
+# pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210712-L039跳绳的小人',force_weekday=0,TeacherSig='阿晓老师')  
 
 # 课前生成海报
 # before_class_poster(crsDate_name='20210710-L102挥刀的螳螂',time_crs_input='1100-1230')
