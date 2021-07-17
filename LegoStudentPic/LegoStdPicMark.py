@@ -258,11 +258,12 @@ class SimpleMark:
     def pick_pics(self,std_name='LWL廖韦朗',start_date='20210103',end_date='20210506'):
         pic_list=[]
         for fn in os.listdir(os.path.join(self.std_pic_dir,std_name)):
-            date_s = datetime.strptime(start_date, "%Y%m%d") 
-            date_e = datetime.strptime(end_date, "%Y%m%d")  
-            date_pic=datetime.strptime(fn[:8],"%Y%m%d") 
-            if date_pic>=date_s and date_pic<=date_e:
-                pic_list.append(os.path.join(self.std_pic_dir,std_name,fn))
+            if fn[-3:].lower()=='jpg' or fn[-4:].lower()=='jpeg':
+                date_s = datetime.strptime(start_date, "%Y%m%d") 
+                date_e = datetime.strptime(end_date, "%Y%m%d")  
+                date_pic=datetime.strptime(fn[:8],"%Y%m%d") 
+                if date_pic>=date_s and date_pic<=date_e:
+                    pic_list.append(os.path.join(self.std_pic_dir,std_name,fn))
 
         return pic_list
 
