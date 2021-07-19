@@ -20,7 +20,7 @@ iptcinfo_logger.setLevel(logging.ERROR)
 class pics:
     def __init__(self):
         print('正在初始化参数……',end='')
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoStudentPic.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
             for line in lines:
@@ -42,14 +42,19 @@ class pics:
     def putCover(self,height=2250,term='2020秋',weekday=2):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
-            if weekday==2:
-                stdFile=['2020乐高课程签到表（周二）.xlsx','学生上课签到表']
-            elif weekday==6:
-                stdFile=['2020乐高课程签到表（周六）.xlsx','学生上课签到表']
+            # if weekday==2:
+            #     stdFile=['2020乐高课程签到表（周二）.xlsx','学生上课签到表']
+            # elif weekday==6:
+            #     stdFile=['2020乐高课程签到表（周六）.xlsx','学生上课签到表']
+            wd=days_calculate.num_to_ch(weekday)
+            stdFile=[term+'-'+'学生信息表（周'+wd+'）.xlsx','学生上课签到表']
             # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
-            stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
-            stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名','Unnamed: 6':'已上课数量'},inplace=True)
+            stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=1,sheet_name=stdFile[1])
+            stds.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
+                                'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'上期课时结余','Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时', \
+                                'Unnamed: 10':'上课数量统计汇总'},inplace=True)
+            # print(stds)
             # std=stds[stds['学生姓名']==stdName]
             # std_basic=std[['姓名首拼','学生姓名']]
             # std_crs=std[std.iloc[:,:]=='√'].dropna(axis=1)
@@ -66,29 +71,33 @@ class pics:
             ptn_std_name=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+')
 
             infos=[]
-            total_pics_dir=os.path.join(self.totalPics,term,'总')
-            for fileName in os.listdir(total_pics_dir):
-                fn=fileName.split('-')
-                crsName=fn[1][4:]
-                crsCode=fn[1][0:4]
-                real_addr=os.path.join(total_pics_dir,fileName)
-                tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
-                if len(tag)>0:
-                    for _tag in tag:        
-                        # print(_tag)     
-                        _tag.strip()
-                        _tag=_tag.replace(' ','')           
-                        if ptn_std_name.match(_tag):
-                            _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
-                        # print('77 _tag:',_tag)
+            total_pics_dir=os.path.join(self.totalPics,term,term+'-每周课程16')
+            # if not os.path.exists(total_pics_dir):
+            #     os.makedirs(total_pics_dir)
 
-                        if _tag in stdList:
-                            # print('80_tag:',_tag)
-                            std_name=_tag
-                            knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
-                            infos.append([real_addr,std_name,crsName,knlg,fileName])
+            for fileName in os.listdir(total_pics_dir):
+                if fileName[-3:].lower()=='jpg' or fileName[-4:].lower()=='jpeg':
+                    fn=fileName.split('-')
+                    crsName=fn[1][4:]
+                    crsCode=fn[1][0:4]
+                    real_addr=os.path.join(total_pics_dir,fileName)
+                    tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
+                    if len(tag)>0:
+                        for _tag in tag:        
+                            # print(_tag)     
+                            _tag.strip()
+                            _tag=_tag.replace(' ','')           
+                            if ptn_std_name.match(_tag):
+                                _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                            # print('77 _tag:',_tag)
+
+                            if _tag in stdList:
+                                # print('80_tag:',_tag)
+                                std_name=_tag
+                                knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
+                                infos.append([real_addr,std_name,crsName,knlg,fileName])
             print('完成')
-            # print('77infos:',infos)
+                # print('77infos:',infos)
             return infos
 
         def ResizeCrop(pic,h_min=2250,crop='yes',bigger='yes'):
@@ -304,10 +313,10 @@ class SimpleMark:
         print('完成')
 
 if __name__=='__main__':
-    # pic=pics()
-    # pic.putCover(height=2250,term='2020秋',weekday=6)
+    pic=pics()
+    pic.putCover(height=2250,term='2021春',weekday=4)
 
-    pic=SimpleMark(place_input='001-超智幼儿园')
-    # pic.put_mark()
-    # pic.put_simple_marks(std_name_list=['LWL廖韦朗','LBC陆炳辰'],start_date='20210103',end_date='20210506')
-    pic.put(term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506')
+    # pic=SimpleMark(place_input='001-超智幼儿园')
+    # # pic.put_mark()
+    # # pic.put_simple_marks(std_name_list=['LWL廖韦朗','LBC陆炳辰'],start_date='20210103',end_date='20210506')
+    # pic.put(term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506')

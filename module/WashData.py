@@ -89,7 +89,7 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
     df_ability_total=pd.read_excel(xls,sheet_name='学员能力评分表',skiprows=1)
     df_ability_total.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
                         'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'优点特性','Unnamed: 8':'提升特性'},inplace=True)
-    df_ability=df_ability_total[['学生姓名','理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']]
+    df_ability=df_ability_total[['学生姓名','理解力','空间想象力','逻辑思维','创造力','表达力','学习力','人际力','情绪力']]
     # print(df_ability)
     df_term_comment_txt=df_cmt.filter(regex='学期总结')
     df_term_comment=pd.concat([df_cmt[['ID','学生姓名']],df_term_comment_txt],axis=1)
