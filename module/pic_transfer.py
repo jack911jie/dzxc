@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from PIL import Image,ImageDraw
+import base64
 
 def mat_to_pil_img(fig):
     # 将plt转化为numpy数据
@@ -79,6 +80,12 @@ def mat_test():
     # plt.show()
 
     return fig
+
+def pic_to_base64(pic):
+    f=open(pic,'rb') #二进制方式打开图文件
+    ls_f=base64.b64encode(f.read()) #读取文件内容，转换为base64编码
+    f.close()    
+    return ls_f
 
 if __name__=='__main__':
     # img=Image.open('E:\\健身项目\\素材\\男性头像01.jpg')
