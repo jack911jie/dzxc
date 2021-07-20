@@ -50,6 +50,7 @@ class data_summary:
         df_std_crs.reset_index(inplace=True)
         df_total_crs=pd.concat(df_total_crss,ignore_index=True)
 
+        df_std_crs.drop(df_std_crs[df_std_crs['课程名称']=='请假'].index,inplace=True)
         # print(df_std_crs,'\n',df_total_crs)
         # print(df_total_crs)
 
@@ -533,7 +534,6 @@ class data_summary:
                 composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
                                     xy=[248,2607],dis_line=int(23*k),fill='#3e3a39', \
                                     font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
-
 
                 composing.put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
                                     xy=[1313,2607],dis_line=int(23*k),fill='#3e3a39', \
