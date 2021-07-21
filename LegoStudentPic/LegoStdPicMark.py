@@ -39,7 +39,7 @@ class pics:
         print('完成')
         
 
-    def putCover(self,height=2250,term='2020秋',weekday=2):
+    def putCover(self,height=2250,term='2020秋',crop='yes',bigger='yes',weekday=2):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
             # if weekday==2:
@@ -88,14 +88,17 @@ class pics:
                             _tag.strip()
                             _tag=_tag.replace(' ','')           
                             if ptn_std_name.match(_tag):
-                                _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                                _tag_py=re.findall(r'[a-zA-Z]+',_tag)[0] 
+                                _tag_zh=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                                
                             # print('77 _tag:',_tag)
 
-                            if _tag in stdList:
-                                # print('80_tag:',_tag)
-                                std_name=_tag
-                                knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
-                                infos.append([real_addr,std_name,crsName,knlg,fileName])
+                                if _tag_zh in stdList:
+                                    # print('80_tag:',_tag)
+                                    std_name=_tag_zh
+                                    std_py=_tag_py
+                                    knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
+                                    infos.append([real_addr,std_name,crsName,knlg,fileName,std_py])
             print('完成')
                 # print('77infos:',infos)
             return infos
@@ -132,8 +135,13 @@ class pics:
             return k
 
         def draw(img,w,h,txt):           
+
+            rct=Image.new('RGBA',(w,h),(255,255,255,190))
+
             draw=ImageDraw.Draw(img)
-            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
+            img.paste(rct,(0,int(img.size[1]-h)),mask=rct)
+
+            # draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
             r=img.size[1]/3024
     
             # print(img.size,w,h)
@@ -187,17 +195,17 @@ class pics:
                 for info in tqdm(infos):
                     date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
                     # img=Image.open(info[0])
-                    img=ResizeCrop(info[0],h_min=height,bigger='no')
+                    img=ResizeCrop(info[0],h_min=height,crop=crop,bigger=bigger)
                     if not isinstance(img,str):
                         bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
                         txt_write=[info[0],info[2],date_crs,info[3]]
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,term,info[1])
+                        saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
                             # print(saveName)
-                            os.mkdir(saveDir)
+                            os.makedirs(saveDir)
                             img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
                         else:
                             img.save(saveName,quality=95,subsampling=0)
@@ -208,7 +216,7 @@ class pics:
                         smallpics.append(info[4])
 
                 if smallpics:
-                    msg='完成 {}/{} 个文件。{}个文件大小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
+                    msg='完成 {}/{} 个文件。{}个文件太小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
                     print(msg)
                 print('完成')
             else:
@@ -314,7 +322,7 @@ class SimpleMark:
 
 if __name__=='__main__':
     pic=pics()
-    pic.putCover(height=2250,term='2021春',weekday=4)
+    pic.putCover(height=2250,term='2021春',crop='yes',bigger='yes',weekday=1)
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
     # # pic.put_mark()

@@ -65,10 +65,10 @@ def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1,bgm_src='de
     except:
         print('出错。请检查目录中是否有相应文件。')
 
-def stdpicWhiteMark(height=2250,term='2020秋',weekday=[2]):
+def stdpicWhiteMark(height=2250,term='2020秋',crop='yes',bigger='yes',weekday=[2]):
     pic=LegoStdPicMark.pics()
     for wd in weekday:
-        pic.putCover(height=height,term=term,weekday=wd)
+        pic.putCover(height=height,term=term,crop=crop,bigger=bigger,weekday=wd)
 
 def stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506'):
     pic=LegoStdPicMark.SimpleMark(place_input=place_input)
@@ -128,9 +128,9 @@ def std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6'):
     pic=my.rose(std_name=std_name,xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\2021春-学生课堂学习情况反馈表（周六）.xlsx')
     # my.exp_poster(std_name=std_name,start_date=start_date,end_date=end_date,weekday=weekday,term=term,tch_name=tch_name,k=k)
 
-def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_date='20210510', \
-                    cmt_date='20210410',tb_list=[['2020秋','w6'],['2021春','w6']], \
-                    tch_name='阿晓老师',mode='only16',k=1):
+def stage_report(std_names=['韦华晋','黄建乐'],start_date='20210301',end_date='20210801', \
+                    cmt_date='20210719',tb_list=[['2021春','w4']], \
+                    tch_name=['阿晓','杨芳芳'],mode='all',k=1):
     stds=Summary_hd.data_summary()
     for n in std_names:
         stds.exp_a4_16(std_name=n,start_date=start_date,end_date=end_date, \
@@ -146,16 +146,15 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20200801',end_d
 
 
 #学期末为照片加上灰背景及知识点等
-stdpicWhiteMark(height=2250,term='2021春',weekday=[1])
+stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[4])
 
 #学期末为照片加上黄色背景
 # stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
 
 #16节课/或阶段课程学习报告
-# stage_report(std_names=['韦华晋','黄建乐'], start_date='20200801', end_date='20210510', cmt_date='20210410', \
-#             tb_list=[['2020秋','w6'],['2021春','w6']], \ 
-#             tch_name='阿晓老师', \
-#             mode='only16', k=1)
+# stage_report(std_names=['陆炳辰'],start_date='20210301',end_date='20210801', \
+#                     cmt_date='20210719',tb_list=[['2021春','w4']], \
+#                     tch_name=['阿晓','杨芳芳'],mode='all',k=1)
 
 #学员成长手册
 # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
