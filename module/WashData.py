@@ -89,7 +89,7 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
     df_ability_total=pd.read_excel(xls,sheet_name='学员能力评分表',skiprows=1)
     df_ability_total.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
                         'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'优点特性','Unnamed: 8':'提升特性'},inplace=True)
-    df_ability=df_ability_total[['学生姓名','理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']]
+    df_ability=df_ability_total[['学生姓名','理解力','空间想象力','逻辑思维','创造力','表达力','学习力','人际力','情绪力','注意力','自控力']]
     # print(df_ability)
     df_term_comment_txt=df_cmt.filter(regex='学期总结')
     df_term_comment=pd.concat([df_cmt[['ID','学生姓名']],df_term_comment_txt],axis=1)
@@ -127,6 +127,7 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     df_crs.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','课堂总积分']
     df_crs.dropna(how='all',axis=0,inplace=True)
     df_crs=df_crs[df_crs['学生姓名']!=0]
+    # print(df_crs)
 
     df_act=pd.concat(df_acts)
     df_act.columns=['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','活动总积分']
@@ -268,10 +269,10 @@ def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
 
 if __name__=='__main__':
     # print(std_feedback())
-    print(std_term_crs())
+    # print(std_term_crs())
     # k=crs_sig_table()
     # print(k['total_crs'])
-    # print(std_all_scores())
+    print(std_all_scores())
     # print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"

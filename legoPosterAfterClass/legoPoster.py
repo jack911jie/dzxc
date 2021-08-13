@@ -654,7 +654,11 @@ class poster:
         INFO=read_excel()
         df_std_scores=read_scores(place_input=self.place_input,term=self.term,weekday=self.weekday)
         std_list,crs_info,teacherCmt=INFO['std_list'],INFO['crs_info'],INFO['tch_cmt']
-    
+
+        if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):
+            os.makedirs(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
+        save_dir=os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)
+        
         for std in std_list:
             print('正在处理 {} 的图片：'.format(std[3]))
             # img=basic_bg()
@@ -674,15 +678,16 @@ class poster:
             putTxt(img,stdName,stdAge,KdgtName,ClassName)             
             
             print('正在保存 {} 的图片……'.format(std[3]),end='')
-            if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):
-                os.makedirs(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput))
             
-            img.save(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
+            
+            
+            img.save(os.path.join(save_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             print('完成')
             # img.show()
 
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
+        os.startfile(save_dir)
         
     
 if __name__=='__main__':

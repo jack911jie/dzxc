@@ -1,0 +1,1 @@
+git update-index --assume-unchanged  LegoStudentPic/LegoStudentsPic.config TermSummary/configs/TermSummary.config legoCrstoPPT/legoCrstoPPT.config legoPosterAfterClass/LegoPoster.config legoPosterAfterClass/legoPosterAfterClass.config module/fonts_list.config psychology/psychology.config query/query.config

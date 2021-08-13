@@ -1,8 +1,12 @@
 import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../../dzxc/module'))
+import readConfig
 import composing as paraFormat
+import pics_modify
+import days_calculate
 import re
+from datetime import datetime
 import json
 import pandas as pd
 import iptcinfo3
@@ -16,7 +20,7 @@ iptcinfo_logger.setLevel(logging.ERROR)
 class pics:
     def __init__(self):
         print('正在初始化参数……',end='')
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentsPicConfig.txt'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoStudentPic.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
             for line in lines:
@@ -35,17 +39,22 @@ class pics:
         print('完成')
         
 
-    def putCover(self,height=2250,term='2020秋',weekday=2):
+    def putCover(self,height=2250,term='2020秋',crop='yes',bigger='yes',weekday=2):
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
-            if weekday==2:
-                stdFile=['2020乐高课程签到表（周二）.xlsx','学生上课签到表']
-            elif weekday==6:
-                stdFile=['2020乐高课程签到表（周六）.xlsx','学生上课签到表']
+            # if weekday==2:
+            #     stdFile=['2020乐高课程签到表（周二）.xlsx','学生上课签到表']
+            # elif weekday==6:
+            #     stdFile=['2020乐高课程签到表（周六）.xlsx','学生上课签到表']
+            wd=days_calculate.num_to_ch(weekday)
+            stdFile=[term+'-'+'学生信息表（周'+wd+'）.xlsx','学生上课签到表']
             # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
-            stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=2,sheet_name=stdFile[1])
-            stds.rename(columns={'Unnamed: 0':'机构','Unnamed: 1':'班级','Unnamed: 2':'姓名首拼','Unnamed: 3':'性别','Unnamed: 4':'ID','Unnamed: 5':'学生姓名','Unnamed: 6':'已上课数量'},inplace=True)
+            stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=1,sheet_name=stdFile[1])
+            stds.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
+                                'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'上期课时结余','Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时', \
+                                'Unnamed: 10':'上课数量统计汇总'},inplace=True)
+            # print(stds)
             # std=stds[stds['学生姓名']==stdName]
             # std_basic=std[['姓名首拼','学生姓名']]
             # std_crs=std[std.iloc[:,:]=='√'].dropna(axis=1)
@@ -62,29 +71,36 @@ class pics:
             ptn_std_name=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+')
 
             infos=[]
-            total_pics_dir=os.path.join(self.totalPics,term,'总')
-            for fileName in os.listdir(total_pics_dir):
-                fn=fileName.split('-')
-                crsName=fn[1][4:]
-                crsCode=fn[1][0:4]
-                real_addr=os.path.join(total_pics_dir,fileName)
-                tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
-                if len(tag)>0:
-                    for _tag in tag:        
-                        # print(_tag)     
-                        _tag.strip()
-                        _tag=_tag.replace(' ','')           
-                        if ptn_std_name.match(_tag):
-                            _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
-                        # print('77 _tag:',_tag)
+            total_pics_dir=os.path.join(self.totalPics,term,term+'-每周课程16')
+            # if not os.path.exists(total_pics_dir):
+            #     os.makedirs(total_pics_dir)
 
-                        if _tag in stdList:
-                            # print('80_tag:',_tag)
-                            std_name=_tag
-                            knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
-                            infos.append([real_addr,std_name,crsName,knlg,fileName])
+            for fileName in os.listdir(total_pics_dir):
+                if fileName[-3:].lower()=='jpg' or fileName[-4:].lower()=='jpeg':
+                    fn=fileName.split('-')
+                    crsName=fn[1][4:]
+                    crsCode=fn[1][0:4]
+                    real_addr=os.path.join(total_pics_dir,fileName)
+                    tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
+                    if len(tag)>0:
+                        for _tag in tag:        
+                            # print(_tag)     
+                            _tag.strip()
+                            _tag=_tag.replace(' ','')           
+                            if ptn_std_name.match(_tag):
+                                _tag_py=re.findall(r'[a-zA-Z]+',_tag)[0] 
+                                _tag_zh=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
+                                
+                            # print('77 _tag:',_tag)
+
+                                if _tag_zh in stdList:
+                                    # print('80_tag:',_tag)
+                                    std_name=_tag_zh
+                                    std_py=_tag_py
+                                    knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
+                                    infos.append([real_addr,std_name,crsName,knlg,fileName,std_py])
             print('完成')
-            # print('77infos:',infos)
+                # print('77infos:',infos)
             return infos
 
         def ResizeCrop(pic,h_min=2250,crop='yes',bigger='yes'):
@@ -119,8 +135,13 @@ class pics:
             return k
 
         def draw(img,w,h,txt):           
+
+            rct=Image.new('RGBA',(w,h),(255,255,255,190))
+
             draw=ImageDraw.Draw(img)
-            draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
+            img.paste(rct,(0,int(img.size[1]-h)),mask=rct)
+
+            # draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
             r=img.size[1]/3024
     
             # print(img.size,w,h)
@@ -174,17 +195,17 @@ class pics:
                 for info in tqdm(infos):
                     date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
                     # img=Image.open(info[0])
-                    img=ResizeCrop(info[0],h_min=height,bigger='no')
+                    img=ResizeCrop(info[0],h_min=height,crop=crop,bigger=bigger)
                     if not isinstance(img,str):
                         bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
                         txt_write=[info[0],info[2],date_crs,info[3]]
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,term,info[1])
+                        saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
                             # print(saveName)
-                            os.mkdir(saveDir)
+                            os.makedirs(saveDir)
                             img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
                         else:
                             img.save(saveName,quality=95,subsampling=0)
@@ -195,7 +216,7 @@ class pics:
                         smallpics.append(info[4])
 
                 if smallpics:
-                    msg='完成 {}/{} 个文件。{}个文件大小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
+                    msg='完成 {}/{} 个文件。{}个文件太小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
                     print(msg)
                 print('完成')
             else:
@@ -214,6 +235,96 @@ class pics:
     
         return out
 
+class SimpleMark:
+    def __init__(self,place_input='001-超智幼儿园'):
+        config=readConfig.readConfig(os.path.join(os.path.dirname(__file__),'LegoStdPicMark.config'))
+        self.std_pic_dir=config['乐高学员文件夹']
+        self.std_pic_dir= self.std_pic_dir.replace('$',place_input)
+        self.place_input=place_input
+        self.public_pic_dir=config['公共图片']
+        self.save_dir=config['生成照片文件夹']
+        self.sig_table_dir=config['学员签到表文件夹']
+        logo=Image.open(os.path.join(self.public_pic_dir,'01大智小超科学实验室商标.png'))
+        self.logo=logo.resize((200*1988//1181,200))
+        r,g,b,self.a=self.logo.split()
+
+    def put_mark(self,img_src='e:\\temp\\每周乐高课_学员\\LBC陆炳辰\\20210701-L097会投掷的车-006.JPG'):
+        txt=img_src.split('\\')[-1][:-4].split('-')
+        crs_name=txt[1][4:]
+        crs_date=txt[0][0:4]+'-'+txt[0][4:6]+'-'+txt[0][6:]
+        
+        font_size=140
+        mk_bg_wid=400+(len(crs_name)+1)*font_size
+        mk_bg=Image.new('RGBA',(mk_bg_wid,260),'#FFA833')    
+        mk_bg.paste(self.logo,(30,30),mask=self.a)
+        draw=ImageDraw.Draw(mk_bg)
+        draw.text((360,30),'·'+crs_name,fill='#FFFFFF',font=paraFormat.fonts('华文新魏',font_size))
+        date_size=40
+        draw.text(((mk_bg_wid-370-paraFormat.char_len(crs_date))//2+300,190),crs_date,fill='#FFFFFF',font=paraFormat.fonts('方正韵动粗黑简',date_size))
+
+        mk_bg=pics_modify.circle_corner(mk_bg,radii=150)
+        # mk_bg.show()
+        r2,g2,b2,a2=mk_bg.split()
+        img=Image.open(img_src)
+        #缩放至固定的分辨率
+        if img.size[0]!=4032:
+            img=img.resize((4032,3024))
+        img.paste(mk_bg,(80,2600),mask=a2)
+        return img
+
+    def pick_pics(self,std_name='LWL廖韦朗',start_date='20210103',end_date='20210506'):
+        pic_list=[]
+        for fn in os.listdir(os.path.join(self.std_pic_dir,std_name)):
+            if fn[-3:].lower()=='jpg' or fn[-4:].lower()=='jpeg':
+                date_s = datetime.strptime(start_date, "%Y%m%d") 
+                date_e = datetime.strptime(end_date, "%Y%m%d")  
+                date_pic=datetime.strptime(fn[:8],"%Y%m%d") 
+                if date_pic>=date_s and date_pic<=date_e:
+                    pic_list.append(os.path.join(self.std_pic_dir,std_name,fn))
+
+        return pic_list
+
+    def put_simple_marks(self,std_name_list=['LWL廖韦朗'],start_date='20210103',end_date='20210506'):
+        print('正在给照片加标签')
+        for std_name in std_name_list:
+            print('正在处理 {} 的照片……'.format(std_name),end='')
+            pic_list=self.pick_pics(std_name,start_date=start_date,end_date=end_date)
+            save_dir=os.path.join(self.save_dir,std_name)
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir)
+            for pic in pic_list:
+                fn=pic.split('\\')[-1][:-4]+'_mark.jpg'
+                img=self.put_mark(pic)                
+                img.save(os.path.join(save_dir,fn),quality=95,subsampling=0)
+            print('完成')
+        os.startfile(self.save_dir)
+    
+    def put(self,term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506'):
+        xlsxs=[]
+        print('\n正在生成学员列表……',end='')
+        for wd in weekdays:
+            wd=days_calculate.num_to_ch(wd)
+            fn=term+'-'+'学生信息表（周'+wd+'）.xlsx'
+            xls=os.path.join(self.sig_table_dir,self.place_input,'学生信息表',fn)
+            xlsxs.append(xls)
+        
+        std_list=[]
+        for xlsx in xlsxs:  
+            df=pd.read_excel(xlsx,sheet_name='学生档案表')
+            std_name_pre=df['姓名首拼'].str.cat(df['学生姓名'])
+            std_name=std_name_pre.to_list()
+            std_list.extend(std_name)
+        # print(std_list)
+        print('完成\n')
+
+        self.put_simple_marks(std_name_list=std_list,start_date=start_date,end_date=end_date)
+        print('完成')
+
 if __name__=='__main__':
     pic=pics()
-    pic.putCover(height=2250,term='2020秋',weekday=6)
+    pic.putCover(height=2250,term='2021春',crop='yes',bigger='yes',weekday=1)
+
+    # pic=SimpleMark(place_input='001-超智幼儿园')
+    # # pic.put_mark()
+    # # pic.put_simple_marks(std_name_list=['LWL廖韦朗','LBC陆炳辰'],start_date='20210103',end_date='20210506')
+    # pic.put(term='2021春',weekdays=[1,4],start_date='20210103',end_date='20210506')

@@ -52,10 +52,10 @@ class picToPPT:
                 print('请先做好步骤图片')
                 sys.exit (0)
 
-    def test_stepXls(self):
+    def test_stepXls(self,lxfml_mode):
         xlsName=os.path.join(self.picSrc,self.crsName+'-ppt步骤零件名称.xlsm')
         if not os.path.exists(xlsName):
-            blNames=self.blockNames()
+            blNames=self.blockNames(mode=lxfml_mode)
             # blNames=self.block_names
             copyfile(os.path.join(self.picDir,'ppt_step_Template.xlsm'),xlsName)
             wb=load_workbook(xlsName,keep_vba=True)
@@ -111,21 +111,25 @@ class picToPPT:
         os.startfile(desDir)
         os.startfile(newName_ppt)
 
-    def blockNames(self):
+    def blockNames(self,mode='new'):
         fn=os.path.join(self.picDir,self.crsName,self.crsName[4:]+'.lxfml')
         bl=pd.read_excel(self.legoCodeList)
         bl['lxfml编号'].astype('object')
         with open (fn,'r',encoding='utf-8') as f:
             rl=f.readlines()
 
-        # ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
-        # ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
-        # ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
-
-        #studio更新的至2.2.2(1)版本后，lxfml文档结构改变
-        ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\" partType\=)'
-        ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\" partType\=)'
-        ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+        if mode=='old':
+            ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\;A\" materials\=)'
+            ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\;A\" materials\=)'
+            ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+        elif mode=='new':
+            #studio更新的至2.2.2(1)版本后，lxfml文档结构改变
+            ptn1='(?<=\<Part refID\=\"\d{1}\" designID\=\")(.*)(?=\" partType\=)'
+            ptn2='(?<=\<Part refID\=\"\d{2}\" designID\=\")(.*)(?=\" partType\=)'
+            ptn3='(?<=\<Part refID\=\"\d{3}\" designID\=\")(.*)(?=\" partType\=)'
+        else:
+            print('lxfml文件的内容不能识别')
+            exit()
 
         a=[]
         for line in rl:
@@ -159,8 +163,8 @@ class picToPPT:
         # self.block_names=out
         return out
 
-    def inner_box_pos(self,save='yes'):
-        block_names_file=self.blockNames()
+    def inner_box_pos(self,save='yes',lxfml_mode='new'):
+        block_names_file=self.blockNames(mode=lxfml_mode)
         box_pic_jpg=self.box_pos_pic
         df=pd.DataFrame(block_names_file)
         df.columns=['零件名称','位置']
@@ -207,11 +211,11 @@ class picToPPT:
             print('仅显示，未保存。')
             bg.show()
 
-    def ExpPPT(self,copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
+    def ExpPPT(self,copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
         print('\n正在处理：')   
         self.makeDirs(self.picSrc)
         self.renameFiles()    
-        self.test_stepXls()    
+        self.test_stepXls(lxfml_mode=lxfml_mode)    
         def picList():
             ptn_block_list=re.compile(r'\d*_1x_tagged.png')
             ptn_block_list2=re.compile(r'\d*_1x.png')
@@ -355,11 +359,11 @@ class picToPPT:
         picToPPT(picList)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L023不倒翁')
-    mypics.inner_box_pos()
+    mypics=picToPPT('L098起重机')
+    # mypics.inner_box_pos(save='yes',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    # mypics.ExpPPT(copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    mypics.ExpPPT(copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
