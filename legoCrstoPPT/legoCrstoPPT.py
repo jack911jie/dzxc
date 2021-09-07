@@ -308,7 +308,8 @@ class picToPPT:
 
             for i,img in enumerate(picList[0]):                
                 slide=prs.slides.add_slide(blank_slide_layout)
-                pic=slide.shapes.add_picture(img,left,top,height=height)
+                if img[-3:].lower()=='png':
+                    pic=slide.shapes.add_picture(img,left,top,height=height)
                 
                
                 if i>=picList[1]: #跳过零件总图的数量
@@ -355,11 +356,11 @@ class picToPPT:
 
             print('ppt已导出完成，文件名：{}'.format(newFn))                              
             
-        picList=picList()
-        picToPPT(picList)          
+        pic_list=picList()
+        picToPPT(pic_list)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L098起重机')
+    mypics=picToPPT('L106手动小赛车')
     # mypics.inner_box_pos(save='yes',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
