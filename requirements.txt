@@ -1,0 +1,14 @@
+pillow
+pandas
+openpyxl
+xlrd
+python-pptx
+moviepy
+matplotlib
+iptcinfo3
+exifread
+pypinyin
+fitz
+pdfkit
+PyMuPdf
+markdown
