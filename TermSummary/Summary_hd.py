@@ -525,8 +525,8 @@ class data_summary:
 
                 #评语
                 #左右标题
-                draw.text((618,1764),'技能测评',fill='#7197b4',font=self.font('优设标题',int(80*k)))
-                draw.text((1638,1764),'发育测评',fill='#7197b4',font=self.font('优设标题',int(80*k)))
+                draw.text((608,1764),'技能成长',fill='#7197b4',font=self.font('优设标题',int(80*k)))
+                draw.text((1598,1764),'社会能力成长',fill='#7197b4',font=self.font('优设标题',int(80*k)))
                 draw.text((698,3034),'上课老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
                 draw.text((1618,3034),'特约心理老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
 
@@ -566,10 +566,12 @@ class data_summary:
                 
                 bg=bg.convert('RGB')
                 savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'-课程学习报告.jpg')
+                if not os.path.exists(self.term_pic_dir):
+                    os.makedirs(self.term_pic_dir)
                 # savename=os.path.join('e:/temp/',std_name+'.jpg')
-                # bg.save(savename,quality=90,subsampling=0)
+                bg.save(savename,quality=90,subsampling=0)
                 # bg.save(savename,quality=95,dpi=(300,300))
-                bg.show()
+                # bg.show()
                 print('图片保存完成，保存路径：{}'.format(savename))
 
             draw_crs()
