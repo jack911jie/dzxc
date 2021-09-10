@@ -328,10 +328,11 @@ class StepMark(pics):
     def __init__(self):
         super().__init__()
         self.para={
-            '乐高step1':'拆开盒子',
-            '乐高step2':'装配',
-            '乐高step3':'装好啦',
-            '乐高step4':'放好'
+            '乐高step1':['认识零件','今天是我第一次上乐高机器人课！老师带我认识了各种认识板、砖、梁、销、齿轮等各种零件。用这些零件可以搭建各种各样的东西，好神奇！'],
+            '乐高step2':['搭建环节','我学会了观察对比图纸和按照颜色、结构来选零件和搭建。老师夸奖我观察细致、会独立思考！'],
+            '乐高step3':['作品环节','我使用了32个零件，经历20个搭建步骤，过程中会遇到零件扣不稳、操作不慎作品散架等等问题，但我都勇敢面对，完成作品“小汽车”，好开心！'],
+            '乐高step4':['分享环节','我勇敢自信地走上前台，跟大家分享我的作品。今天很有成就感，我也是小小工程师啦！'],
+            '乐高step5':['归纳整理','老师教了我们按颜色、形状归纳分类的方法，我把小汽车拆卸了，对应零件的格子放好，让零件回到自己的家。老师说学会归纳整理是一个非常好的习惯！']
         }
 
     
@@ -413,20 +414,23 @@ class StepMark(pics):
                             _tag=_tag.replace(' ','')                            
 
                             if _tag.lower() in list(self.para.keys()):
-                                    txt_step=self.para[_tag.lower()]
+                                    txt_step=self.para[_tag.lower()][1]
+                                    step_num=_tag.lower()
+                                    step_name=self.para[_tag.lower()][0]
                                 
-                            print(_tag)
+                            # print(_tag)
                             if ptn_std_name.match(_tag):
-                                print(_tag)
+                                # print(_tag)
                                 _tag_py=re.findall(r'[a-zA-Z]+',_tag)[0] 
                                 _tag_zh=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0] 
 
                                 if _tag_zh in stdList:
                                     # print('80_tag:',_tag)
+                                    std_class=stds[stds['学生姓名']==_tag_zh]['班级'].tolist()[0]
                                     std_name=_tag_zh
                                     std_py=_tag_py
                                     knlg=crs[crs['课程编号']==crsCode]['知识点'].tolist()[0]
-                        infos.append([real_addr,std_name,crsName,knlg,fileName,std_py,txt_step])
+                        infos.append([real_addr,std_name,crsName,knlg,fileName,std_py,txt_step,std_class,step_num,step_name])
                             
             print('完成')
                 # print('77infos:',infos)
@@ -486,11 +490,11 @@ class StepMark(pics):
             pic_qrcode=_pic_qrcode.resize((ratio(350,r),ratio(350,r)))
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
             img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
-            img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
-            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
+            # img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
+            # draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
-            partKnlg=ratio(1500,r)
+            partStep=ratio(1800,r)
             titleSize=ratio(300,r)
             knlgSize=ratio(80,r)
             dateSize=ratio(65,r)
@@ -504,17 +508,17 @@ class StepMark(pics):
             xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
 
 
-            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
-            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            draw.text((xTitle,int(ratio(2530,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,ratio(2880,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
             # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            draw.text((ratio(1900,r),ratio(2450,r)), '乐高机器人体验课', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
+            draw.text((ratio(780,r),ratio(2450,r)), '乐高机器人体验课', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
 
-            draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2565,r)),'#2A68B1')
+            draw.rectangle((ratio(780,r),ratio(2560,r),ratio(1590,r),ratio(2565,r)),'#2A68B1')
 
 
             # txt3Dot=re.sub('\d.','· ',txt[4]) #将数字替换成点
             # print('153:',isinstance(txt3Dot,str))
-            paraFormat.put_txt_img(draw,txt[4],partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            paraFormat.put_txt_img(draw,txt[4],partStep,[ratio(1850,r),ratio(2530,r)],25,'#2A68B1','楷体',knlgSize) #步骤描述
 
 
         def putCoverToPics():
@@ -533,8 +537,11 @@ class StepMark(pics):
                         txt_write=[info[0],info[2],date_crs,info[3],info[6]]
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,term,'体验课',str(weekday).zfill(2)+info[5]+info[1])
-                        saveName=os.path.join(saveDir,info[4])
+                        # saveDir=os.path.join(self.stdPicsDir,term,'体验课',str(weekday).zfill(2)+info[5]+info[1])
+                        saveDir=os.path.join(self.stdPicsDir,term,'体验课打标',info[7]+'_'+info[5]+info[1])
+                        save_filename=info[8]+'_'+info[9]+'.jpg'
+                        # print(type(save_filename))
+                        saveName=os.path.join(saveDir,save_filename)
                         if not os.path.exists(saveDir):
                             # print(saveName)
                             os.makedirs(saveDir)
@@ -559,12 +566,11 @@ class StepMark(pics):
 if __name__=='__main__':
     # pic=pics()
     # pic.putCover(height=2250,term='2021春',crop='yes',bigger='yes',weekday=1)
-    # stu_pics=LegoStudentPicDistribute.LegoPics(crsDate=20210908,crsName='L106手动小赛车',weekday=3,term='2021秋',mode='tiyan')
+    # stu_pics=LegoStudentPicDistribute.LegoPics(crsDate=20210909,crsName='L106手动小赛车',weekday=4,term='2021秋',mode='tiyan')
     # stu_pics.dispatch()
 
     
     p=StepMark()
-    # p.read_fn()
     p.putCover(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=3)
 
     # pic=SimpleMark(place_input='001-超智幼儿园')

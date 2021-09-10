@@ -44,7 +44,7 @@ class LegoClass:
         draw.text((260,178),date_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,228),time_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,279),addr_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程地点
-        composing.put_txt_img(draw=draw,tt=knlg,total_dis=400,xy=[180,530],dis_line=20, \
+        composing.put_txt_img(draw=draw,tt=knlg,total_dis=480,xy=[120,530],dis_line=20, \
                                 fill='#595757',font_name='丁永康硬笔楷书',font_size=34,addSPC='None') #知识点
 
         _img=Image.open(os.path.join(self.crs_proj_dir,crs_name_input,crs_name_input[4:]+'.jpg'))

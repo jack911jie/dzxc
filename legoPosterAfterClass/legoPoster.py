@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(
 logger = logging.getLogger(__name__)
 
 class poster:
-    def __init__(self,weekday=2,term='2021春',place_input='001-超智幼儿园'):
+    def __init__(self,weekday=2,term='2021春',place_input='001-超智幼儿园',mode=''):
         
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPosterAfterClass.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
@@ -31,7 +31,7 @@ class poster:
             newLine=line.strip('\n')
             _line=_line+newLine
         config=json.loads(_line)
-
+        self.mode=mode
         self.bg=config['导出文件夹']
         self.bg=self.bg.replace('$',place_input)
         self.font_dir=config['字体文件夹']
@@ -40,18 +40,23 @@ class poster:
         self.weekday=weekday
         self.term=term
         self.place_input=place_input
+        self.std_sig_dir=config['学生签到表文件夹']
         wd=days_calculate.num_to_ch(str(weekday))
         # self.eachStd=config['个别学员评语表']
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
         cmt_table_dir=config['老师评语表文件夹']
-        self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
-        
+        if mode=='tiyan':
+            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（体验）.xlsx')
+            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（体验）.xlsx')
+        else:
+            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
+            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')
         self.picTitleDir=config['课程标题照片文件夹']
         self.picTitleDir=self.picTitleDir.replace('$',place_input)
         self.picStdDir=config['学生照片文件夹']
         self.picStdDir=self.picStdDir.replace('$',place_input)
         self.ConsDir=config['乐高图纸文件夹']
-        self.std_sig_dir=config['学生签到表文件夹']
+        
         self.public_pic_dir=config['公共素材']
 
         # if weekday==2:
@@ -59,7 +64,6 @@ class poster:
         # elif weekday==6:
         #     self.crsStudent=config['学员签到表w6']
         
-        self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')
 
         self.PraiseTxt=['#同学在课堂上的表现非常棒！下次课加油！','下节课继续加油哦！','这节课很有收获，期待你下节课能有更大进步！','#同学的课堂表现非常棒，老师给你点个赞！'] 
         self.picWid=425 #默认照片
@@ -239,7 +243,10 @@ class poster:
         def read_scores(place_input,term,weekday):
             print('正在读取积分信息……',end='')
             wd=days_calculate.num_to_ch(str(weekday))
-            xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')  
+            if self.mode=='tiyan':
+                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（体验）.xlsx')                  
+            else:
+                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')  
             df_this_crs_score=WashData.std_score_this_crs(xls_this)
 
             place_dir=os.path.join(self.std_sig_dir,self.place_input)
