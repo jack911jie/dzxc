@@ -558,6 +558,7 @@ class StepMark(pics):
                     msg='完成 {}/{} 个文件。{}个文件太小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
                     print(msg)
                 print('完成')
+                os.startfile(os.path.join(self.stdPicsDir,term,'体验课打标'))
             else:
                 print('无合适的照片')
 
@@ -571,7 +572,7 @@ if __name__=='__main__':
 
     
     p=StepMark()
-    p.putCover(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=3)
+    p.putCover(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=5)
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
     # # pic.put_mark()
