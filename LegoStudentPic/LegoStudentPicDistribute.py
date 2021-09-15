@@ -32,7 +32,7 @@ class LegoPics:
         self.stu_dir=self.stu_dir.replace('$',place_input)
         self.stu_sigDir=config['2020乐高课程签到表文件夹']
         self.weekday=weekday
-        self.other_tags=['每周课程4+','每周课程16']
+        self.other_tags=['每周课程4+','每周课程16','乐高step1','乐高step2','乐高step3','乐高step4','乐高step5']
         self.std_sig_dir=config['学员签到表文件夹']
         self.place=place_input
         self.term=term
@@ -105,7 +105,7 @@ class LegoPics:
                             else:
                                 not_match_num+=1
                         else:
-                            if _tag not in self.other_tags:
+                            if _tag.lower() not in self.other_tags:
                                 lack_stdName.append(_tag)
 
         # print(lack_stdName)

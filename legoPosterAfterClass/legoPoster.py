@@ -220,6 +220,7 @@ class poster:
                 if fn[-3:].lower()=='jpg':
                     with open(fn,'rb') as fd:
                         tag=exifread.process_file(fd)
+                        # print(tag)
                         t=str(tag['EXIF DateTimeOriginal']).replace(':','-',2)
                         if t in newfiles.keys():
                             t=t[0:-2]+str(int(t[-2:])+1).zfill(2)
@@ -615,6 +616,7 @@ class poster:
             draw.text((470,5), '器', fill = color['t_title_qi'],font=composing.fonts('汉仪超级战甲',75))  #大题目
             draw.text((570,5), '人', fill = color['t_title_ren'],font=composing.fonts('汉仪超级战甲',75))  #大题目
             draw.text((670,5), '课', fill = color['t_title_ke4'],font=composing.fonts('汉仪超级战甲',75))  #大题目
+            # draw.text((350,120), stdName, fill =color['t_name'] ,font=composing.fonts('楷体',60))  #姓名
             draw.text((350,120), stdName, fill =color['t_name'] ,font=composing.fonts('汉仪心海行楷w',60))  #姓名
             # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=composing.fonts('微软雅黑',60))  #年龄    
             draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=composing.fonts('杨任东竹石体',33))  #幼儿园
@@ -639,6 +641,7 @@ class poster:
             script=script.replace('*',str(std_this_score))
 
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
+            # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=36,addSPC='add_2spaces') #老师评语
             draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=composing.fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
             draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=composing.fonts('微软雅黑',30)) 
             draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=composing.fonts('汉仪糯米团',45))  #我的课堂情况

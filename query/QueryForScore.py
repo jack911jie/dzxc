@@ -17,7 +17,7 @@ class query:
 
     def query_for_scores(self,std_input=''):
         df_score=WashData.std_all_scores(self.std_info_dir)
-        # print(df_score)
+        print(df_score)
         if isinstance(std_input,str):
             if re.match(r'w\d{3}',std_input):
                 std_names_read=pd.read_excel(self.std_in_class_list)
@@ -43,5 +43,5 @@ class query:
 
 if __name__=='__main__':
     q=query()
-    res=q.query_for_scores(std_input='w101')
+    res=q.query_for_scores(std_input='w0601')
     print(res)
