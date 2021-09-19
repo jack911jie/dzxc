@@ -96,11 +96,15 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
     return {'df_ability':df_ability,'df_term_comment':df_term_comment}
 
-def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园'):
+def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no'):
     xlsxs=[]
     for fn in os.listdir(os.path.join(xls_dir,'学生信息表')):
         if re.match(r'^\d.*-.*）.xlsx',fn):
-            xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
+            if plus_tiyan=='yes':
+                xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
+            else:
+                if fn[-8:-6] != '体验':
+                    xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
 
     df_infos=[]
     df_crss=[]

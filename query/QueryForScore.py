@@ -15,9 +15,9 @@ class query:
         self.std_info_dir=config['机构文件夹']
         self.std_info_dir=self.std_info_dir.replace('$',place_input)
 
-    def query_for_scores(self,std_input=''):
-        df_score=WashData.std_all_scores(self.std_info_dir)
-        print(df_score)
+    def query_for_scores(self,std_input='',plus_tiyan='no'):
+        df_score=WashData.std_all_scores(self.std_info_dir,plus_tiyan=plus_tiyan)
+        # print(df_score)
         if isinstance(std_input,str):
             if re.match(r'w\d{3}',std_input):
                 std_names_read=pd.read_excel(self.std_in_class_list)

@@ -251,7 +251,7 @@ class poster:
             df_this_crs_score=WashData.std_score_this_crs(xls_this)
 
             place_dir=os.path.join(self.std_sig_dir,self.place_input)
-            df_all_scores=WashData.std_all_scores(place_dir)
+            df_all_scores=WashData.std_all_scores(place_dir,plus_tiyan='no')
 
             print('完成')
             return {'this_score':df_this_crs_score,'all_scores':df_all_scores}
