@@ -271,12 +271,22 @@ def multi_std_infos(tb_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     # df_all=pd.concat(all_tables,ignore_index=True)
     # df_all.to_excel('e:/temp/kkkdd.xlsx')
 
+def class_taken(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx'):
+    df=pd.read_excel(xls,sheet_name='学生上课签到表',skiprows=1,header=0)
+    cls_taken=df.iloc[:,11:].columns.values.tolist()
+    df_std=df.iloc[:,4:5].values.tolist()
+    std_names=[std[0] for std in df_std]
+
+    return {'cls_taken':cls_taken,'std_names':std_names}
+
+
 if __name__=='__main__':
     # print(std_feedback())
     # print(std_term_crs())
     # k=crs_sig_table()
     # print(k['total_crs'])
-    print(std_all_scores())
+    # print(std_all_scores())
+    print(class_taken())
     # print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
