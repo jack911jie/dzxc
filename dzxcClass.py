@@ -16,12 +16,13 @@ from legoPoster import poster as posterAfterClass
 import LegoStdPicMark
 import legoCrstoPPT
 import QueryForScore
+import QueryForClassTaken
 import iptcinfo3
 from datetime import datetime
 
-def view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分'):
+def view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分',plus_tiyan='no'):
     myQuery=QueryForScore.query(place_input=place_input)
-    res=myQuery.query_for_scores(std_name)
+    res=myQuery.query_for_scores(std_name,plus_tiyan=plus_tiyan)
     res.sort_values(by=sort_by,inplace=True)
     print(res)
     # print(datetime.now().strftime('%Y-%m-%d'))
@@ -86,21 +87,21 @@ def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\
     else:
         mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
 
-def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020):
+def legoPoster(crsName='L035啃骨头的小狗',crsDate=20201020,mode=''):
     weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通日期计算星期
-    my=posterAfterClass(weekday=weekday)
+    my=posterAfterClass(weekday=weekday,mode=mode)
     #     my.PosterDraw('可以伸缩的夹子')      
     my.PosterDraw(crsName,crsDate)    
 
-def picsDistribute(crsDate,place,crsName,term,force_weekday=0):
+def picsDistribute(crsDate,place,crsName,term,force_weekday=0,mode=''):
     if force_weekday==0:
         weekday=datetime.strptime(str(crsDate),'%Y%m%d').weekday()+1 #通过日期计算星期
     else:
         weekday=force_weekday
-    stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term)
+    stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term,mode=mode)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',force_weekday=0,TeacherSig='阿晓老师'):
+def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',force_weekday=0,TeacherSig='阿晓老师',copy_to_feedback_dir='no',mode=''):
     crsDate=crsDate_name.split('-')[0]
     crsName=crsDate_name.split('-')[1]
     if force_weekday==0:
@@ -108,9 +109,14 @@ def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',c
     else:
         weekday=force_weekday
     crsName_distibute=str(crsDate)+crsName[4:]
-    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term,force_weekday=force_weekday)
-    my=posterAfterClass(weekday=weekday,term=term,place_input=place)  
-    my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig)
+    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term,force_weekday=force_weekday,mode=mode)
+    # print(crsDate_name[10:])
+    pic_to_feedback=LegoStudentPicDistribute.LegoPics(crsDate=crsDate_name[0:8],crsName=crsDate_name[9:],weekday=weekday,term=term,mode='')
+    pic_to_feedback.dispatch_after_class()
+    pics=LegoStdPicMark.AfterClassMark()
+    pics.group_put(crs_date=crsDate_name[0:8],crs_name=crsDate_name[9:])
+    my=posterAfterClass(weekday=weekday,term=term,place_input=place,mode=mode)  
+    my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig,copy_to_feedback_dir=copy_to_feedback_dir)
 
 def before_class_poster(crsDate_name='20210619-L094游泳的鲨鱼',time_crs_input='1100-1230'):
     date_crs_input=crsDate_name.split('-')[0]
@@ -137,41 +143,68 @@ def stage_report(std_names=['韦华晋','黄建乐'],start_date='20210301',end_d
                     cmt_date=cmt_date,tb_list=tb_list, \
                     tch_name=tch_name,mode=mode,k=k)
 
+def tiyanke_step_mark(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=5):
+    p=LegoStdPicMark.StepMark()
+    p.putCover(height=height,term=term,crop=crop,bigger=bigger,weekday=weekday)
+
+def check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=5,fn='c:/Users/jack/desktop/w5待排课程.txt',show_res='yes',write_file='no'):
+    qry=QueryForClassTaken.Query(place_input=place_input)
+    # qry.std_class_taken(weekday=[1,4],display='print_list',format='only_clsnam')
+    # qry.check_duplicate(term='2021秋',weekday=1,crs_name='L026跷跷板') 
+    conflict=qry.check_conflict(term=term,weekday=weekday,fn=fn,show_res=show_res,write_file=write_file)
+
+
+if __name__=='__main__':
+#排课检查课程冲突
+    # check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=6,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
+
+#体验课给照片打标
+    # tiyanke_step_mark(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=1)
+
 #将步骤图生成1分钟视频放上视频号
-# makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
+    # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
 #将步骤图生成搭建视频，与原拍摄视频合并  拍摄mp4建议29-44秒
-#方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
-# merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
+    #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
+    # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 
 
 #学期末为照片加上灰背景及知识点等
-stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[4])
+    # stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[1,4])
 
 #学期末为照片加上黄色背景
-# stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
+    # stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
 
 #16节课/或阶段课程学习报告
-# stage_report(std_names=['陆炳辰'],start_date='20210301',end_date='20210801', \
-#                     cmt_date='20210719',tb_list=[['2021春','w4']], \
-#                     tch_name=['阿晓','杨芳芳'],mode='all',k=1)
+    # list_w4=['w4',['陈锦媛','陆炳辰','刘嘉祥','李贤斌','庞孙钜','沈金辰','陶盛挺','韦宇浠','李家捷','林祖葳']]
+    # list_w1=['w1',['邓立文','黄昱涵','农雨蒙','覃熙雅','廖韦朗','王丹亭','李宛晏','韦万祎','谢威年','黄进桓']]
+    # list_all=[list_w1,list_w4]
+    # for list_cus in list_all:
+    #     stage_report(std_names=list_cus[1],start_date='20210301',end_date='20210801', \
+    #                         cmt_date='20210719',tb_list=[['2021春',list_cus[0]]], \
+    #                         tch_name=['阿晓','芳芳'],mode='all',k=1)
+
+    # stage_report(std_names=['廖韦朗'],start_date='20210301',end_date='20210801', \
+    #                         cmt_date='20210719',tb_list=[['2021春','w1']], \
+    #                         tch_name=['阿晓','芳芳'],mode='all',k=1)
 
 #学员成长手册
-# std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
+    # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
 
 #学员能力玫瑰图
-# std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
+    # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-# makePpt('L105侧飞的战斗机',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new')
+    # makePpt('L108风车和房子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
-# view_score(place_input='001-超智幼儿园',std_name='w401',sort_by='剩余积分')
+    # view_score(place_input='001-超智幼儿园',std_name='w601',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-# pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021春',crsDate_name='20210717-L105侧飞的战斗机',force_weekday=0,TeacherSig='阿晓老师')  
+    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20210918-L107我的小房子', \
+        force_weekday=1,TeacherSig='阿晓老师',copy_to_feedback_dir='yes',mode='')  
 
 # 课前生成海报
-# before_class_poster(crsDate_name='20210717-L105侧飞的战斗机',time_crs_input='1100-1230')
+    # before_class_poster(crsDate_name='20210925-L042玉兔捣药',time_crs_input='1100-1230')
 
  
