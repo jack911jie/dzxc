@@ -124,7 +124,7 @@ class LegoPics:
 
     #将课后照片按 日期-首拼姓名-【课后反馈，每周课程4+，16+】
     def dispatch_after_class(self):
-        print('。。。。将打标签的照片分配到“I:\\每周乐高课_学员\\{}”中……'.format(self.place))
+        print('正在分配打标签的照片……')
         stdInfos=self.read_sig(weekday=self.weekday)
 
         dictPY=stdInfos[0]
@@ -153,7 +153,7 @@ class LegoPics:
                             if re.match(ptn_pic_src,fn):     
                                 if '每周课程4+' in tag or '每周课程16' in tag:
                                     stu_dirName=os.path.join(self.after_class_dir,self.crsDate+'-'+self.crsName,fn)
-                                    stu_pic_dirName=os.path.join(self.after_class_dir,self.crsDate,dictPY[_tag]+_tag)
+                                    stu_pic_dirName=os.path.join(self.after_class_dir,self.crsDate+'-'+self.crsName,dictPY[_tag]+_tag)
                                     if not os.path.exists(stu_pic_dirName):
                                         os.makedirs(stu_pic_dirName)
                                         oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)

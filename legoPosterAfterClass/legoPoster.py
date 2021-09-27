@@ -694,7 +694,7 @@ class poster:
             
             img.save(os.path.join(save_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             if copy_to_feedback_dir=='yes':
-                save_feedback_dir=os.path.join(self.feedback_dir,str(dateInput),std[2]+stdName)
+                save_feedback_dir=os.path.join(self.feedback_dir,str(dateInput)+'-'+crs_nameInput,std[2]+stdName)
                 try:
                     img.save(os.path.join(save_feedback_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
                 except Exception as err:

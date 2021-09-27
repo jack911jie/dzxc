@@ -571,7 +571,7 @@ class AfterClassMark(pics):
     
     def get_pics(self,crs_date='20210924',crs_name='L107我的小房子'):
         pics_addr=[]
-        for parent,dirs,fns in os.walk(os.path.join(self.after_class_dir,crs_date)):
+        for parent,dirs,fns in os.walk(os.path.join(self.after_class_dir,crs_date+'-'+crs_name)):
             for fn in fns:
                 if fn[-3:].lower()=='jpg' or fn[-4:].lower()=='jpeg':
                     pics_addr.append(os.path.join(parent,fn))
