@@ -41,7 +41,7 @@ class Query:
         
         return cls
 
-    def check_repeat(self,term='2021秋',weekday=5,crs_name='L103摩托车骑士'):
+    def check_duplicate(self,term='2021秋',weekday=5,crs_name='L103摩托车骑士',show='show'):
         wd=days_calculate.num_to_ch(weekday)
         fn_dir=os.path.join(self.std_info_dir,'学生信息表')
         fn=os.path.join(fn_dir,term+'-学生信息表（周'+wd+'）.xlsx')
@@ -63,17 +63,101 @@ class Query:
                         if std in info_taken['std_names']:
                             rpt_info.append([std,crs_name,xls[:5],xls[-8:-6]])
                             rpt+=1
-                
-        if rpt>0:
-            print('\n在 {} 学期 星期{} 的学生课程中检测到以下重复\n'.format(term,wd))
-            for info in rpt_info:
-                print(info)
-        else:
-            print('未检测到重复值')
+        if show=='show':
+            if rpt>0:
+                print('\n在 {} 学期 星期{} 的学生课程 {} 中检测到以下重复\n'.format(term,wd,crs_name))
+                for info in rpt_info:
+                    print(info)
+            else:
+                print('未检测到重复值')
+
+        return [rpt_info,rpt]
+
+    def check_conflict(self,term='2021秋',weekday=5,fn='c:/Users/jack/desktop/w5待排课程.txt',show_res='yes',write_file='yes'):
+        with open(fn,'r',encoding='utf-8') as f:
+            lines=f.readlines()
+        to_arrange=[itm.strip() for itm in lines]
+        res=[]
+        rpt=0
+        for crs in to_arrange:
+            res_dup=self.check_duplicate(term=term, weekday=weekday,crs_name=crs,show='no')
+            rpt=rpt+res_dup[1]
+            check_res=res_dup[0]
+            _res=[]
+            for _check_res in check_res:
+                _res.append([_check_res[0],_check_res[2],_check_res[3]])
+            res.append([crs,_res])
+        
+        # print(res)
+
+        if show_res=='yes':
+            if rpt>0:
+                print('\n在 {} 学期 星期{} 的班级课程中检测到以下重复值：'.format(term,days_calculate.num_to_ch(weekday)))
+                res_no_dups=[]
+                for conf in res:
+                    if conf[1]:
+                        if conf[0]!='':
+                            print('\n'+conf[0]+'---->')
+                            for conff in conf[1]:
+                                print(conff[0]+'  '+conff[1]+'  '+conff[2])
+                    else:
+                        if conf[0]!='':
+                            res_no_dups.append(conf[0])
+                if res_no_dups:
+                    print('\n=========分==隔==线===========\n')
+                    for res_no_dup in res_no_dups:
+                        print(res_no_dup)
+                    print('-------------------------------->\n在 {} 学期 星期{} 的班级课程中未检测到重复值。\n'.format(term,days_calculate.num_to_ch(weekday)))
+                    print('\n')
+            else:
+                print('\n')
+                for conf in res:
+                    if conf[0]!='':
+                        print(conf[0])
+                print('----------------------------------------->')
+                print('\n以上在 {} 学期 星期{} 的班级课程中未检测到重复值。\n'.format(term,days_calculate.num_to_ch(weekday)))
+
+        if write_file=='yes':
+            res_fn='c:/Users/jack/desktop/crs_conflict_result.txt'
+            if rpt>0:
+                with open (res_fn,'w',encoding='utf-8') as fw:
+                    fw.write('\n在 {} 学期 星期{} 的班级课程中检测到以下重复值：\n'.format(term,days_calculate.num_to_ch(weekday)))
+                    res_no_dup_w=[]
+                    for conf in res:
+                        if conf[1]:
+                            fw.write('\n'+conf[0]+'---->'+'\n')
+                            for conff in conf[1]:
+                                fw.write(conff[0]+'  '+conff[1]+'  '+conff[2]+'\n')
+                        else:
+                            if conf[0]!='':
+                                res_no_dup_w.append(conf[0])
+                    if res_no_dup_w:
+                        fw.write('\n=========分==隔==线===========\n\n')
+                        for res_no_dup in res_no_dups:
+                            fw.write(res_no_dup+'\n')
+                        fw.write('------------------------------->\n在 {} 学期 星期{} 的班级课程中未检测到重复值。\n'.format(term,days_calculate.num_to_ch(weekday)))
+                        fw.write('\n')
+                    print('\n文件写入完成')
+            else:
+                with open (res_fn,'w',encoding='utf-8') as fw:
+                    fw.write('\n')
+                    for conf in res:
+                        if conf[0]!='':
+                            fw.write(conf[0]+'\n')
+                    fw.write('----------------------------------->'+'\n')                
+                    fw.write('\n在 {} 学期 星期{} 的班级课程中未检测到重复值。\n'.format(term,days_calculate.num_to_ch(weekday)))
+
+        # print(res)
+        return res
+
+        # print(check_res)
+
+        
 
 
 
 if __name__=='__main__':
     qry=Query(place_input='001-超智幼儿园')
     # qry.std_class_taken(weekday=[1,4],display='print_list',format='only_clsnam')
-    qry.check_repeat(term='2021秋',weekday=1,crs_name='L042玉免捣药') 
+    # qry.check_duplicate(term='2021秋',weekday=1,crs_name='L026跷跷板') 
+    conflict=qry.check_conflict(term='2021秋',weekday=1,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='yes')

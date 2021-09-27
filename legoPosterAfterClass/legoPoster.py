@@ -41,6 +41,7 @@ class poster:
         self.term=term
         self.place_input=place_input
         self.std_sig_dir=config['学生签到表文件夹']
+        self.feedback_dir=config['课后照片及反馈文件夹']
         wd=days_calculate.num_to_ch(str(weekday))
         # self.eachStd=config['个别学员评语表']
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
@@ -193,7 +194,7 @@ class poster:
 
         return ImageFont.truetype(fontList[font_name],font_size)
     
-    def PosterDraw(self,crs_nameInput,dateInput,TeacherSig='阿晓老师'):
+    def PosterDraw(self,crs_nameInput,dateInput,TeacherSig='阿晓老师',copy_to_feedback_dir='no'):
         crs_name=crs_nameInput[4:]
         crs_code=crs_nameInput[0:4]
         def basic_para():
@@ -692,12 +693,20 @@ class poster:
             
             
             img.save(os.path.join(save_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
+            if copy_to_feedback_dir=='yes':
+                save_feedback_dir=os.path.join(self.feedback_dir,str(dateInput),std[2]+stdName)
+                try:
+                    img.save(os.path.join(save_feedback_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
+                except Exception as err:
+                    print('课后照片及反馈文件夹不存在',err)
+
             print('完成')
             # img.show()
 
 
         print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
         os.startfile(save_dir)
+        os.startfile(os.path.dirname(save_feedback_dir))
         
     
 if __name__=='__main__':

@@ -34,6 +34,7 @@ class LegoPics:
         self.weekday=weekday
         self.other_tags=['每周课程4+','每周课程16','乐高step1','乐高step2','乐高step3','乐高step4','乐高step5']
         self.std_sig_dir=config['学员签到表文件夹']
+        self.after_class_dir=config['课后照片及反馈文件夹']
         self.place=place_input
         self.term=term
         self.mode=mode
@@ -80,7 +81,6 @@ class LegoPics:
             if fn[-3:].lower()=='jpg' or fn[-3:].lower()=='jpeg':
             #                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
                 tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
-
                 if len(tag)>0:
                     for _tag in tag:
                         _tag=_tag.strip()
@@ -122,7 +122,68 @@ class LegoPics:
         
         print('\n完成')
 
-            
+    #将课后照片按 日期-首拼姓名-【课后反馈，每周课程4+，16+】
+    def dispatch_after_class(self):
+        print('。。。。将打标签的照片分配到“I:\\每周乐高课_学员\\{}”中……'.format(self.place))
+        stdInfos=self.read_sig(weekday=self.weekday)
+
+        dictPY=stdInfos[0]
+        stdNamelist=stdInfos[1]
+
+
+        ptn=re.compile(r'^[a-zA-Z]+[\u4e00-\u9fa5]+') #标签为“英文+中文”的正则表达式
+        ptn_pic_src='[0-9]{8}\-[a-zA-Z].*'
+        lack_stdName=[]
+        match_num=0
+        not_match_num=0
+
+        for fn in os.listdir(os.path.join(self.dir,self.crsDate+'-'+self.crsName)):
+            if fn[-3:].lower()=='jpg' or fn[-4:].lower()=='jpeg':
+            #                 if iptcinfo3.IPTCInfo(os.path.join(self.dir,fn)):
+                tag=code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)))      
+
+                if len(tag)>0:
+                    for _tag in tag:
+                        _tag=_tag.strip()
+                        _tag=_tag.replace(' ','')
+                        if ptn.match(_tag): #如有“英文+中文”的标签格式，提取中文。
+                             _tag=re.findall(r'[\u4e00-\u9fa5]+',_tag)[0]                              
+
+                        if _tag in stdNamelist:
+                            if re.match(ptn_pic_src,fn):     
+                                if '每周课程4+' in tag or '每周课程16' in tag:
+                                    stu_dirName=os.path.join(self.after_class_dir,self.crsDate+'-'+self.crsName,fn)
+                                    stu_pic_dirName=os.path.join(self.after_class_dir,self.crsDate,dictPY[_tag]+_tag)
+                                    if not os.path.exists(stu_pic_dirName):
+                                        os.makedirs(stu_pic_dirName)
+                                        oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
+                                        newName=os.path.join(stu_pic_dirName,fn)
+                                        shutil.copyfile(oldName,newName)
+                                    else:
+                                        oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
+                                        newName=os.path.join(stu_pic_dirName,fn)
+                                        shutil.copyfile(oldName,newName)
+                                    match_num+=1
+                            else:
+                                not_match_num+=1
+                        else:
+                            if _tag.lower() not in self.other_tags:
+                                lack_stdName.append(_tag)
+
+        # print(lack_stdName)
+        if lack_stdName:
+            except_list=['积分记录','老师指导','阅读']
+            for lack_n in lack_stdName:            
+                if lack_n not in except_list:
+                    print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
+        
+        if not_match_num>0:
+            print('已分配{0}个文件到学生姓名的文件夹中，未分配文件： {1} 个，请检查文件名是否已按标准修改。'.format(match_num,not_match_num))
+        else:
+            print('已分配{0}个文件到学生姓名的文件夹中。'.format(match_num))
+        
+        # os.startfile(os.path.join(self.after_class_dir,self.crsDate))
+        print('\n完成')
             
 def code_to_str(ss):
     s=ss['keywords']
@@ -138,5 +199,6 @@ def code_to_str(ss):
 
 
 if __name__=='__main__':
-    stu_pics=LegoPics(crsDate=20210908,crsName='L106手动小赛车',weekday=3,term='2021秋',mode='tiyan')
-    stu_pics.dispatch()
+    stu_pics=LegoPics(crsDate=20210924,crsName='L107我的小房子',weekday=5,term='2021秋',mode='')
+    # stu_pics.dispatch()
+    stu_pics.dispatch_after_class()
