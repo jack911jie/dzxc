@@ -27,6 +27,7 @@ def circle_corner(img,radii=150):
     # img.save('e:\\temp\\5555.png','PNG',qulity=100)
 
     # img.show()
+    # img=img.convert('RGBA')
     return img
 
 def round_pic(img,method='in'):

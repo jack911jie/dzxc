@@ -671,7 +671,7 @@ class poster:
         save_dir=os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)
         
         for std in std_list:
-            print('正在处理 {} 的图片：'.format(std[3]))
+            print('\n正在处理 {} 的课后反馈：'.format(std[3]))
             # img=basic_bg()
             KdgtName,ClassName,stdPY,stdName,stdAge=std[0],std[1],std[2],std[3],'-'
             totalTxt=expScript(stdName)
@@ -688,7 +688,7 @@ class poster:
             putImg(img,stdPY+stdName)
             putTxt(img,stdName,stdAge,KdgtName,ClassName)             
             
-            print('正在保存 {} 的图片……'.format(std[3]),end='')
+            print('正在保存 {} 的课后反馈……'.format(std[3]),end='')
             
             
             
@@ -704,7 +704,7 @@ class poster:
             # img.show()
 
 
-        print('\n全部完成,保存文件夹：{} 下面的学生文件名'.format(self.bg))
+        print('\n全部完成,保存文件夹：{} , {}'.format(self.bg,self.feedback_dir))
         os.startfile(save_dir)
         os.startfile(os.path.dirname(save_feedback_dir))
         

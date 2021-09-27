@@ -609,8 +609,9 @@ class AfterClassMark(pics):
             k=int(p*rate)
             return k
 
-    def put_cover_to_pic(self,crs_date='20210924',crs_name='L107我的小房子',img_src='E:\\大智小超\\课后照片及反馈\\20210924\\CJY陈锦媛\\20210924-L107我的小房子-017.JPG'):
+    def put_cover_to_pic(self,crs_date='20210924',crs_name='L107我的小房子',img_src='E:\\大智小超\\课后照片及反馈\\20210924-L107我的小房子\\CJY陈锦媛\\20210924-L107我的小房子-017.JPG'):
         img=Image.open(img_src)
+        # img=img.convert('RGBA')
         img=self.resize_crop(img,h_min=2250,crop='yes',bigger='yes')
         w,h=img.size
 
@@ -622,6 +623,7 @@ class AfterClassMark(pics):
         w_rct=int(paraFormat.char_len(crs_name[4:])*ft_size_crs+80)
         rct=Image.new('RGBA',(w_rct,h_rct),(255,255,255,190))
         rct=pics_modify.circle_corner(rct,radii=100)
+        # rct1,rct2,rct3,rct4=rct_alpha.split()
         draw=ImageDraw.Draw(img)
         img.paste(rct,(p_rct_x,p_rct_y),mask=rct)
         # draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
@@ -837,8 +839,8 @@ if __name__=='__main__':
     #课后照片加课程名称及时间
     p=AfterClassMark()
     # p.get_pics(crs_date='20210924',crs_name='L107我的小房子')
-    # p.put_cover_to_pic(img_src='E:\\大智小超\\课后照片及反馈\\20210924\\CJY陈锦媛\\20210924-L107我的小房子-017.JPG')
-    p.group_put(crs_date='20210924',crs_name='L107我的小房子')
+    p.put_cover_to_pic(img_src='E:\\大智小超\\课后照片及反馈\\20210924-L107我的小房子\\CJY陈锦媛\\20210924-L107我的小房子-080.JPG')
+    # p.group_put(crs_date='20210924',crs_name='L107我的小房子')
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
     # # pic.put_mark()
