@@ -105,15 +105,14 @@ class LegoPics:
                             else:
                                 not_match_num+=1
                         else:
-                            if _tag.lower() not in self.other_tags:
+                            if _tag.lower() not in self.other_tags and _tag.lower() not in lack_stdName:
                                 lack_stdName.append(_tag)
 
         # print(lack_stdName)
         if lack_stdName:
             except_list=['积分记录','老师指导','阅读']
-            for lack_n in lack_stdName:            
-                if lack_n not in except_list:
-                    print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
+            drop_dup_stdnames=list(set(lack_stdName).difference(set(except_list)))
+            print('未找到 {} 的名字,无法分配照片。'.format(','.join(drop_dup_stdnames)))
         
         if not_match_num>0:
             print('已分配{0}个文件到学生姓名的文件夹中，未分配文件： {1} 个，请检查文件名是否已按标准修改。'.format(match_num,not_match_num))
@@ -167,20 +166,19 @@ class LegoPics:
                             else:
                                 not_match_num+=1
                         else:
-                            if _tag.lower() not in self.other_tags:
+                            if _tag.lower() not in self.other_tags and _tag.lower() not in lack_stdName:
                                 lack_stdName.append(_tag)
 
-        # print(lack_stdName)
-        if lack_stdName:
-            except_list=['积分记录','老师指导','阅读']
-            for lack_n in lack_stdName:            
-                if lack_n not in except_list:
-                    print('未找到 {} 的名字,无法分配照片。'.format(','.join(lack_stdName)))
+        # if lack_stdName:
+        #     except_list=['积分记录','老师指导','阅读']
+        #     #去重：
+        #     drop_dup_std=list(set(lack_stdName).difference(set(except_list)))
+        #     print('未找到 {} 的名字,无法分配照片。'.format(','.join(drop_dup_std)))
         
-        if not_match_num>0:
-            print('已分配{0}个文件到学生姓名的文件夹中，未分配文件： {1} 个，请检查文件名是否已按标准修改。'.format(match_num,not_match_num))
-        else:
-            print('已分配{0}个文件到学生姓名的文件夹中。'.format(match_num))
+        # if not_match_num>0:
+        #     print('已分配{0}个文件到学生姓名的文件夹中，未分配文件： {1} 个，请检查文件名是否已按标准修改。'.format(match_num,not_match_num))
+        # else:
+        #     print('已分配{0}个文件到学生姓名的文件夹中。'.format(match_num))
         
         # os.startfile(os.path.join(self.after_class_dir,self.crsDate))
         print('\n完成')
