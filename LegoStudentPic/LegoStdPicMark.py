@@ -621,8 +621,11 @@ class AfterClassMark(pics):
         p_rct_x,p_rct_y= 30,h-h//10
         h_rct=h//13
         w_rct=int(paraFormat.char_len(crs_name[4:])*ft_size_crs+80)
-        rct=Image.new('RGBA',(w_rct,h_rct),(255,255,255,190))
+        rct=Image.new('RGB',(w_rct,h_rct),(255,255,255))
         rct=pics_modify.circle_corner(rct,radii=100)
+        rct_blender=Image.new('RGBA',(rct.size[0],rct.size[1]),(0,0,0,0))
+        #增加透明度
+        rct=Image.blend(rct_blender,rct,0.9) 
         # rct1,rct2,rct3,rct4=rct_alpha.split()
         draw=ImageDraw.Draw(img)
         img.paste(rct,(p_rct_x,p_rct_y),mask=rct)
@@ -839,7 +842,7 @@ if __name__=='__main__':
     #课后照片加课程名称及时间
     p=AfterClassMark()
     # p.get_pics(crs_date='20210924',crs_name='L107我的小房子')
-    p.put_cover_to_pic(img_src='E:\\大智小超\\课后照片及反馈\\20210924-L107我的小房子\\CJY陈锦媛\\20210924-L107我的小房子-080.JPG')
+    p.put_cover_to_pic(img_src='e:/temp/20210924-L107我的小房子-080.JPG')
     # p.group_put(crs_date='20210924',crs_name='L107我的小房子')
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
