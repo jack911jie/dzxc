@@ -2,8 +2,9 @@ import os
 import sys
 # print(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file))),'module'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
-import days_calculate
 import WashData
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
+import days_calculate
 import composing
 import readConfig
 import numpy as np
