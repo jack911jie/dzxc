@@ -1,7 +1,7 @@
 import os
 import sys
 sys.path.append('i:/py/dzxc/module')
-from pics_modify import circle_corner
+from pics_modify import Shape
 import composing
 import readConfig
 from PIL import Image,ImageDraw
@@ -17,7 +17,7 @@ class LegoClass:
         self.df=pd.read_excel(self.crs_info,sheet_name='课程信息')
         self.crs_proj_dir=config['图纸文件夹']
         self.font_list=config['fontList']
-        self.font=composing.fonts
+        self.font=composing.TxtFormat().fonts
 
     def read_excels(self,crs_name_input):        
         df_crs=self.df[self.df['课程编号']==crs_name_input[0:4]]
@@ -44,14 +44,14 @@ class LegoClass:
         draw.text((260,178),date_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,228),time_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程日期
         draw.text((260,279),addr_crs,fill='#595757',font=self.font('上首金牛体',34)) #课程地点
-        composing.put_txt_img(draw=draw,tt=knlg,total_dis=480,xy=[120,530],dis_line=20, \
+        composing.TxtFormat().put_txt_img(draw=draw,tt=knlg,total_dis=480,xy=[120,530],dis_line=20, \
                                 fill='#595757',font_name='丁永康硬笔楷书',font_size=34,addSPC='None') #知识点
 
         _img=Image.open(os.path.join(self.crs_proj_dir,crs_name_input,crs_name_input[4:]+'.jpg'))
         img=_img.resize((int(300*_img.size[0]/_img.size[1]),300))
         w,h=img.size
         new_img=img.crop((int(w*5/16),0,w,h))
-        new_img_round=circle_corner(new_img,radii=150)
+        new_img_round=Shape().circle_corner(new_img,radii=150)
         # new_img_round.show()
         bg.paste(new_img_round,(int((bg.size[0]-new_img_round.size[0])/2),700),mask=new_img_round)
         jpg=bg.convert('RGB')

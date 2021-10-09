@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__
 import WashData
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
 import days_calculate
-import composing
+from composing import TxtFormat
 import readConfig
 import numpy as np
 import json
@@ -132,16 +132,16 @@ class poster:
 
     def put_txt_img(self,img,t,total_dis,xy,dis_line,fill,font_name,font_size,addSPC='None'):
         
-        fontInput=composing.fonts(font_name,font_size)            
+        fontInput=TxtFormat().fonts(font_name,font_size)            
         if addSPC=='add_2spaces': 
             ind='yes'
         else:
             ind='no'
             
         # txt=self.split_txt(total_dis,font_size,t,Indent='no')
-        txt,p_num=composing.split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
+        txt,p_num=TxtFormat().split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
 
-        # font_sig = composing.fonts('丁永康硬笔楷书',40)
+        # font_sig = TxtFormat().fonts('丁永康硬笔楷书',40)
         draw=ImageDraw.Draw(img)   
         # logging.info(txt)
         n=0
@@ -612,26 +612,26 @@ class poster:
             color=color_list('202101')
             draw=ImageDraw.Draw(img)        
             
-            draw.text((170,5), '科', fill = color['t_title_ke1'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((270,5), '学', fill = color['t_title_xue'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((370,5), '机', fill = color['t_title_ji'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((470,5), '器', fill = color['t_title_qi'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((570,5), '人', fill = color['t_title_ren'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            draw.text((670,5), '课', fill = color['t_title_ke4'],font=composing.fonts('汉仪超级战甲',75))  #大题目
-            # draw.text((350,120), stdName, fill =color['t_name'] ,font=composing.fonts('楷体',60))  #姓名
-            draw.text((350,120), stdName, fill =color['t_name'] ,font=composing.fonts('汉仪心海行楷w',60))  #姓名
-            # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=composing.fonts('微软雅黑',60))  #年龄    
-            draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=composing.fonts('杨任东竹石体',33))  #幼儿园
-            draw.text((460,200), ClassName, fill = color['t_class'],font=composing.fonts('杨任东竹石体',33))  #班级
+            draw.text((170,5), '科', fill = color['t_title_ke1'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            draw.text((270,5), '学', fill = color['t_title_xue'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            draw.text((370,5), '机', fill = color['t_title_ji'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            draw.text((470,5), '器', fill = color['t_title_qi'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            draw.text((570,5), '人', fill = color['t_title_ren'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            draw.text((670,5), '课', fill = color['t_title_ke4'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
+            # draw.text((350,120), stdName, fill =color['t_name'] ,font=TxtFormat().fonts('楷体',60))  #姓名
+            draw.text((350,120), stdName, fill =color['t_name'] ,font=TxtFormat().fonts('汉仪心海行楷w',60))  #姓名
+            # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=TxtFormat().fonts('微软雅黑',60))  #年龄    
+            draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=TxtFormat().fonts('杨任东竹石体',33))  #幼儿园
+            draw.text((460,200), ClassName, fill = color['t_class'],font=TxtFormat().fonts('杨任东竹石体',33))  #班级
     
-            draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=composing.fonts('华康海报体W12(p)',40))  #课程名称  
-            draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=composing.fonts('汉仪锐智w',25))  #难度
-            draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=composing.fonts('微软雅黑',22))  #教具
+            draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=TxtFormat().fonts('华康海报体W12(p)',40))  #课程名称  
+            draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=TxtFormat().fonts('汉仪锐智w',25))  #难度
+            draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=TxtFormat().fonts('微软雅黑',22))  #教具
             
             self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = color['t_knlg'],font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
-            draw.text((100,630), date_txt, fill = color['t_date'],font=composing.fonts('汉仪心海行楷w',35))  #日期           
+            draw.text((100,630), date_txt, fill = color['t_date'],font=TxtFormat().fonts('汉仪心海行楷w',35))  #日期           
 
             #评语&积分
             script=expScript(stdName)
@@ -644,16 +644,16 @@ class poster:
 
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
             # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=36,addSPC='add_2spaces') #老师评语
-            draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=composing.fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
-            draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=composing.fonts('微软雅黑',30)) 
-            draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=composing.fonts('汉仪糯米团',45))  #我的课堂情况
-            draw.text((60,self.y_score+5), '我的积分', fill = color['t_scores_title'],font=composing.fonts('汉仪糯米团',45))  #我的积分
-            draw.text((120,self.y_score+120), '本节课积分', fill = color['t_scores_left'],font=composing.fonts('汉仪糯米团',45))  #本节课积分
+            draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=TxtFormat().fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
+            draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=TxtFormat().fonts('微软雅黑',30)) 
+            draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=TxtFormat().fonts('汉仪糯米团',45))  #我的课堂情况
+            draw.text((60,self.y_score+5), '我的积分', fill = color['t_scores_title'],font=TxtFormat().fonts('汉仪糯米团',45))  #我的积分
+            draw.text((120,self.y_score+120), '本节课积分', fill = color['t_scores_left'],font=TxtFormat().fonts('汉仪糯米团',45))  #本节课积分
 
-            draw.text((210,self.y_score+200), str(std_this_score)+'分', fill = color['t_scores_left'],font=composing.fonts('汉仪糯米团',75))  #本节课积分
-            draw.text((490,self.y_score+160),'可兑换积分：'+str(int(remain_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #可兑换积分
-            draw.text((490,self.y_score+210), '累计积分：'+str(int(crs_total_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #累计总积分
-            draw.text((490,self.y_score+260), '已兑换积分：'+str(int(vrfy_sc))+' 分', fill = color['t_scores_right'],font=composing.fonts('优设标题',35))  #消耗积分
+            draw.text((210,self.y_score+200), str(std_this_score)+'分', fill = color['t_scores_left'],font=TxtFormat().fonts('汉仪糯米团',75))  #本节课积分
+            draw.text((490,self.y_score+160),'可兑换积分：'+str(int(remain_sc))+' 分', fill = color['t_scores_right'],font=TxtFormat().fonts('优设标题',35))  #可兑换积分
+            draw.text((490,self.y_score+210), '累计积分：'+str(int(crs_total_sc))+' 分', fill = color['t_scores_right'],font=TxtFormat().fonts('优设标题',35))  #累计总积分
+            draw.text((490,self.y_score+260), '已兑换积分：'+str(int(vrfy_sc))+' 分', fill = color['t_scores_right'],font=TxtFormat().fonts('优设标题',35))  #消耗积分
             
            
             print('完成')
@@ -676,7 +676,8 @@ class poster:
             # img=basic_bg()
             KdgtName,ClassName,stdPY,stdName,stdAge=std[0],std[1],std[2],std[3],'-'
             totalTxt=expScript(stdName)
-            self.allTxt,self.para_num=composing.split_txt_Chn_eng(wid=780,font_size=self.comment_font_size,txt_input=totalTxt,Indent='yes')
+            txt_and_num=TxtFormat().split_txt_Chn_eng(wid=780,font_size=self.comment_font_size,txt_input=totalTxt,Indent='yes')
+            self.allTxt,self.para_num=txt_and_num['txt'],txt_and_num['para_num']
 
 
 

@@ -3,8 +3,8 @@ import sys
 # sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'../../dzxc/module'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
 import readConfig
-import composing as paraFormat
-import pics_modify
+from composing import TxtFormat
+from pics_modify import Shape
 import days_calculate
 import LegoStudentPicDistribute
 import re
@@ -621,9 +621,11 @@ class AfterClassMark(pics):
         ft_size_crs=90   
         p_rct_x,p_rct_y= 30,h-h//10
         h_rct=h//13
+        paraFormat=TxtFormat()
         w_rct=int(paraFormat.char_len(crs_name[4:])*ft_size_crs+80)
         rct=Image.new('RGB',(w_rct,h_rct),(255,255,255))
-        rct=pics_modify.circle_corner(rct,radii=100)
+        shape=Shape()
+        rct=shape.circle_corner(rct,radii=100)
         rct_blender=Image.new('RGBA',(rct.size[0],rct.size[1]),(0,0,0,0))
         #增加透明度
         rct=Image.blend(rct_blender,rct,0.9) 
