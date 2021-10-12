@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append('i:/py/dzxc/module')
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
 import days_calculate
 import pandas as pd 
 pd.set_option('display.unicode.ambiguous_as_wide', True)
