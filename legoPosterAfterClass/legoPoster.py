@@ -139,7 +139,8 @@ class poster:
             ind='no'
             
         # txt=self.split_txt(total_dis,font_size,t,Indent='no')
-        txt,p_num=TxtFormat().split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
+        txt_and_p_num=TxtFormat().split_txt_Chn_eng(total_dis,font_size,t,Indent=ind)
+        txt,p_num=txt_and_p_num['txt'],txt_and_p_num['para_num']
 
         # font_sig = TxtFormat().fonts('丁永康硬笔楷书',40)
         draw=ImageDraw.Draw(img)   
@@ -610,7 +611,9 @@ class poster:
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
             print('    正在置入文本……',end='')
             color=color_list('202101')
-            draw=ImageDraw.Draw(img)        
+            draw=ImageDraw.Draw(img)     
+
+            
             
             draw.text((170,5), '科', fill = color['t_title_ke1'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
             draw.text((270,5), '学', fill = color['t_title_xue'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
@@ -623,11 +626,10 @@ class poster:
             # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=TxtFormat().fonts('微软雅黑',60))  #年龄    
             draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=TxtFormat().fonts('杨任东竹石体',33))  #幼儿园
             draw.text((460,200), ClassName, fill = color['t_class'],font=TxtFormat().fonts('杨任东竹石体',33))  #班级
-    
+            
             draw.text((50,290), '• '+crs_info[0]+' •', fill = color['t_crs'],font=TxtFormat().fonts('华康海报体W12(p)',40))  #课程名称  
             draw.text((50,360), '难度：'+crs_info[3], fill = color['t_diff'],font=TxtFormat().fonts('汉仪锐智w',25))  #难度
             draw.text((530,630), '使用教具：'+crs_info[4], fill = color['t_tool'],font=TxtFormat().fonts('微软雅黑',22))  #教具
-            
             self.put_txt_img(img,crs_info[1],450,[25,420],25,fill = color['t_knlg'],font_name='汉仪锐智w',font_size=28)  #知识点    
             
             date_txt='-'.join([str(dateInput)[0:4],str(dateInput)[4:6],str(dateInput)[6:]])
@@ -712,6 +714,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=4,term='2021春')
+    my=poster(weekday=1,term='2021秋')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L074小青蛙',20210422,TeacherSig='阿晓老师')
+    my.PosterDraw('L109螺旋桨飞车',20211011,TeacherSig='阿晓老师')
