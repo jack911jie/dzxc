@@ -251,13 +251,14 @@ class poster:
                 xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（体验）.xlsx')                  
             else:
                 xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')  
-            df_this_crs_score=WashData.std_score_this_crs(xls_this)
+            this_crs_score_info=WashData.std_score_this_crs(xls_this)
+            df_this_crs_score,df_this_medals=this_crs_score_info['std_this_scores'],this_crs_score_info['medals_this_class']
 
             place_dir=os.path.join(self.std_sig_dir,self.place_input)
             df_all_scores=WashData.std_all_scores(place_dir,plus_tiyan='no')
 
             print('完成')
-            return {'this_score':df_this_crs_score,'all_scores':df_all_scores}
+            return {'this_score':df_this_crs_score,'this_medals':df_this_medals,'all_scores':df_all_scores}
         
         def pic_xy(picWid,picHig,x0,y0):
             #白色矩形
@@ -595,6 +596,9 @@ class poster:
             this_score=df_this_crs_score['this_score']      
             std_this_score=this_score[this_score['学生姓名']==std_name][str(date_input)+'-'+crs_name].tolist()[0]
 
+            this_medals=df_this_crs_score['this_medals']
+            std_this_medals=this_medals[this_medals['学生姓名']==std_name][str(date_input)+'-'+crs_name].tolist()[0]
+
             all_scores=df_this_crs_score['all_scores']
             df_std_all_scores=all_scores[all_scores['学生姓名']==std_name]
             crs_sc=df_std_all_scores['课堂总积分'].tolist()[0]
@@ -606,7 +610,7 @@ class poster:
                 'remain_sc':remain_sc
             }
 
-            return {'std_this_score':std_this_score,'std_all_scores':std_all_scores}
+            return {'std_this_score':std_this_score,'std_this_medals':std_this_medals,'std_all_scores':std_all_scores}
 
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
             print('    正在置入文本……',end='')
@@ -639,10 +643,11 @@ class poster:
             script=expScript(stdName)
             std_scores=get_std_scores(date_input=dateInput,crs_name=crs_nameInput,std_name=stdName,df_this_crs_score=df_std_scores)
             std_this_score=std_scores['std_this_score']
+            std_this_medals=std_scores['std_this_medals']
             crs_total_sc=std_scores['std_all_scores']['crs_sc']
             remain_sc=std_scores['std_all_scores']['remain_sc']
             vrfy_sc=std_scores['std_all_scores']['vrfy_sc']
-            script=script.replace('*',str(std_this_score))
+            script=script.replace('*','{}枚奖牌，共计{}'.format(str(round(std_this_medals)),str(std_this_score)))
 
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
             # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=36,addSPC='add_2spaces') #老师评语

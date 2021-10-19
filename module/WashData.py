@@ -166,11 +166,11 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     # print(df_scores)
     return df_scores
 
-def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx'):
+def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周一）.xlsx'):
     df=pd.read_excel(xls,sheet_name='课堂积分',header=None)
-    date_crs=df.iloc[0,8:]   
+    res_date_crs=df.iloc[0,8:]   
     #将数字改为nan后去掉nan，只保留有课程名称的记录     
-    date_crs=date_crs.apply(lambda x : np.nan if isinstance(x, int) else x) 
+    date_crs=res_date_crs.apply(lambda x : np.nan if isinstance(x, int) else x) 
     date_crs.dropna(inplace=True)
 
     std_all_crs_scores=df.iloc[2:,:]
@@ -184,8 +184,14 @@ def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     col_names.extend(date_crs.tolist())
     std_this_scores.columns=col_names
     # print(std_this_scores)
+    #计算奖牌个数
+    count_medal=df.iloc[2:,8:8+4*date_crs.shape[0]]
+    for k,title in enumerate(date_crs.tolist()):        
+        count_medal[title]=count_medal.iloc[:,4*k:4*(k+1)-1].sum(axis=1)
 
-    return std_this_scores
+    medal_num=pd.concat([std_info,count_medal.iloc[:,4*date_crs.shape[0]:]],axis=1)
+    medal_num.columns=col_names
+    return {'std_this_scores':std_this_scores,'medals_this_class':medal_num}
 
 def comments_after_class(cmt_date,crs_name_input,weekday,crs_list,std_info,tch_cmt):
     crs_code=crs_name_input[0:4]
@@ -286,8 +292,8 @@ if __name__=='__main__':
     # k=crs_sig_table()
     # print(k['total_crs'])
     # print(std_all_scores())
-    print(class_taken())
-    # print(std_score_this_crs())
+    # print(class_taken())
+    print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
     # std_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx"
