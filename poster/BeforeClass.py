@@ -10,14 +10,15 @@ import re
 from datetime import datetime
 
 class LegoClass:
-    def __init__(self):
-        config=readConfig.readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','config.dazhi'))
+    def __init__(self,place='001-超智幼儿园'):
+        config=readConfig.readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','poster.config'))
         self.bg=config['科学机器人课模板图片']
         self.crs_info=config['科学机器人课程信息表']
         self.df=pd.read_excel(self.crs_info,sheet_name='课程信息')
         self.crs_proj_dir=config['图纸文件夹']
         self.font_list=config['fontList']
         self.font=composing.TxtFormat().fonts
+        self.out_dir=config['输出文件夹'].replace('$',place)
 
     def read_excels(self,crs_name_input):        
         df_crs=self.df[self.df['课程编号']==crs_name_input[0:4]]
@@ -55,7 +56,7 @@ class LegoClass:
         # new_img_round.show()
         bg.paste(new_img_round,(int((bg.size[0]-new_img_round.size[0])/2),700),mask=new_img_round)
         jpg=bg.convert('RGB')
-        save_name=os.path.join(self.crs_proj_dir,crs_name_input,date_crs_input+'_'+crs_name_input+'_课前海报.jpg')
+        save_name=os.path.join(self.out_dir,date_crs_input+'_'+crs_name_input+'_课前海报.jpg')
         jpg.save(save_name,quality=85)
         # bg.show()
         print('完成')
