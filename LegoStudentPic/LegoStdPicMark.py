@@ -610,7 +610,7 @@ class AfterClassMark(pics):
             k=int(p*rate)
             return k
 
-    def put_cover_to_pic(self,crs_date='20210924',crs_name='L107我的小房子',img_src='E:\\大智小超\\课后照片及反馈\\20210924-L107我的小房子\\CJY陈锦媛\\20210924-L107我的小房子-017.JPG'):
+    def put_cover_to_pic(self,crs_date='20210924',crs_name='L107我的小房子',img_src='E:\\大智小超\\课后照片及反馈\\20210924-L107我的小房子\\CJY陈锦媛\\20210924-L107我的小房子-017.JPG',forced_ht=''):
         img=Image.open(img_src)
         # img=img.convert('RGBA')
         img=self.resize_crop(img,h_min=2250,crop='yes',bigger='yes')
@@ -659,14 +659,19 @@ class AfterClassMark(pics):
 
 
         # img.show()
+        if forced_ht:
+            w,h=img.size
+            forced_ht=int(forced_ht)
+            forced_wid=forced_ht*w//h
+            img=img.resize((forced_wid,forced_ht))
         return img
         
-    def group_put(self,crs_date='20210924',crs_name='L107我的小房子'):
+    def group_put(self,crs_date='20210924',crs_name='L107我的小房子',forced_ht=''):
         print('正在给照片加上标签……\n')
         pic_list=self.get_pics(crs_date=crs_date,crs_name=crs_name)
         # print(pic_list)
         for pic in tqdm(pic_list):
-            img=self.put_cover_to_pic(crs_date=crs_date,crs_name=crs_name,img_src=pic)
+            img=self.put_cover_to_pic(crs_date=crs_date,crs_name=crs_name,img_src=pic,forced_ht=forced_ht)
             img.save(pic,quality=95,subsampling=0)
         print('完成')
 

@@ -101,7 +101,7 @@ def picsDistribute(crsDate,place,crsName,term,force_weekday=0,mode=''):
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term,mode=mode)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',force_weekday=0,TeacherSig='阿晓老师',copy_to_feedback_dir='no',mode=''):
+def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht='',copy_to_feedback_dir='no',mode=''):
     crsDate=crsDate_name.split('-')[0]
     crsName=crsDate_name.split('-')[1]
     if force_weekday==0:
@@ -114,7 +114,7 @@ def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',c
     pic_to_feedback=LegoStudentPicDistribute.LegoPics(crsDate=crsDate_name[0:8],crsName=crsDate_name[9:],weekday=weekday,term=term,mode='')
     pic_to_feedback.dispatch_after_class()
     pics=LegoStdPicMark.AfterClassMark()
-    pics.group_put(crs_date=crsDate_name[0:8],crs_name=crsDate_name[9:])
+    pics.group_put(crs_date=crsDate_name[0:8],crs_name=crsDate_name[9:],forced_ht=pic_forced_ht)
     my=posterAfterClass(weekday=weekday,term=term,place_input=place,mode=mode)  
     my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig,copy_to_feedback_dir=copy_to_feedback_dir)
 
@@ -195,16 +195,16 @@ if __name__=='__main__':
     # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-    # makePpt('L108风车和房子',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
+    # makePpt('L112飞行的小鸟',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
     # view_score(place_input='001-超智幼儿园',std_name='w601',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20210918-L107我的小房子', \
-        force_weekday=1,TeacherSig='阿晓老师',copy_to_feedback_dir='yes',mode='')  
+    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211018-L111可爱的小蜜蜂', 
+        force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='')  
 
 # 课前生成海报
-    # before_class_poster(crsDate_name='20210925-L042玉兔捣药',time_crs_input='1100-1230')
+    # before_class_poster(crsDate_name='20211023-L112飞行的小鸟',time_crs_input='1100-1230')
 
  

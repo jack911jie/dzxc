@@ -647,7 +647,7 @@ class poster:
             crs_total_sc=std_scores['std_all_scores']['crs_sc']
             remain_sc=std_scores['std_all_scores']['remain_sc']
             vrfy_sc=std_scores['std_all_scores']['vrfy_sc']
-            script=script.replace('*','{}枚奖牌，共计{}'.format(str(round(std_this_medals)),str(std_this_score)))
+            script=script.replace('*','{}枚积分币，共计{}'.format(str(round(std_this_medals)),str(std_this_score)))
 
             self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
             # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=36,addSPC='add_2spaces') #老师评语
