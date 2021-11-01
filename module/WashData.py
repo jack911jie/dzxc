@@ -58,7 +58,7 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
     info_crs.loc['aa']=info_crs_0.columns.values
     info_crs=info_crs.T
     info_crs.reset_index(drop=True,inplace=True)
-    # print(info_crs)
+    print(info_crs)
     info_crs.columns=['课程名称','上课日期']    
     info_crs.replace('-',np.nan,inplace=True)
     # print(info_crs)

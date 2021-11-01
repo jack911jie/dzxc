@@ -3,11 +3,12 @@ import sys
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 # sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
-import composing
+from composing import TxtFormat
 import pic_transfer
-import WashData
 import days_calculate
 from readConfig import readConfig
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),'module'))
+import WashData
 import pandas as pd 
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator
@@ -26,7 +27,7 @@ class data_summary:
 
         font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
-        self.font=composing.fonts
+        self.font=TxtFormat.fonts
         
     def get_std_term_crs(self,std_name='韦宇浠',tb_list=[['2020秋','w2'],['2021春','w4']],start_date='20200901',end_date='20210521'):
 
@@ -775,8 +776,10 @@ if __name__=='__main__':
     # print(res['total_crs'],'\n',res['std_crs'])
     # pic=my.rose_and_bar(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\每周课程反馈\\2021春-学生课堂学习情况反馈表（周四）.xlsx')
 
-    ns=['韦宇浠']
+    ns=['韦万祎']
     for n in ns:
-        my.exp_a4_16(std_name=n,start_date='20210301',end_date='20210810', \
-                    cmt_date='20210719',tb_list=[['2021春','w4']], \
-                    tch_name=['阿晓','杨芳芳'],mode='all',k=1)
+        # my.exp_a4_16(std_name=n,start_date='20210801',end_date='20211110', \
+        #             cmt_date='20210719',tb_list=[['2021秋','w5']], \
+        #             tch_name=['阿晓','杨芳芳'],mode='all',k=1)
+        info=my.get_std_term_crs(std_name=n,tb_list=[['2021秋','w5']],start_date='20210801',end_date='20211110')
+        print(info)
