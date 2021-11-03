@@ -4,7 +4,7 @@ import sys
 # sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
 from composing import TxtFormat
-import pic_transfer
+from pic_transfer import Plot
 import days_calculate
 from readConfig import readConfig
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(__file__)),'module'))
@@ -27,7 +27,7 @@ class data_summary:
 
         font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
-        self.font=TxtFormat.fonts
+        self.font=TxtFormat().fonts
         
     def get_std_term_crs(self,std_name='韦宇浠',tb_list=[['2020秋','w2'],['2021春','w4']],start_date='20200901',end_date='20210521'):
 
@@ -105,7 +105,7 @@ class data_summary:
       
         comments_for_std=std_crs_num_txt+'\n'+comments_for_std
         font_size_cmt=int(30*k)
-        prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
+        prgh_nums=TxtFormat.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
         #评语标题高度
         ht_cmt_title=int(60*k)
         #评语高度
@@ -235,7 +235,7 @@ class data_summary:
             draw.text((int(45),int((y_left_up+gap_0+20))),'学期评语',fill='#8fc31f',font=self.font('鸿蒙印品',int(35*k))) 
 
             #评语
-            composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(628*k*0.95), \
+            TxtFormat.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(628*k*0.95), \
                                   xy=[int(58),int((y_left_up+gap_0+110))],dis_line=int(20*k),fill='#595757', \
                                   font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
 
@@ -259,9 +259,35 @@ class data_summary:
             info=self.get_std_term_crs(std_name=std_name,tb_list=tb_list,start_date=start_date,end_date=end_date)
             total_crs=info['total_crs']
             total_crs.dropna(inplace=True)
+
             std_crs=info['std_crs']
             std_crs.dropna(inplace=True)   
             std_info=info['std_info']
+
+            # print('std_crs',std_crs)
+            #如有补课的信息
+            if not std_crs[std_crs['课程名称'].str.match('补_\d{8}-.*')].empty:
+                missed_crs=std_crs[std_crs['课程名称'].str.match('补_\d{8}-.*')]
+                # print('missed_crs',missed_crs)
+                #处理该同学的总课表
+                for id in missed_crs['index'].tolist():
+                    total_crs.drop(total_crs[total_crs['课程名称']==missed_crs[missed_crs['index']==id]['课程名称'].tolist()[0][9:]].index,inplace=True)
+                    total_crs.loc[total_crs['上课日期']==missed_crs[missed_crs['index']==id]['上课日期'].tolist()[0],'课程名称']=missed_crs[missed_crs['index']==id]['课程名称'].tolist()[0][11:]
+
+                    total_crs.loc[total_crs['课程名称']==missed_crs[missed_crs['index']==id]['课程名称'].tolist()[0][11:],'上课日期']=missed_crs[missed_crs['index']==id]['课程名称'].tolist()[0][2:11]
+                total_crs.sort_values(by=['上课日期'],inplace=True)
+                total_crs.drop_duplicates(subset=['上课日期','课程名称'],inplace=True)
+
+                #处理该同学的个人课表              
+                std_crs['tmp']=pd.to_datetime(std_crs['课程名称'].apply(lambda x:'-'.join([x[2:6],x[6:8],x[8:10]]) if x.startswith('补') else np.nan))
+                std_crs=std_crs[(std_crs['tmp'].isnull()) | (std_crs['tmp']==std_crs['上课日期'])][['上课日期','课程名称']]
+                std_crs['课程名称']=std_crs['课程名称'].apply(lambda x:x[11:] if x.startswith('补') else x)
+
+                # print('std_crs',std_crs)
+
+            # print('total_crs',total_crs)
+
+
 
             if mode=='only16':
                 # if len(std_crs)<16:
@@ -309,8 +335,9 @@ class data_summary:
                     # std_crs_num_txt='{0}同学在上一阶段的{1} 节科学机器人课中，完成了{2} 节课的学习，请假{3} 节。'.format(std_name,total_crs_num,std_crs_num,total_crs_num-std_crs_num)
         
             # comments_for_std=std_crs_num_txt+'\n'+comments_for_std
+
             font_size_cmt=int(50*k)
-            prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
+            prgh_nums=TxtFormat().split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)['para_num']
             #评语标题高度
             ht_cmt_title=int(60*k)
             #评语高度
@@ -451,7 +478,7 @@ class data_summary:
                 #玫瑰图
                 rose_and_bar=self.rose_and_bar(std_name=std_name,xls=xls)
                 rose_mat=rose_and_bar['res_rose']['chart']
-                rose_pic=pic_transfer.mat_to_pil_img(rose_mat)
+                rose_pic=Plot().mat_to_pil_img(rose_mat)
                 rose_pic=rose_pic.resize((640,640*rose_pic.size[1]//rose_pic.size[0]))
                 rose_pic=rose_pic.crop((0,0,620,640))
                 bg.paste(rose_pic,(421,1890))
@@ -467,7 +494,7 @@ class data_summary:
 
                 #雷达图
                 radar_mat=rose_and_bar['res_radar']['chart']
-                radar_pic=pic_transfer.mat_to_pil_img(radar_mat)
+                radar_pic=Plot().mat_to_pil_img(radar_mat)
                 radar_pic=radar_pic.resize((640,640*radar_pic.size[1]//radar_pic.size[0]))
                 # radar_pic=radar_pic.crop((0,0,620,640))
                 bg.paste(radar_pic,(1460,1890))
@@ -518,10 +545,10 @@ class data_summary:
                 # draw.text((1750,2715),'• '+abl_top[1],fill=rose_data[-1][2],font=self.font('微软雅黑',int(70*k))) 
                 # draw.text((1750,2995),'• '+abl_btm[0],fill=rose_data[0][2],font=self.font('微软雅黑',int(70*k)))                
 
-                # composing.put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
+                # TxtFormat.put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2705],dis_line=int(23*k),fill='#7197b4', \
                 #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
-                # composing.put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
+                # TxtFormat.put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2995],dis_line=int(23*k),fill='#7197b4', \
                 #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
 
@@ -533,11 +560,11 @@ class data_summary:
                 draw.text((1618,3034),'特约心理老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
 
 
-                composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
+                TxtFormat().put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
                                     xy=[248,2607],dis_line=int(23*k),fill='#3e3a39', \
                                     font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
 
-                composing.put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
+                TxtFormat().put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
                                     xy=[1313,2607],dis_line=int(23*k),fill='#3e3a39', \
                                     font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
                 
@@ -776,10 +803,12 @@ if __name__=='__main__':
     # print(res['total_crs'],'\n',res['std_crs'])
     # pic=my.rose_and_bar(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\每周课程反馈\\2021春-学生课堂学习情况反馈表（周四）.xlsx')
 
-    ns=['韦万祎']
+    ns=['李俊豪','韦万祎']
     for n in ns:
-        # my.exp_a4_16(std_name=n,start_date='20210801',end_date='20211110', \
-        #             cmt_date='20210719',tb_list=[['2021秋','w5']], \
-        #             tch_name=['阿晓','杨芳芳'],mode='all',k=1)
-        info=my.get_std_term_crs(std_name=n,tb_list=[['2021秋','w5']],start_date='20210801',end_date='20211110')
-        print(info)
+        my.exp_a4_16(std_name=n,start_date='20210801',end_date='20211110', \
+                    cmt_date='20210719',tb_list=[['2021秋','w5']], \
+                    tch_name=['阿晓','杨芳芳'],mode='all',k=1)
+        # info=my.get_std_term_crs(std_name=n,tb_list=[['2021秋','w5']],start_date='20210801',end_date='20211110')
+        # print(info['total_crs'])
+        # print(info['std_crs'])
+        # print(info['std_info'])

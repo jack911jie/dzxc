@@ -17,16 +17,19 @@ def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx')
     left_11=pd.Series(['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','上年课时结余','购买课时','目前剩余课时','上课数量统计汇总'])
     # new_title=left_6.append(df.iloc[0].str.cat(df.iloc[1],sep=',')[6:]).tolist() #构建新的表头，使用了函数 df.iloc[0].str.cat
     # title_time=left_11.append(df.iloc[0][11:].apply([0:8])).tolist()
-    title_time=df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[0:8])
-
-    title_time=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[0:8])).tolist()
+    title_time=df.iloc[0,11:].apply(lambda x: x[2:10] if x.startswith('补') else x[0:8])
+    title_time=title_time.fillna('-')
+    title_time=left_11.append(title_time).tolist()    
 
     title_crs=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[9:])).tolist()
-    
+    raw_title_crs=df.iloc[0,11:].apply(lambda x: x if x.startswith('补') else x[9:])
+    title_crs=left_11.append(raw_title_crs.fillna('-')).tolist()
+    # print(title_crs)
 
     #学生实际上的课表
     df_std=df.iloc[1:]
     df_std_new=df_std.copy()
+    
     
     df_std_new.columns=title_time
 
@@ -38,9 +41,13 @@ def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx')
     #总课表
     df_crs_0=df.iloc[0,11:].copy().T
     df_crs_0.fillna('-',inplace=True)
-    df_crs=df_crs_0.apply(lambda x: x if x=='-' else x[0:8]).to_frame()
+    df_crs_1=df_crs_0.apply(lambda x: x[2:] if x.startswith('补') else x)
+    df_crs=df_crs_1.apply(lambda x: x if x=='-' else x[0:8]).to_frame()
     df_crs.columns=['上课日期']
+    
     df_crs['课程名称']=df_crs_0.apply(lambda x: x if x=='-' else x[9:])
+    #识别补课的日期，以'补_20211107-L115XXXXX’开头
+    df_crs['课程名称']=df_crs_0.apply(lambda x: x if x.startswith('L') else x.split('-')[-1])
     df_crs.reset_index(inplace=True,drop=True)
     df_crs.replace('-',np.nan,inplace=True)
     
@@ -58,10 +65,14 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
     info_crs.loc['aa']=info_crs_0.columns.values
     info_crs=info_crs.T
     info_crs.reset_index(drop=True,inplace=True)
-    print(info_crs)
+    # print(info_crs)
     info_crs.columns=['课程名称','上课日期']    
     info_crs.replace('-',np.nan,inplace=True)
     # print(info_crs)
+    # print(info_crs['上课日期'])
+    # info_crs['上课日期']=info_crs['上课日期'].apply(lambda x: x[2:] if x.startswith('补') else x)
+    # print(info_crs['上课日期'])
+
     info_crs['上课日期']=pd.to_datetime(info_crs['上课日期'])
     start_date=datetime.strptime(start_date[0:4]+'-'+start_date[4:6]+'-'+start_date[6:],'%Y-%m-%d')
     end_date=datetime.strptime(end_date[0:4]+'-'+end_date[4:6]+'-'+end_date[6:],'%Y-%m-%d')
@@ -77,6 +88,14 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
     _total_crs['上课日期']=pd.to_datetime(_total_crs['上课日期'])
     total_crs=_total_crs[(_total_crs['上课日期']>=start_date) & (_total_crs['上课日期']<=end_date)]
     # total_crs.dropna(inplace=True)
+    
+
+    if any(std_crs['课程名称'].str.contains('不补')):
+        # print(std_crs[std_crs['课程名称'].str.contains('不补')]['上课日期'])
+        total_crs=total_crs[~(total_crs['上课日期'].isin(std_crs[std_crs['课程名称'].str.contains('不补')]['上课日期'].tolist()))]
+        std_crs=std_crs[~std_crs['课程名称'].str.contains('不补')]
+        
+    # print('std_crs',std_crs)
 
 
     return {'std_crs':std_crs,'total_crs':total_crs,'std_info':info_basic}
@@ -288,12 +307,15 @@ def class_taken(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学�
 
 if __name__=='__main__':
     # print(std_feedback())
-    # print(std_term_crs())
-    # k=crs_sig_table()
+    k=std_term_crs(std_name='李俊豪',start_date='20210901',end_date='20211105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周五）.xlsx')
+    print('std_crs',k['std_crs'])
+    print('total_crs',k['total_crs'])
+    # k=crs_sig_table(xls='E:\\temp\\2021秋-学生信息表（周五）.xlsx')
     # print(k['total_crs'])
+    # print(k['std_crs'])
     # print(std_all_scores())
     # print(class_taken())
-    print(std_score_this_crs())
+    # print(std_score_this_crs())
 
     # crs_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\2-乐高课程\\课程信息表.xlsx"
     # std_list="E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021春-学生信息表（周一）.xlsx"
