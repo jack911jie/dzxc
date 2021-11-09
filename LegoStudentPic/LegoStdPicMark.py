@@ -161,7 +161,7 @@ class pics:
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
             img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
             img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
-            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
+            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=TxtFormat().fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
             partKnlg=ratio(1500,r)
