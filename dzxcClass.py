@@ -153,10 +153,13 @@ def check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=5,fn=
     # qry.check_duplicate(term='2021秋',weekday=1,crs_name='L026跷跷板') 
     conflict=qry.check_conflict(term=term,weekday=weekday,fn=fn,show_res=show_res,write_file=write_file)
 
+def temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes'):
+    p=LegoStdPicMark.TempMark()
+    p.putCover(input_dir=input_dir,height=height,crop=crop,bigger=bigger)
 
 if __name__=='__main__':
 #排课检查课程冲突
-    # check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=6,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
+    # check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=1,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
 
 #体验课给照片打标
     # tiyanke_step_mark(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=1)
@@ -168,6 +171,8 @@ if __name__=='__main__':
     #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
     # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 
+#临时打标
+    temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
 #学期末为照片加上灰背景及知识点等
     # stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[1,4])
@@ -195,16 +200,16 @@ if __name__=='__main__':
     # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-    # makePpt('L112飞行的小鸟',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
+    # makePpt('L118小小摩天轮',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
-    # view_score(place_input='001-超智幼儿园',std_name='w601',sort_by='剩余积分',plus_tiyan='no')
+    # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211018-L111可爱的小蜜蜂', 
+    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211108-L118小鲨鱼游泳', 
         force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='')  
 
 # 课前生成海报
-    # before_class_poster(crsDate_name='20211023-L112飞行的小鸟',time_crs_input='1100-1230')
+    # before_class_poster(crsDate_name='20211106-L116蜻蜓点水',time_crs_input='1100-1230')
 
  
