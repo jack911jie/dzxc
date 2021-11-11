@@ -3,8 +3,8 @@ import sys
 # print(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 # sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
 sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'modules'))
-import composing
-import pic_transfer
+from composing import TxtFormat
+from pic_transfer import Plot
 import WashData
 import days_calculate
 from readConfig import readConfig
@@ -26,7 +26,7 @@ class data_summary:
 
         font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
-        self.font=composing.fonts
+        self.font=TxtFormat().fonts
         
     def get_std_term_crs(self,std_name='韦宇浠',tb_list=[['2020秋','w2'],['2021春','w4']],start_date='20200901',end_date='20210521'):
 
@@ -104,7 +104,7 @@ class data_summary:
       
         comments_for_std=std_crs_num_txt+'\n'+comments_for_std
         font_size_cmt=int(30*k)
-        prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
+        prgh_nums=TxtFormat().split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
         #评语标题高度
         ht_cmt_title=int(60*k)
         #评语高度
@@ -234,7 +234,7 @@ class data_summary:
             draw.text((int(45),int((y_left_up+gap_0+20))),'学期评语',fill='#8fc31f',font=self.font('鸿蒙印品',int(35*k))) 
 
             #评语
-            composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(628*k*0.95), \
+            TxtFormat().put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(628*k*0.95), \
                                   xy=[int(58),int((y_left_up+gap_0+110))],dis_line=int(20*k),fill='#595757', \
                                   font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
 
@@ -309,7 +309,7 @@ class data_summary:
         
             # comments_for_std=std_crs_num_txt+'\n'+comments_for_std
             font_size_cmt=int(50*k)
-            prgh_nums=composing.split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)[1]
+            prgh_nums=TxtFormat().split_txt_Chn_eng(wid=int(636*k),font_size=font_size_cmt,txt_input=comments_for_std)['para_num']
             #评语标题高度
             ht_cmt_title=int(60*k)
             #评语高度
@@ -450,7 +450,7 @@ class data_summary:
                 #玫瑰图
                 rose_and_bar=self.rose_and_bar(std_name=std_name,xls=xls)
                 rose_mat=rose_and_bar['res_rose']['chart']
-                rose_pic=pic_transfer.mat_to_pil_img(rose_mat)
+                rose_pic=Plot().mat_to_pil_img(rose_mat)
                 rose_pic=rose_pic.resize((640,640*rose_pic.size[1]//rose_pic.size[0]))
                 rose_pic=rose_pic.crop((0,0,620,640))
                 bg.paste(rose_pic,(421,1890))
@@ -466,7 +466,7 @@ class data_summary:
 
                 #雷达图
                 radar_mat=rose_and_bar['res_radar']['chart']
-                radar_pic=pic_transfer.mat_to_pil_img(radar_mat)
+                radar_pic=Plot().mat_to_pil_img(radar_mat)
                 radar_pic=radar_pic.resize((640,640*radar_pic.size[1]//radar_pic.size[0]))
                 # radar_pic=radar_pic.crop((0,0,620,640))
                 bg.paste(radar_pic,(1460,1890))
@@ -517,10 +517,10 @@ class data_summary:
                 # draw.text((1750,2715),'• '+abl_top[1],fill=rose_data[-1][2],font=self.font('微软雅黑',int(70*k))) 
                 # draw.text((1750,2995),'• '+abl_btm[0],fill=rose_data[0][2],font=self.font('微软雅黑',int(70*k)))                
 
-                # composing.put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
+                # TxtFormat().put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2705],dis_line=int(23*k),fill='#7197b4', \
                 #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
-                # composing.put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
+                # TxtFormat().put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2995],dis_line=int(23*k),fill='#7197b4', \
                 #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
 
@@ -532,13 +532,13 @@ class data_summary:
                 draw.text((1618,3034),'特约心理老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
 
 
-                composing.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
+                TxtFormat().put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
                                     xy=[248,2607],dis_line=int(23*k),fill='#3e3a39', \
-                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
+                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
 
-                composing.put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
+                TxtFormat().put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
                                     xy=[1313,2607],dis_line=int(23*k),fill='#3e3a39', \
-                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
+                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
                 
 
                 #签名(如无图片，则用文字)
