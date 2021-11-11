@@ -148,7 +148,7 @@ class pics:
             r=img.size[1]/3024
     
             # print(img.size,w,h)
-            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
+            # title='\n'.join(TxtFormat().split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
@@ -161,7 +161,7 @@ class pics:
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
             img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
             img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
-            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
+            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=TxtFormat().fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
             partKnlg=ratio(1500,r)
@@ -175,20 +175,20 @@ class pics:
             while len(txt[1])*titleSize>partTitle:
                 titleSize=titleSize-2
             # print('after  ',titleSize)
-            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
+            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(TxtFormat().char_len(txt[2])*dateSize/2)-20
 
 
-            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
-            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
-            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
+            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=TxtFormat().fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=TxtFormat().fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=TxtFormat().fonts('杨任东竹石体',140))  #知识点
+            draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=TxtFormat().fonts('汉仪字酷堂义山楷w',80))  #知识点
 
             draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2565,r)),'#2A68B1')
 
 
             txt3Dot=re.sub('\d.','· ',txt[3]) #将数字替换成点
             # print('153:',isinstance(txt3Dot,str))
-            paraFormat.put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            TxtFormat().put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
         def putCoverToPics():
             infos=read_pics_new()
@@ -205,7 +205,7 @@ class pics:
                         bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
                         txt_write=[info[0],info[2],date_crs,info[3]]
                         # print('173 txt_write:',txt_write)
-                        draw(img,bg_w,bg_h,txt_write,mode=mode,txt2=txt2)
+                        draw(img,bg_w,bg_h,txt_write)
                         saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
@@ -263,9 +263,9 @@ class SimpleMark:
         mk_bg=Image.new('RGBA',(mk_bg_wid,260),'#FFA833')    
         mk_bg.paste(self.logo,(30,30),mask=self.a)
         draw=ImageDraw.Draw(mk_bg)
-        draw.text((360,30),'·'+crs_name,fill='#FFFFFF',font=paraFormat.fonts('华文新魏',font_size))
+        draw.text((360,30),'·'+crs_name,fill='#FFFFFF',font=TxtFormat().fonts('华文新魏',font_size))
         date_size=40
-        draw.text(((mk_bg_wid-370-paraFormat.char_len(crs_date))//2+300,190),crs_date,fill='#FFFFFF',font=paraFormat.fonts('方正韵动粗黑简',date_size))
+        draw.text(((mk_bg_wid-370-TxtFormat().char_len(crs_date))//2+300,190),crs_date,fill='#FFFFFF',font=TxtFormat().fonts('方正韵动粗黑简',date_size))
 
         mk_bg=pics_modify.circle_corner(mk_bg,radii=150)
         # mk_bg.show()
@@ -356,7 +356,7 @@ class StepMark(pics):
     def put_step_txt(self,txt='测试测试',fn='C:\\Users\\jack\\Desktop\\新建文件夹\\20210325-L066弹力小车-030.JPG'):
         img=Image.open(fn)
         draw=ImageDraw.Draw(img)
-        draw.text((3000,2500),text=txt, fill = '#2A68B1',font=paraFormat.fonts('优设标题',100))
+        draw.text((3000,2500),text=txt, fill = '#2A68B1',font=TxtFormat().fonts('优设标题',100))
         # print(img.size)
         # img.show()
         save_fn=fn.split('\\')[-1]
@@ -479,7 +479,7 @@ class StepMark(pics):
             r=img.size[1]/3024
     
             # print(img.size,w,h)
-            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
+            title='\n'.join(TxtFormat().split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
@@ -492,7 +492,7 @@ class StepMark(pics):
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
             img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
             # img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
-            # draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
+            # draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=TxtFormat().fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
             partStep=ratio(1800,r)
@@ -506,20 +506,20 @@ class StepMark(pics):
             while len(txt[1])*titleSize>partTitle:
                 titleSize=titleSize-2
             # print('after  ',titleSize)
-            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
+            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(TxtFormat().char_len(txt[2])*dateSize/2)-20
 
 
-            draw.text((xTitle,int(ratio(2530,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
-            draw.text((xDate,ratio(2880,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
-            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            draw.text((ratio(780,r),ratio(2450,r)), '乐高机器人体验课', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
+            draw.text((xTitle,int(ratio(2530,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=TxtFormat().fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,ratio(2880,r)), txt[2], fill = '#2A68B1',font=TxtFormat().fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=TxtFormat().fonts('杨任东竹石体',140))  #知识点
+            draw.text((ratio(780,r),ratio(2450,r)), '乐高机器人体验课', fill = '#2A68B1',font=TxtFormat().fonts('汉仪字酷堂义山楷w',80))  #知识点
 
             draw.rectangle((ratio(780,r),ratio(2560,r),ratio(1590,r),ratio(2565,r)),'#2A68B1')
 
 
             # txt3Dot=re.sub('\d.','· ',txt[4]) #将数字替换成点
             # print('153:',isinstance(txt3Dot,str))
-            paraFormat.put_txt_img(draw,txt[4],partStep,[ratio(1850,r),ratio(2530,r)],25,'#2A68B1','楷体',knlgSize) #步骤描述
+            TxtFormat().put_txt_img(draw,txt[4],partStep,[ratio(1850,r),ratio(2530,r)],25,'#2A68B1','楷体',knlgSize) #步骤描述
 
 
         def putCoverToPics():
@@ -622,7 +622,7 @@ class AfterClassMark(pics):
         p_rct_x,p_rct_y= 30,h-h//10
         h_rct=h//13
         paraFormat=TxtFormat()
-        w_rct=int(paraFormat.char_len(crs_name[4:])*ft_size_crs+80)
+        w_rct=int(TxtFormat().char_len(crs_name[4:])*ft_size_crs+80)
         rct=Image.new('RGB',(w_rct,h_rct),(255,255,255))
         shape=Shape()
         rct=shape.circle_corner(rct,radii=100)
@@ -634,7 +634,7 @@ class AfterClassMark(pics):
         img.paste(rct,(p_rct_x,p_rct_y),mask=rct)
         # draw.rectangle([(0,int(img.size[1]-h)),(w,img.size[1])],fill='#eae8e8') #背景
         r=h/3024
-        # title='\n'.join(paraFormat.split_txt_Chn_eng(self.ratio(360,r),self.ratio(90,r),txt[1])[0][0])
+        # title='\n'.join(TxtFormat().split_txt_Chn_eng(self.ratio(360,r),self.ratio(90,r),txt[1])[0][0])
         _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
         _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
         # pic_logo=_pic_logo.resize((self.ratio(430,r),self.ratio(430/1.7616,r)))
@@ -647,15 +647,15 @@ class AfterClassMark(pics):
         # img.paste(pic_logo,(self.ratio(50,r),self.ratio(2740,r)),mask=a)
         # img.paste(pic_logo2,(self.ratio(120,r),self.ratio(2500,r)),mask=a2)
         # img.paste(pic_qrcode,(self.ratio(3560,r),self.ratio(2500,r)))    
-        # draw.text((self.ratio(3560,r),self.ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',self.ratio(40,r)))
-        # draw.text((self.ratio(40,r),self.ratio(h-h//10+10,r)), crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:], fill = '#3d7ab3',font=paraFormat.fonts('楷体',self.ratio(60,r)))
-        p_date_x=p_rct_x+(w_rct-paraFormat.char_len(crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:])*50)//2
-        draw.text((p_date_x,p_rct_y+h_rct*9//10-40), crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:], fill = '#3d7ab3',font=paraFormat.fonts('楷体',50))
-        # draw.text((self.ratio(1560,r),self.ratio(2730,r)), crs_name[4:], fill = '#3d7ab3',font=paraFormat.fonts('优设标题',self.ratio(ft_size_crs,r)))
-        p_crs_x=p_rct_x+(w_rct-paraFormat.char_len(crs_name[4:])*ft_size_crs)//2
-        draw.text((p_crs_x,p_rct_y+5), crs_name[4:], fill = '#3d7ab3',font=paraFormat.fonts('优设标题',ft_size_crs))
-        # draw.text((self.ratio(630,r),self.ratio(2730,r)), '科学机器人', fill = '#3db357',font=paraFormat.fonts('汉仪超级战甲',self.ratio(110,r)))
-        # draw.text((self.ratio(630,r),self.ratio(2830,r)), '编程课', fill = '#3db357',font=paraFormat.fonts('汉仪超级战甲',self.ratio(110,r)))
+        # draw.text((self.ratio(3560,r),self.ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=TxtFormat().fonts('微软雅黑',self.ratio(40,r)))
+        # draw.text((self.ratio(40,r),self.ratio(h-h//10+10,r)), crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:], fill = '#3d7ab3',font=TxtFormat().fonts('楷体',self.ratio(60,r)))
+        p_date_x=p_rct_x+(w_rct-TxtFormat().char_len(crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:])*50)//2
+        draw.text((p_date_x,p_rct_y+h_rct*9//10-40), crs_date[:4]+'-'+crs_date[4:6]+'-'+crs_date[6:], fill = '#3d7ab3',font=TxtFormat().fonts('楷体',50))
+        # draw.text((self.ratio(1560,r),self.ratio(2730,r)), crs_name[4:], fill = '#3d7ab3',font=TxtFormat().fonts('优设标题',self.ratio(ft_size_crs,r)))
+        p_crs_x=p_rct_x+(w_rct-TxtFormat().char_len(crs_name[4:])*ft_size_crs)//2
+        draw.text((p_crs_x,p_rct_y+5), crs_name[4:], fill = '#3d7ab3',font=TxtFormat().fonts('优设标题',ft_size_crs))
+        # draw.text((self.ratio(630,r),self.ratio(2730,r)), '科学机器人', fill = '#3db357',font=TxtFormat().fonts('汉仪超级战甲',self.ratio(110,r)))
+        # draw.text((self.ratio(630,r),self.ratio(2830,r)), '编程课', fill = '#3db357',font=TxtFormat().fonts('汉仪超级战甲',self.ratio(110,r)))
 
 
         # img.show()
@@ -756,7 +756,7 @@ class AfterClassMark(pics):
             r=img.size[1]/3024
     
             # print(img.size,w,h)
-            title='\n'.join(paraFormat.split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
+            title='\n'.join(TxtFormat().split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
@@ -769,7 +769,7 @@ class AfterClassMark(pics):
             img.paste(pic_logo,(ratio(50,r),ratio(100,r)),mask=a)
             img.paste(pic_logo2,(ratio(120,r),ratio(2500,r)),mask=a2)
             img.paste(pic_qrcode,(ratio(3560,r),ratio(2500,r)))    
-            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=paraFormat.fonts('微软雅黑',ratio(40,r)))
+            draw.text((ratio(3560,r),ratio(2880,r)), '微信扫码关注视频号', fill = '#000000',font=TxtFormat().fonts('微软雅黑',ratio(40,r)))
 
             partTitle=ratio(1000,r)
             partKnlg=ratio(1500,r)
@@ -783,20 +783,20 @@ class AfterClassMark(pics):
             while len(txt[1])*titleSize>partTitle:
                 titleSize=titleSize-2
             # print('after  ',titleSize)
-            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(paraFormat.char_len(txt[2])*dateSize/2)-20
+            xDate=int(len(txt[1])*titleSize/2+xTitle)-int(TxtFormat().char_len(txt[2])*dateSize/2)-20
 
 
-            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=paraFormat.fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
-            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=paraFormat.fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
-            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=paraFormat.fonts('杨任东竹石体',140))  #知识点
-            draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=paraFormat.fonts('汉仪字酷堂义山楷w',80))  #知识点
+            draw.text((xTitle,int(ratio(2400,r)+0.8*(ratio(300,r)-titleSize))), txt[1], fill = '#2A68B1',font=TxtFormat().fonts('优设标题',titleSize))  #课程题目  单个汉字的上方会有空间，空间大小与字体成正比，所以y坐标要根据字体大小改变。
+            draw.text((xDate,ratio(2800,r)), txt[2], fill = '#2A68B1',font=TxtFormat().fonts('微软雅黑',dateSize))  #日期，坐标根据课程题目调整，居中对齐
+            # draw.text((1800,2500), txt[3], fill = '#2A68B1',font=TxtFormat().fonts('杨任东竹石体',140))  #知识点
+            draw.text((ratio(1900,r),ratio(2450,r)), '课程知识点', fill = '#2A68B1',font=TxtFormat().fonts('汉仪字酷堂义山楷w',80))  #知识点
 
             draw.rectangle((ratio(1900,r),ratio(2560,r),ratio(2400,r),ratio(2565,r)),'#2A68B1')
 
 
             txt3Dot=re.sub('\d.','· ',txt[3]) #将数字替换成点
             # print('153:',isinstance(txt3Dot,str))
-            paraFormat.put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
+            TxtFormat().put_txt_img(draw,txt3Dot,partKnlg,[ratio(1850,r),ratio(2620,r)],25,'#2A68B1','楷体',knlgSize) #知识点，可设置行间距
 
         def putCoverToPics():
             infos=self.get_pics()
