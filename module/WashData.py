@@ -172,7 +172,7 @@ def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     #将数字改为nan后去掉nan，只保留有课程名称的记录     
     date_crs=res_date_crs.apply(lambda x : np.nan if isinstance(x, int) else x) 
     date_crs.dropna(inplace=True)
-
+    # print(date_crs)
     std_all_crs_scores=df.iloc[2:,:]
     remain_col_nums=[3+4*x for x in range(date_crs.shape[0])]
     std_scores=std_all_crs_scores.iloc[:,8:]
