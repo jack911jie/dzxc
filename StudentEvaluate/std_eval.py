@@ -6,7 +6,7 @@ import pandas as pd
 
 class StdEval:
     def __init__(self,place='001-超智幼儿园'):
-        config=readConfig(os.path.join(os.path.dirname(__file__),'configs','StudentEvalute.config'))
+        config=readConfig(os.path.join(os.path.dirname(__file__),'configs','StudentEvaluate.config'))
         self.std_info_dir=config['学生信息表文件夹'].replace('#',place)
         self.std_comment_dir=config['课程反馈文件夹'].replace('#',place)
         self.sop_dir=config['SOP文件夹'].replace('#',place)
