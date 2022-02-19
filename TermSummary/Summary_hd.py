@@ -36,7 +36,11 @@ class data_summary:
         std_term_crs=[]
         for tb in tb_list:
             term,weekday=tb[0],tb[1][-1]
-            xls_name=os.path.join(self.std_dir,'学生信息表',term+'-学生信息表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx') 
+            if tb[1].lower()=='w':
+                xls_name=os.path.join(self.std_dir,'学生信息表',term[0:4],term+'-学生信息表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx') 
+            else:
+                xls_name=os.path.join(self.std_dir,'学生信息表',term[0:4],term+'-学生信息表（'+std_name+'）.xlsx') 
+                
             std_term_crs_pre=WashData.std_term_crs(std_name=std_name,start_date=start_date,end_date=end_date,xls=xls_name)
             std_term_crs.append(std_term_crs_pre)
             # print(std_term_crs_pre)
@@ -52,9 +56,11 @@ class data_summary:
         df_std_crs.reset_index(inplace=True)
         df_total_crs=pd.concat(df_total_crss,ignore_index=True)
 
-        df_std_crs.drop(df_std_crs[df_std_crs['课程名称']=='请假'].index,inplace=True)
+        #将不符合L001类型的数据删除，剔除请假补课等情况。
+        df_std_crs.drop(df_std_crs[~(df_std_crs['课程名称'].str.contains(r'L\d{3}',regex=True))].index,inplace=True)
+
         # print(df_std_crs,'\n',df_total_crs)
-        # print(df_total_crs)
+        # print(df_std_crs)
 
         res_std_term_crs={'total_crs':df_total_crs,'std_crs':df_std_crs,'std_info':std_term_crs[0]['std_info']}
         print('完成')
@@ -237,7 +243,7 @@ class data_summary:
             #评语
             TxtFormat.put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(628*k*0.95), \
                                   xy=[int(58),int((y_left_up+gap_0+110))],dis_line=int(20*k),fill='#595757', \
-                                  font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
+                                  font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
 
             draw.text((int(520*k),int((y_cmt_bg-46))),tch_name,fill='#595757',font=self.font('丁永康硬笔楷书',35)) 
 
@@ -316,8 +322,11 @@ class data_summary:
 
             #学生学期末评语
             term,weekday=tb_list[-1][0],tb_list[-1][1][1]
-            wd=days_calculate.num_to_ch(weekday)
-            xls=os.path.join(self.feedback_dir,term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
+            if tb_list[-1][1][0].lower()=='w':
+                wd=days_calculate.num_to_ch(weekday)
+                xls=os.path.join(self.feedback_dir,'反馈表',term[0:4],term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
+            else:
+                xls=os.path.join(self.feedback_dir,'反馈表',term[0:4],term+'-学生课堂学习情况反馈表（'+std_name+'）.xlsx')
             comments=WashData.std_feedback(std_name=std_name,xls=xls)['df_term_comment']    
             comments_for_std=comments[comments['学生姓名']==std_name][term+'学期总结-能力-'+str(cmt_date)].values.tolist()[0].replace('#',std_name)
             comments_for_std_psycho=comments[comments['学生姓名']==std_name][term+'学期总结-心理-'+str(cmt_date)].values.tolist()[0].replace('#',std_name)
@@ -547,10 +556,10 @@ class data_summary:
 
                 # TxtFormat.put_txt_img(draw=draw,tt='• '+abl_top[0]+'\n'+'• '+abl_top[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2705],dis_line=int(23*k),fill='#7197b4', \
-                #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
+                #                     font_name='微软雅黑',font_size=40,addSPC="yes")
                 # TxtFormat.put_txt_img(draw=draw,tt='• '+abl_btm[0]+'\n'+'• '+abl_btm[1],total_dis=int(800*k*0.95), \
                 #                     xy=[1750,2995],dis_line=int(23*k),fill='#7197b4', \
-                #                     font_name='微软雅黑',font_size=40,addSPC="add_2spaces")
+                #                     font_name='微软雅黑',font_size=40,addSPC="yes")
 
                 #评语
                 #左右标题
@@ -562,11 +571,11 @@ class data_summary:
 
                 TxtFormat().put_txt_img(draw=draw,tt=comments_for_std,total_dis=int(980*k*0.95), \
                                     xy=[248,2607],dis_line=int(23*k),fill='#3e3a39', \
-                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
+                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
 
                 TxtFormat().put_txt_img(draw=draw,tt=comments_for_std_psycho,total_dis=int(980*k*0.95), \
                                     xy=[1313,2607],dis_line=int(23*k),fill='#3e3a39', \
-                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="add_2spaces")
+                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
                 
 
                 #签名(如无图片，则用文字)
@@ -802,12 +811,15 @@ if __name__=='__main__':
     # res=my.get_std_term_crs(std_name='韦华晋',tb_list=[['2020秋','w6'],['2021春','w6']],start_date='20200901',end_date='20210521')
     # print(res['total_crs'],'\n',res['std_crs'])
     # pic=my.rose_and_bar(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\每周课程反馈\\2021春-学生课堂学习情况反馈表（周四）.xlsx')
+    # k=my.get_std_term_crs(std_name='韦万祎',tb_list=[['2021秋','韦万祎']],start_date='20210915',end_date='20220120')
+    # print(k)
 
-    ns=['李俊豪','韦万祎']
-    for n in ns:
-        my.exp_a4_16(std_name=n,start_date='20210801',end_date='20211110', \
-                    cmt_date='20210719',tb_list=[['2021秋','w5']], \
-                    tch_name=['阿晓','杨芳芳'],mode='all',k=1)
+
+    # ns=['韦万祎']
+    # for n in ns:
+    #     my.exp_a4_16(std_name=n,start_date='20210801',end_date='20211110', \
+    #                 cmt_date='20210719',tb_list=[['2021秋','w5']], \
+    #                 tch_name=['阿晓','杨芳芳'],mode='all',k=1)
         # info=my.get_std_term_crs(std_name=n,tb_list=[['2021秋','w5']],start_date='20210801',end_date='20211110')
         # print(info['total_crs'])
         # print(info['std_crs'])

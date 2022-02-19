@@ -172,7 +172,7 @@ if __name__=='__main__':
     # merge_animation_mv(crs_name='L046圣诞老人来了',method_merge=1,bgm_src='e:/temp/JingleBells2.mp3') 
 
 #临时打标
-    temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
+    # temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
 #学期末为照片加上灰背景及知识点等
     # stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[1,4])
@@ -181,17 +181,17 @@ if __name__=='__main__':
     # stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
 
 #16节课/或阶段课程学习报告
-    # list_w4=['w4',['陈锦媛','陆炳辰','刘嘉祥','李贤斌','庞孙钜','沈金辰','陶盛挺','韦宇浠','李家捷','林祖葳']]
-    # list_w1=['w1',['邓立文','黄昱涵','农雨蒙','覃熙雅','廖韦朗','王丹亭','李宛晏','韦万祎','谢威年','黄进桓']]
+    list_w5=['w5',['李崇析','岑亦鸿','磨治丞','李俊豪','廖世吉','陈锦媛','黄钰竣','韦宇浠','李贤斌','邓立文','黄昱涵','黄进桓']]
+    list_w1=['w1',['覃熙雅','农雨蒙','谢威年','韦欣彤','邓恩睿','张开铭','陶梓翔','韦欣怡','韦启元','陆浩铭']]
     # list_all=[list_w1,list_w4]
     # for list_cus in list_all:
     #     stage_report(std_names=list_cus[1],start_date='20210301',end_date='20210801', \
     #                         cmt_date='20210719',tb_list=[['2021春',list_cus[0]]], \
     #                         tch_name=['阿晓','芳芳'],mode='all',k=1)
 
-    # stage_report(std_names=['廖韦朗'],start_date='20210301',end_date='20210801', \
-    #                         cmt_date='20210719',tb_list=[['2021春','w1']], \
-    #                         tch_name=['阿晓','芳芳'],mode='all',k=1)
+    stage_report(std_names=['韦万祎'],start_date='20210915',end_date='20220120', \
+                            cmt_date='20220221',tb_list=[['2021秋','韦万祎']], \
+                            tch_name=['阿晓','芳芳'],mode='all',k=1)
 
 #学员成长手册
     # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
@@ -206,8 +206,8 @@ if __name__=='__main__':
     # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211108-L118小鲨鱼游泳', 
-        force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='')  
+    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211108-L118小鲨鱼游泳', 
+    #     force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='')  
 
 # 课前生成海报
     # before_class_poster(crsDate_name='20211106-L116蜻蜓点水',time_crs_input='1100-1230')

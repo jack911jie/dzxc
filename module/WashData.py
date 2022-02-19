@@ -89,7 +89,7 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
     total_crs=_total_crs[(_total_crs['上课日期']>=start_date) & (_total_crs['上课日期']<=end_date)]
     # total_crs.dropna(inplace=True)
     
-
+    # print(std_crs)
     if any(std_crs['课程名称'].str.contains('不补')):
         # print(std_crs[std_crs['课程名称'].str.contains('不补')]['上课日期'])
         total_crs=total_crs[~(total_crs['上课日期'].isin(std_crs[std_crs['课程名称'].str.contains('不补')]['上课日期'].tolist()))]
@@ -117,13 +117,15 @@ def std_feedback(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive
 
 def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no'):
     xlsxs=[]
-    for fn in os.listdir(os.path.join(xls_dir,'学生信息表')):
-        if re.match(r'^\d.*-.*）.xlsx',fn):
-            if plus_tiyan=='yes':
-                xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
-            else:
-                if fn[-8:-6] != '体验':
-                    xlsxs.append(os.path.join(xls_dir,'学生信息表',fn))
+    for root,dirs,fns in os.walk(os.path.join(xls_dir,'学生信息表')):
+        for fn in fns:
+            if re.match(r'^\d{4}.*-.*）.xlsx',fn):
+                if fn[-8:-6] in ['周一','周二','周三','周四','周五','周六','周日','体验']:
+                    if plus_tiyan=='yes':
+                        xlsxs.append(os.path.join(root,fn))
+                    else:
+                        if fn[-8:-6] != '体验':
+                            xlsxs.append(os.path.join(root,fn))
 
     df_infos=[]
     df_crss=[]
@@ -307,13 +309,14 @@ def class_taken(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学�
 
 if __name__=='__main__':
     # print(std_feedback())
-    k=std_term_crs(std_name='李俊豪',start_date='20210901',end_date='20211105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周五）.xlsx')
-    print('std_crs',k['std_crs'])
-    print('total_crs',k['total_crs'])
+    # k=std_term_crs(std_name='李俊豪',start_date='20210901',end_date='20211105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周五）.xlsx')
+    # print('std_crs',k['std_crs'])
+    # print('total_crs',k['total_crs'])
+
     # k=crs_sig_table(xls='E:\\temp\\2021秋-学生信息表（周五）.xlsx')
     # print(k['total_crs'])
     # print(k['std_crs'])
-    # print(std_all_scores())
+    print(std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no'))
     # print(class_taken())
     # print(std_score_this_crs())
 
