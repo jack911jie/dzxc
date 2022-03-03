@@ -36,7 +36,7 @@ class data_summary:
         std_term_crs=[]
         for tb in tb_list:
             term,weekday=tb[0],tb[1][-1]
-            if tb[1].lower()=='w':
+            if tb[1][0].lower()=='w':
                 xls_name=os.path.join(self.std_dir,'学生信息表',term[0:4],term+'-学生信息表（周'+days_calculate.num_to_ch(weekday)+'）.xlsx') 
             else:
                 xls_name=os.path.join(self.std_dir,'学生信息表',term[0:4],term+'-学生信息表（'+std_name+'）.xlsx') 
@@ -563,8 +563,8 @@ class data_summary:
 
                 #评语
                 #左右标题
-                draw.text((608,1764),'技能成长',fill='#7197b4',font=self.font('优设标题',int(80*k)))
-                draw.text((1598,1764),'社会能力成长',fill='#7197b4',font=self.font('优设标题',int(80*k)))
+                draw.text((518,1764),'搭建能力成长',fill='#7197b4',font=self.font('优设标题',int(80*k)))
+                draw.text((1498,1764),'社会性与情感发展',fill='#7197b4',font=self.font('优设标题',int(80*k)))
                 draw.text((698,3034),'上课老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
                 draw.text((1618,3034),'特约心理老师：',fill='#7197b4',font=self.font('优设标题',int(50*k)))
 

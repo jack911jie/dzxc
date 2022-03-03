@@ -48,9 +48,9 @@ class LegoPics:
         
         wd=days_calculate.num_to_ch(str(self.weekday))
         if self.mode=='tiyan':
-            sigFile=os.path.join(self.std_sig_dir,self.place,'学生信息表',self.term+'-学生信息表（体验）.xlsx')
+            sigFile=os.path.join(self.std_sig_dir,self.place,'学生信息表',self.term[:4],self.term+'-学生信息表（体验）.xlsx')
         else:
-            sigFile=os.path.join(self.std_sig_dir,self.place,'学生信息表',self.term+'-学生信息表（周'+wd+'）.xlsx')
+            sigFile=os.path.join(self.std_sig_dir,self.place,'学生信息表',self.term[:4],self.term+'-学生信息表（周'+wd+'）.xlsx')
 
         stdInfo=pd.read_excel(os.path.join(self.stu_sigDir,sigFile),sheet_name='学生上课签到表',skiprows=1)
         stdInfo.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼', \

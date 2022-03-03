@@ -48,11 +48,11 @@ class poster:
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
         cmt_table_dir=config['老师评语表文件夹']
         if mode=='tiyan':
-            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（体验）.xlsx')
-            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（体验）.xlsx')
+            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈','反馈表',term[:4],term+'-学生课堂学习情况反馈表（体验）.xlsx')
+            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term[:4],term+'-学生信息表（体验）.xlsx')
         else:
-            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈',term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
-            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')
+            self.eachStd=os.path.join(cmt_table_dir,place_input,'每周课程反馈','反馈表',term[:4],term+'-学生课堂学习情况反馈表（周'+wd+'）.xlsx')
+            self.crsStudent=os.path.join(self.std_sig_dir,place_input,'学生信息表',term[:4],term+'-学生信息表（周'+wd+'）.xlsx')
         self.picTitleDir=config['课程标题照片文件夹']
         self.picTitleDir=self.picTitleDir.replace('$',place_input)
         self.picStdDir=config['学生照片文件夹']
@@ -248,9 +248,9 @@ class poster:
             print('正在读取积分信息……',end='')
             wd=days_calculate.num_to_ch(str(weekday))
             if self.mode=='tiyan':
-                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（体验）.xlsx')                  
+                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term[:4],term+'-学生信息表（体验）.xlsx')                  
             else:
-                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term+'-学生信息表（周'+wd+'）.xlsx')  
+                xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term[:4],term+'-学生信息表（周'+wd+'）.xlsx')  
             this_crs_score_info=WashData.std_score_this_crs(xls_this)
             df_this_crs_score,df_this_medals=this_crs_score_info['std_this_scores'],this_crs_score_info['medals_this_class']
 
