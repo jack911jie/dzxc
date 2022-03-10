@@ -12,11 +12,13 @@ import re
 
 # def crs_sig_table(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2020秋-学生信息表（周二）.xlsx'):
 def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx'):
+    # print(xls)
     df=pd.read_excel(xls,sheet_name='学生上课签到表',skiprows=1,header=None)
     # df.iloc[0]=df.iloc[0].map(lambda x:str(x)[0:10])#将原有的时间格式变为字符串格式2
     left_11=pd.Series(['ID','机构','班级','姓名首拼','学生姓名','昵称','性别','上年课时结余','购买课时','目前剩余课时','上课数量统计汇总'])
     # new_title=left_6.append(df.iloc[0].str.cat(df.iloc[1],sep=',')[6:]).tolist() #构建新的表头，使用了函数 df.iloc[0].str.cat
     # title_time=left_11.append(df.iloc[0][11:].apply([0:8])).tolist()
+    # print(df)
     title_time=df.iloc[0,11:].apply(lambda x: x[2:10] if x.startswith('补') else x[0:8])
     title_time=title_time.fillna('-')
     title_time=left_11.append(title_time).tolist()    
@@ -82,7 +84,7 @@ def std_term_crs(std_name='黄建乐',start_date='20000927',end_date='21000105',
     std_crs.drop(labels='课程名称',axis=1,inplace=True)
     std_crs.columns=['上课日期','课程名称']
     # std_crs['上课日期'].apply(lambda x: x.strftime('%Y-%m-%d'))
-    
+    std_crs.dropna(axis=0,inplace=True)
 
     _total_crs=df['total_crs'].copy()
     _total_crs['上课日期']=pd.to_datetime(_total_crs['上课日期'])

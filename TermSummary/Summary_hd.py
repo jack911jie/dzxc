@@ -263,6 +263,7 @@ class data_summary:
                         tb_list=[['2020秋','w2'],['2021春','w4']],tch_name='阿晓老师',mode='only16',k=1):
             print('正在处理……')
             info=self.get_std_term_crs(std_name=std_name,tb_list=tb_list,start_date=start_date,end_date=end_date)
+            # print(info)
             total_crs=info['total_crs']
             total_crs.dropna(inplace=True)
 
@@ -517,9 +518,11 @@ class data_summary:
                         r_sig,g_sig,b_sib,a_sig=pic_tch_sig.split()
                         bg.paste(pic_tch_sig,(950+m*1000,3015),mask=pic_tch_sig)
                     except FileNotFoundError as e:
+                        # print(e)
                         tch_sig_txt.append([m,tch_n])
                         # print(tch_n,e)
-                
+
+                # print('签名图片不存在',tch_sig_txt)
                 #最高和高低的两个能力名称
                 abl_btm=[rose_data[0][0],rose_data[1][0]]
                 abl_top=[rose_data[3][0],rose_data[4][0]]

@@ -31,7 +31,7 @@ class pics:
             config=json.loads(_line)
         
         self.publicPicDir=config['公共图片']
-        self.StdInfoDir=config['2020乐高课程签到表文件夹']
+        self.StdInfoDir=config['科学机器人课程签到表文件夹']
         # self.StdInfoDir=config['2019科学课签到表文件夹']
         
         self.CrsInfoDir=config['课程信息表']
@@ -53,7 +53,7 @@ class pics:
             stdFile=[term+'-'+'学生信息表（周'+wd+'）.xlsx','学生上课签到表']
             # stdFile=['2019科学实验课学员档案2.xlsx','学员名单']
             crs=pd.read_excel(os.path.join(self.CrsInfoDir,crsFile[0]),skiprows=0,sheet_name=crsFile[1])
-            stds=pd.read_excel(os.path.join(self.StdInfoDir,stdFile[0]),skiprows=1,sheet_name=stdFile[1])
+            stds=pd.read_excel(os.path.join(self.StdInfoDir,term[0:4],stdFile[0]),skiprows=1,sheet_name=stdFile[1])
             stds.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名', \
                                 'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'上期课时结余','Unnamed: 8':'购买课时','Unnamed: 9':'目前剩余课时', \
                                 'Unnamed: 10':'上课数量统计汇总'},inplace=True)
@@ -83,6 +83,8 @@ class pics:
                     fn=fileName.split('-')
                     crsName=fn[1][4:]
                     crsCode=fn[1][0:4]
+
+                    # print(crsCode)
                     real_addr=os.path.join(total_pics_dir,fileName)
                     tag=self.code_to_str(iptcinfo3.IPTCInfo(real_addr))
                     if len(tag)>0:
@@ -148,7 +150,7 @@ class pics:
             r=img.size[1]/3024
     
             # print(img.size,w,h)
-            title='\n'.join(TxtFormat().split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])[0][0])
+            title='\n'.join(TxtFormat().split_txt_Chn_eng(ratio(360,r),ratio(90,r),txt[1])['txt'][0])
             _pic_logo=Image.open('I:\\大智小超\\公共素材\\图片类\\logoForPic.png').convert('RGBA')
             _pic_logo2=Image.open('I:\\大智小超\\公共素材\\图片类\\logoDZXC.png').convert('RGBA')
             pic_logo=_pic_logo.resize((ratio(450,r),ratio(450/1.7616,r)))
@@ -204,8 +206,9 @@ class pics:
                     if not isinstance(img,str):
                         bg_h,bg_w=int(img.size[1]*0.2018),img.size[0]
                         txt_write=[info[0],info[2],date_crs,info[3]]
+
                         # print('173 txt_write:',txt_write)
-                        draw(img,bg_w,bg_h,txt_write,mode=mode,txt2=txt2)
+                        draw(img,bg_w,bg_h,txt_write)
                         saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):

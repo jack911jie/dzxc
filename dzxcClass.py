@@ -101,7 +101,8 @@ def picsDistribute(crsDate,place,crsName,term,force_weekday=0,mode=''):
     stu_pics=LegoStudentPicDistribute.LegoPics(crsDate,crsName,place,weekday,term,mode=mode)
     stu_pics.dispatch()
 
-def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht='',copy_to_feedback_dir='no',mode=''):
+def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',crsDate_name='20210419-L066弹力小车',
+                    force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht='',copy_to_feedback_dir='no',mode='',act='both'):
     crsDate=crsDate_name.split('-')[0]
     crsName=crsDate_name.split('-')[1]
     if force_weekday==0:
@@ -109,14 +110,19 @@ def pics_distribute_and_make_poster(place='001-超智幼儿园',term='2021春',c
     else:
         weekday=force_weekday
     crsName_distibute=str(crsDate)+crsName[4:]
-    picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term,force_weekday=force_weekday,mode=mode)
-    # print(crsDate_name[10:])
-    pic_to_feedback=LegoStudentPicDistribute.LegoPics(crsDate=crsDate_name[0:8],crsName=crsDate_name[9:],weekday=weekday,term=term,mode='')
-    pic_to_feedback.dispatch_after_class()
-    pics=LegoStdPicMark.AfterClassMark()
-    pics.group_put(crs_date=crsDate_name[0:8],crs_name=crsDate_name[9:],forced_ht=pic_forced_ht)
-    my=posterAfterClass(weekday=weekday,term=term,place_input=place,mode=mode)  
-    my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig,copy_to_feedback_dir=copy_to_feedback_dir)
+
+    if act=='dis_and_mark' or act=='both':
+    #照片分配及打标
+        picsDistribute(crsDate=crsDate,place=place,crsName=crsName,term=term,force_weekday=force_weekday,mode=mode)
+        # print(crsDate_name[10:])
+        pic_to_feedback=LegoStudentPicDistribute.LegoPics(crsDate=crsDate_name[0:8],crsName=crsDate_name[9:],weekday=weekday,term=term,mode='')
+        pic_to_feedback.dispatch_after_class()
+        pics=LegoStdPicMark.AfterClassMark()
+        pics.group_put(crs_date=crsDate_name[0:8],crs_name=crsDate_name[9:],forced_ht=pic_forced_ht)
+    if act=='exp_feedback' or act=='both':
+    #生成反馈
+        my=posterAfterClass(weekday=weekday,term=term,place_input=place,mode=mode)  
+        my.PosterDraw(crs_nameInput=crsName,dateInput=crsDate,TeacherSig=TeacherSig,copy_to_feedback_dir=copy_to_feedback_dir)
 
 def before_class_poster(crsDate_name='20210619-L094游泳的鲨鱼',time_crs_input='1100-1230'):
     date_crs_input=crsDate_name.split('-')[0]
@@ -175,23 +181,23 @@ if __name__=='__main__':
     # temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
 #学期末为照片加上灰背景及知识点等
-    # stdpicWhiteMark(height=2250,term='2021春',crop='yes',bigger='yes',weekday=[1,4])
+    stdpicWhiteMark(height=2250,term='2022春',crop='yes',bigger='yes',weekday=[6])
 
 #学期末为照片加上黄色背景
     # stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
 
 #16节课/或阶段课程学习报告
-    list_w5=['w5',['李崇析','岑亦鸿','磨治丞','李俊豪','廖世吉','陈锦媛','黄钰竣','韦宇浠','李贤斌','邓立文','黄昱涵','黄进桓']]
-    list_w1=['w1',['覃熙雅','农雨蒙','谢威年','韦欣彤','邓恩睿','张开铭','陶梓翔','韦欣怡','韦启元','陆浩铭']]
-    # list_all=[list_w1,list_w4]
+    # list_w5=['w5',['李崇析','岑亦鸿','磨治丞','李俊豪','廖世吉','陈锦媛','黄钰竣','韦宇浠','李贤斌','邓立文','黄昱涵','黄进桓']]
+    # list_w1=['w1',['覃熙雅','农雨蒙','谢威年','韦欣彤','邓恩睿','张开铭','陶梓翔','韦欣怡','韦启元','陆浩铭']]
+    # # list_all=[list_w1,list_w4]
     # for list_cus in list_all:
     #     stage_report(std_names=list_cus[1],start_date='20210301',end_date='20210801', \
     #                         cmt_date='20210719',tb_list=[['2021春',list_cus[0]]], \
     #                         tch_name=['阿晓','芳芳'],mode='all',k=1)
 
-    stage_report(std_names=['韦万祎'],start_date='20210915',end_date='20220120', \
-                            cmt_date='20220221',tb_list=[['2021秋','韦万祎']], \
-                            tch_name=['阿晓','芳芳'],mode='all',k=1)
+    # stage_report(std_names=['杨涵宇'],start_date='20210911',end_date='20220320', \
+    #                         cmt_date='20220309',tb_list=[['2021秋','w6'],['2022春','w6']], \
+    #                         tch_name=['阿晓','芳芳'],mode='only16',k=1)
 
 #学员成长手册
     # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
@@ -200,16 +206,17 @@ if __name__=='__main__':
     # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-    # makePpt('L118小小摩天轮',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
+    # makePpt('L142移动的城堡',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
 
 # #查看积分
     # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2021秋',crsDate_name='20211108-L118小鲨鱼游泳', 
-    #     force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='')  
+    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2022春',crsDate_name='20220307-L142移动的城堡', 
+        # force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='',act='both') 
+     #act参数：both,dis_and_mark,exp_feedback
 
 # 课前生成海报
-    # before_class_poster(crsDate_name='20211106-L116蜻蜓点水',time_crs_input='1100-1230')
+    # before_class_poster(crsDate_name='20220305-L141复古小汽车',time_crs_input='1030-1200')
 
  
