@@ -121,6 +121,7 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     xlsxs=[]
     for root,dirs,fns in os.walk(os.path.join(xls_dir,'学生信息表')):
         for fn in fns:
+            # print(fn)
             if re.match(r'^\d{4}.*-.*）.xlsx',fn):
                 if fn[-8:-6] in ['周一','周二','周三','周四','周五','周六','周日','体验']:
                     if plus_tiyan=='yes':
