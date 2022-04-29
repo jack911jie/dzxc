@@ -185,6 +185,8 @@ class picToPPT:
         block_names_file=self.blockNames(mode=lxfml_mode,add_block=add_block,add_list=add_list)
         df=pd.DataFrame(block_names_file)
         df.columns=['零件名称','位置','图片地址']
+        #如无图片地址则丢掉，此行有可能导致计算数量错误
+        df.dropna(axis=0,how='any',subset=['图片地址'],inplace=True)
         df['图片地址']=df['图片地址'].apply(lambda x:os.path.join(self.blk_pic_dir,x))
         df_gp=pd.DataFrame(df.groupby('零件名称').count())
         df_gp.reset_index(inplace=True)
@@ -194,8 +196,6 @@ class picToPPT:
         df_gp['图片地址']=df_gp['零件名称'].apply(lambda x: dict_adr[x])
         df_gp.columns=['零件名称','数量','图片地址']
         df_gp['位置']=df_gp['零件名称'].apply(lambda x: dict_pos[x])
-
-
 
         df_gp.sort_values(by=['位置'],ascending=False,inplace=True)
         df_gp.reset_index(inplace=True)
@@ -208,11 +208,12 @@ class picToPPT:
         draw=ImageDraw.Draw(bg)
         posxy=[100,250]     
 
-        txt_title=self.crsName+'零件分类清单'
+        txt_title=self.crsName+'  零件分类清单'
         # print(txt_title)
         # print((bg_w-len(txt_title)*40)//2)
         # draw.text([100,80],txt_title,'#7EB554',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',40))
         draw.text([(bg_w-len(txt_title)*40)//2,80],txt_title,'#7EB554',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',40))
+        draw.text([(bg_w-len(txt_title)*40)//2,160],'总数量： '+str(df_gp['数量'].sum()),'#8FAE8E',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',32))
 
         for index,row in df_gp.iterrows():
             pic=self.pic_resize(pic_adr=row['图片地址'],h=h_pic)
@@ -256,7 +257,9 @@ class picToPPT:
         block_names_file=self.blockNames(mode=lxfml_mode)
         box_pic_jpg=self.box_pos_pic
         df=pd.DataFrame(block_names_file)
+
         df.columns=['零件名称','位置','图片地址']
+        df.dropna(axis=0,how='any',subset=['图片地址'])
         gp=df.groupby(['位置']).count()
         pos=list(gp.index)
         values=[]
@@ -290,7 +293,7 @@ class picToPPT:
             # if pos_num!='0-0':
                 # print(df_pos[df_pos['位置']==pos_num]['数量'].values)
             draw.text((pos_data[pos_num][0],pos_data[pos_num][1]),str(df_pos[df_pos['位置']==pos_num]['数量'].values[0]),fill='red',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',pos_data[pos_num][2]))
-            draw.text((100,2462),'总数：'+str(df.shape[0]),fill='#6074b7',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',110))
+            draw.text((100,2462),'总数：'+str(pos_dat['数量'].sum()),fill='#6074b7',font=ImageFont.truetype('j:\\fonts\\FZYunDongCuHei.ttf',110))
 
         if save=='yes':
             savename=os.path.join(self.picSrc,self.crsName+'_零件位置图.jpg')
@@ -451,12 +454,12 @@ class picToPPT:
         picToPPT(pic_list)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L152三轮摩托车')
-    # mypics.inner_box_pos(save='no',lxfml_mode='new')
+    mypics=picToPPT('L149可爱的招财猫')
+    mypics.inner_box_pos(save='yes',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
     # mypics.ExpPPT(copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
-    mypics.block_pic_list(save='yes',lxfml_mode='new',add_block='yes',add_list=[[85546,2]])
+    mypics.block_pic_list(save='yes',lxfml_mode='new',add_block='no',add_list=[[85546,2]])
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
