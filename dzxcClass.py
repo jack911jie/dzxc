@@ -75,13 +75,15 @@ def stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[
     pic=LegoStdPicMark.SimpleMark(place_input=place_input)
     pic.put(term=term,weekdays=weekdays,start_date=start_date,end_date=end_date)
 
-def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new'):    
+def makePpt(crsName='L037认识零件',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='no',lxfml_mode='new',add_block='no',add_list=[[85546,2]]):    
     mypics=legoCrstoPPT.picToPPT(crsName)
     if pos_pic=='yes':        
         mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
         mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
+        mypics.block_pic_list(save='yes',lxfml_mode=lxfml_mode,add_block=add_block,add_list=add_list)
     elif pos_pic=='pos_pic_only':
         mypics.inner_box_pos(save='yes',lxfml_mode=lxfml_mode)
+        mypics.block_pic_list(save='yes',lxfml_mode='new',add_block=add_block,add_list=add_list)
     elif pos_pic=='no':
         mypics.ExpPPT(copyToCrsDir=copyToCrsDir,lxfml_mode=lxfml_mode,crsPPTDir=crsPPTDir)
     else:
@@ -171,7 +173,7 @@ if __name__=='__main__':
     # tiyanke_step_mark(height=2250,term='2021秋',crop='yes',bigger='yes',weekday=1)
 
 #将步骤图生成1分钟视频放上视频号
-    # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L056陀螺发射器',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
+    # makeLegoConsMovie(pth='I:\\乐高\\图纸',crsName='L146吃草的蜗牛',crs_list='课程信息表.xlsx',dealtype='makeMovie',src='ldcad')
 
 #将步骤图生成搭建视频，与原拍摄视频合并  拍摄mp4建议29-44秒
     #方法1：先生成搭建动画，保存后再生成影片，不容易有黑色卡顿， 方法2：直接通过Png生成动画。 背景音乐默认参数为default，可输入mp3文件地址替换默认背景音乐。
@@ -181,7 +183,7 @@ if __name__=='__main__':
     # temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
 #学期末为照片加上灰背景及知识点等
-    stdpicWhiteMark(height=2250,term='2022春',crop='yes',bigger='yes',weekday=[6])
+    # stdpicWhiteMark(height=2250,term='2022春',crop='yes',bigger='yes',weekday=[6])
 
 #学期末为照片加上黄色背景
     # stdpicYellowMark(place_input='001-超智幼儿园',term='2021春',weekdays=[4],start_date='20210303',end_date='20210806')
@@ -206,17 +208,19 @@ if __name__=='__main__':
     # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-    # makePpt('L142移动的城堡',copyToCrsDir='yes',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new')
+    makePpt('L152三轮摩托车',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new',add_block='no',add_list=[[85546,2]])
+    #85546-黄色橡皮筋,[85546,2]意思是85546，2个。
+    #85544-红色橡皮筋
 
 # #查看积分
     # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2022春',crsDate_name='20220307-L142移动的城堡', 
-        # force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='',act='both') 
+    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2022春',crsDate_name='20220425-L151机械大铁锤', 
+    #     force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='',act='both') 
      #act参数：both,dis_and_mark,exp_feedback
 
 # 课前生成海报
-    # before_class_poster(crsDate_name='20220305-L141复古小汽车',time_crs_input='1030-1200')
+    # before_class_poster(crsDate_name='20220423-L150霸王龙',time_crs_input='1030-1200')
 
  

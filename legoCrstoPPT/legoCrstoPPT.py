@@ -1,7 +1,7 @@
 import os
 import sys
 # sys.path.append('i:/py/dzxc/module')
-sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'module'))
+sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),'modules'))
 from readConfig import readConfig
 from PIL import Image,ImageDraw,ImageFont
 import platform
@@ -32,6 +32,7 @@ class picToPPT:
             self.wtmark=config['PPT水印']
             self.legoCodeList=config['wedo零件编号']
             self.crs_info=config['课程信息表']
+            self.blk_pic_dir=config['零件图片文件夹']
             self.box_pos_pic=os.path.join(config['盒子位置图文件夹'],'盒子位置编号图.jpg')
         self.picSrc=os.path.join(self.picDir,crsName)
         # self.block_names=self.blockNames()
@@ -112,7 +113,7 @@ class picToPPT:
         os.startfile(desDir)
         os.startfile(newName_ppt)
 
-    def blockNames(self,mode='new'):
+    def blockNames(self,mode='new',add_block='no',add_list=''):
         fn=os.path.join(self.picDir,self.crsName,self.crsName[4:]+'.lxfml')
         bl=pd.read_excel(self.legoCodeList)
         bl['lxfml编号'].astype('object')
@@ -155,20 +156,107 @@ class picToPPT:
             try:
                 blkName=bl[bl['lxfml编号']==aa]['lxfml显示名称'].values.tolist()[0]
                 blk_pos=bl[bl['lxfml编号']==aa]['位置'].values.tolist()[0]
-                out.append([blkName,blk_pos])
+                blk_pic_addr=bl[bl['lxfml编号']==aa]['图片文件名'].values.tolist()[0]
+                out.append([blkName,blk_pos,blk_pic_addr])
             except:
                 if aa!=19079:
                     out.append([aa,'-'])
+        
+        
+        #如有表中未列出的新零件，临时增加
+        if add_block=='yes':
+            # print(add_list)
+            for add_blk_id in add_list:
+                for rpt in range(add_blk_id[1]):
+                    # print(add_blk_id,rpt)
+                    to_add=[bl[bl['lxfml编号']==add_blk_id[0]]['lxfml显示名称'].values.tolist()[0],
+                            bl[bl['lxfml编号']==add_blk_id[0]]['位置'].values.tolist()[0],
+                            bl[bl['lxfml编号']==add_blk_id[0]]['图片文件名'].values.tolist()[0]]
+                    out.append(to_add)
 
         # print('out',out)
         # self.block_names=out
+        # out['图片文件名'].astype(str).apply(lambda x : os.path.join(self.blk_pic_dir,x))
+        # out['图片文件名']=os.path.join(self.blk_pic_dir,out['图片文件名'].astype(str))
+        # print(out[2])
         return out
+
+    def block_pic_list(self,save='yes',lxfml_mode='new',add_block='no',add_list=''):
+        block_names_file=self.blockNames(mode=lxfml_mode,add_block=add_block,add_list=add_list)
+        df=pd.DataFrame(block_names_file)
+        df.columns=['零件名称','位置','图片地址']
+        df['图片地址']=df['图片地址'].apply(lambda x:os.path.join(self.blk_pic_dir,x))
+        df_gp=pd.DataFrame(df.groupby('零件名称').count())
+        df_gp.reset_index(inplace=True)
+        adr=df.drop_duplicates(['零件名称'])
+        dict_adr=dict(zip(adr['零件名称'],adr['图片地址']))
+        dict_pos=dict(zip(adr['零件名称'],adr['位置']))
+        df_gp['图片地址']=df_gp['零件名称'].apply(lambda x: dict_adr[x])
+        df_gp.columns=['零件名称','数量','图片地址']
+        df_gp['位置']=df_gp['零件名称'].apply(lambda x: dict_pos[x])
+
+
+
+        df_gp.sort_values(by=['位置'],ascending=False,inplace=True)
+        df_gp.reset_index(inplace=True)
+        
+        h_pic=200
+        gap=10
+        bg_h=(h_pic+gap)*df_gp.shape[0]+300
+        bg_w=800
+        bg=Image.new('RGBA',[bg_w,bg_h],'#FFFFFF')
+        draw=ImageDraw.Draw(bg)
+        posxy=[100,250]     
+
+        txt_title=self.crsName+'零件分类清单'
+        # print(txt_title)
+        # print((bg_w-len(txt_title)*40)//2)
+        # draw.text([100,80],txt_title,'#7EB554',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',40))
+        draw.text([(bg_w-len(txt_title)*40)//2,80],txt_title,'#7EB554',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',40))
+
+        for index,row in df_gp.iterrows():
+            pic=self.pic_resize(pic_adr=row['图片地址'],h=h_pic)
+            bg.paste(pic[0],posxy,mask=pic[1])      
+            draw.text([posxy[0]+270,posxy[1]+70],row['零件名称'],'#AE9D8E',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',30))      
+            draw.text([posxy[0]+270,posxy[1]+70+50],'×'+str(row['数量']),'#FF0000',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',36))      
+            if index>0 :
+                #不是最后一行
+                if index<(df_gp.shape[0]-1):
+                    if df_gp.iloc[index]['位置']!=df_gp.iloc[index-1]['位置']:
+                        draw.line([(0,posxy[1]-gap//2),(bg_w,posxy[1]-gap//2)],'#000000')  
+                        draw.text([bg_w-200,posxy[1]-gap*8],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))   
+                #最后一行
+                else:
+                    if df_gp.iloc[index]['位置']==df_gp.iloc[index-1]['位置']:
+                        draw.text([bg_w-200,bg_h-200],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))
+                    else:
+                        draw.line([(0,posxy[1]-gap//2),(bg_w,posxy[1]-gap//2)],'#000000')  
+                        draw.text([bg_w-200,posxy[1]-gap*8],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))  
+                        draw.text([bg_w-200,bg_h-200],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))
+            
+            posxy=[posxy[0],posxy[1]+h_pic+gap]
+
+        if save=='yes':
+            savename=os.path.join(self.picSrc,self.crsName+'_零件分类清单.jpg')
+            bg=bg.convert('RGB')
+            bg.save(savename)
+            print('零件分类清单已经保存至 {}'.format(savename))
+        else:
+            print('仅显示，未保存。')
+            bg.show()
+    
+
+    def pic_resize(self,pic_adr,h=480):
+        img=Image.open(pic_adr)
+        img=img.resize((h*img.size[0]//img.size[1],h))
+        # print(pic_adr,img.split())
+        return img,img.split()[3]
 
     def inner_box_pos(self,save='yes',lxfml_mode='new'):
         block_names_file=self.blockNames(mode=lxfml_mode)
         box_pic_jpg=self.box_pos_pic
         df=pd.DataFrame(block_names_file)
-        df.columns=['零件名称','位置']
+        df.columns=['零件名称','位置','图片地址']
         gp=df.groupby(['位置']).count()
         pos=list(gp.index)
         values=[]
@@ -211,6 +299,8 @@ class picToPPT:
         else:
             print('仅显示，未保存。')
             bg.show()
+
+        
 
     def ExpPPT(self,copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程'):
         print('\n正在处理：')   
@@ -361,11 +451,12 @@ class picToPPT:
         picToPPT(pic_list)          
         
 if __name__=='__main__':
-    mypics=picToPPT('L106手动小赛车')
-    # mypics.inner_box_pos(save='yes',lxfml_mode='new')
+    mypics=picToPPT('L152三轮摩托车')
+    # mypics.inner_box_pos(save='no',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
-    mypics.ExpPPT(copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    # mypics.ExpPPT(copyToCrsDir='no',lxfml_mode='new',crsPPTDir='I:\\乐高\\乐高WeDo\\课程')
+    mypics.block_pic_list(save='yes',lxfml_mode='new',add_block='yes',add_list=[[85546,2]])
     # mypics.makeDirs()
     # mypics.copytoCrsDir()
