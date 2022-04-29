@@ -200,6 +200,12 @@ class picToPPT:
         df_gp.sort_values(by=['位置'],ascending=False,inplace=True)
         df_gp.reset_index(inplace=True)
         
+        df_box=df.groupby('位置').count()
+        df_box.reset_index(inplace=True)
+        df_box.columns=['位置','数量','图片地址']
+        # print(df_box)
+
+
         h_pic=200
         gap=10
         bg_h=(h_pic+gap)*df_gp.shape[0]+300
@@ -216,6 +222,7 @@ class picToPPT:
         draw.text([(bg_w-len(txt_title)*40)//2,160],'总数量： '+str(df_gp['数量'].sum()),'#8FAE8E',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',32))
 
         for index,row in df_gp.iterrows():
+
             pic=self.pic_resize(pic_adr=row['图片地址'],h=h_pic)
             bg.paste(pic[0],posxy,mask=pic[1])      
             draw.text([posxy[0]+270,posxy[1]+70],row['零件名称'],'#AE9D8E',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',30))      
@@ -226,14 +233,17 @@ class picToPPT:
                     if df_gp.iloc[index]['位置']!=df_gp.iloc[index-1]['位置']:
                         draw.line([(0,posxy[1]-gap//2),(bg_w,posxy[1]-gap//2)],'#000000')  
                         draw.text([bg_w-200,posxy[1]-gap*8],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))   
+                        draw.text([bg_w-190,posxy[1]-gap*20],'×'+str(df_box[df_box['位置']==df_gp.iloc[index-1]['位置']]['数量'].tolist()[0]),'#F490EF',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',86))  
                 #最后一行
                 else:
                     if df_gp.iloc[index]['位置']==df_gp.iloc[index-1]['位置']:
                         draw.text([bg_w-200,bg_h-200],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))
+                        draw.text([bg_w-190,posxy[1]-gap*8],'×'+str(df_box[df_box['位置']==df_gp.iloc[index-1]['位置']]['数量'].tolist()[0]),'#F490EF',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',86))  
                     else:
                         draw.line([(0,posxy[1]-gap//2),(bg_w,posxy[1]-gap//2)],'#000000')  
                         draw.text([bg_w-200,posxy[1]-gap*8],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))  
                         draw.text([bg_w-200,bg_h-200],str(df_gp.iloc[index-1]['位置']),'#6E6D6D',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',60))
+                        draw.text([bg_w-190,posxy[1]-gap*20],'×'+str(df_box[df_box['位置']==df_gp.iloc[index-1]['位置']]['数量'].tolist()[0]),'#F490EF',font=ImageFont.truetype('c:\\windows\\fonts\\simhei.ttf',86))  
             
             posxy=[posxy[0],posxy[1]+h_pic+gap]
 
@@ -455,7 +465,7 @@ class picToPPT:
         
 if __name__=='__main__':
     mypics=picToPPT('L149可爱的招财猫')
-    mypics.inner_box_pos(save='yes',lxfml_mode='new')
+    # mypics.inner_box_pos(save='yes',lxfml_mode='new')
     # print(mypics.blockNames())
     # k=mypics.blockNames()   
     # mypics=picToPPT('/home/jack/data/乐高/图纸/031回力赛车')
