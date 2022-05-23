@@ -518,7 +518,7 @@ class data_summary:
                         r_sig,g_sig,b_sib,a_sig=pic_tch_sig.split()
                         bg.paste(pic_tch_sig,(950+m*1000,3015),mask=pic_tch_sig)
                     except FileNotFoundError as e:
-                        # print(e)
+                        print(e)
                         tch_sig_txt.append([m,tch_n])
                         # print(tch_n,e)
 
