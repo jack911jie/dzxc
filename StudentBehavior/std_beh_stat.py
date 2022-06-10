@@ -2,6 +2,7 @@ import os
 from subprocess import STD_ERROR_HANDLE
 import sys
 import copy
+import pypinyin
 # import this
 import pandas as pd
 import numpy as np
@@ -97,6 +98,20 @@ class StudentData:
 
         return df_all_crs
 
+    def chr_to_caption(self,chr):
+        all_py=''
+        duoyin={'覃':1}
+        for ss in chr:
+            if ss in list(duoyin.keys()):
+                py_pos=duoyin[ss]
+            else:
+                py_pos=0
+            s_cap=pypinyin.pinyin(ss,heteronym=True,style=pypinyin.NORMAL)[0][py_pos][0].upper()
+            all_py+=s_cap
+        return all_py
+            
+
+
     def multi_tbl_score(self,std_name='邓恩睿',in_list=[['2022春',1]],end_time=''):
         #学生真实上课表
         std_real_crs=self.std_all_crs(std_name=std_name,in_list=in_list,end_time=end_time)
@@ -117,6 +132,7 @@ class StudentData:
             for std_real_took in std_real_crs['课程日期及名称'].tolist():                
                 tb_name=str(df_beh_crs[df_beh_crs['课程名称']==std_real_took]['课时'].tolist()[0])
                 _this_crs_score=self.std_mark(std_name=std_name,tb_name=tb_name,std_mark_fn=beh_rec_fn)
+                _this_crs_score['姓名首拼']=_this_crs_score['姓名'].apply(lambda x:self.chr_to_caption(x))
                 _this_crs_score['学期']=tbl[0][0:5]
                 _this_crs_score['节次']=tb_name
                 _this_crs_score['课程编码及名称']=std_real_took
@@ -124,7 +140,7 @@ class StudentData:
                 df_this_all.append(_this_crs_score)
 
         this_std_all_score=pd.concat(df_this_all)
-
+        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','分类编码','分类名称','细分内容','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
         # this_std_all_score.to_clipboard()
         return this_std_all_score
 
@@ -171,7 +187,8 @@ if __name__=='__main__':
     terms2=[['2022春',5]]
     p=StudentData(wecomid='1688856932305542',place='001-超智幼儿园',template_fn='学生课堂行为评分标准表.xlsx')
     # res=p.multi_tbl_score(std_name='李崇析',in_list=[['2022春',5]],end_time='20220609')
-    
+    # kk=p.chr_to_caption('邓恩睿')
+    # print(kk)
     # res=p.batch_deal_std_scores(std_list=std_list,terms=terms,output_name='e:/temp/temp_dzxc/result.xlsx')
     # print(res)
 
