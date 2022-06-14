@@ -56,7 +56,7 @@ class StudentData:
             ins_tbl['姓名']=std_name         
 
             #筛选出结果
-            res_ins_tbl=ins_tbl[['姓名','环节','分类编码','分类名称','细分内容','行为描述','分数']]
+            res_ins_tbl=ins_tbl[['姓名','环节','分类编码','分类名称','细分内容','能力名称','行为描述','分数']]
 
             return res_ins_tbl
 
@@ -140,7 +140,7 @@ class StudentData:
                 df_this_all.append(_this_crs_score)
 
         this_std_all_score=pd.concat(df_this_all)
-        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','分类编码','分类名称','细分内容','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
+        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','分类编码','分类名称','细分内容','能力名称','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
         # this_std_all_score.to_clipboard()
         return this_std_all_score
 
@@ -187,9 +187,10 @@ if __name__=='__main__':
     terms2=[['2022春',5]]
     p=StudentData(wecomid='1688856932305542',place='001-超智幼儿园',template_fn='学生课堂行为评分标准表.xlsx')
     # res=p.multi_tbl_score(std_name='李崇析',in_list=[['2022春',5]],end_time='20220609')
+    # res.to_clipboard()
     # kk=p.chr_to_caption('邓恩睿')
     # print(kk)
     # res=p.batch_deal_std_scores(std_list=std_list,terms=terms,output_name='e:/temp/temp_dzxc/result.xlsx')
     # print(res)
 
-    p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220609')
+    p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220614')
