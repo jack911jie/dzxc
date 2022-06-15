@@ -10,6 +10,7 @@ from datetime import datetime
 pd.set_option('display.unicode.ambiguous_as_wide', True)
 pd.set_option('display.unicode.east_asian_width', True)
 pd.set_option('display.max_rows', None)
+# pd.set_option('display.max_columns', None)
 
 
 class StudentData:
@@ -56,7 +57,9 @@ class StudentData:
             ins_tbl['姓名']=std_name         
 
             #筛选出结果
-            res_ins_tbl=ins_tbl[['姓名','环节','分类编码','分类名称','细分内容','能力名称','行为描述','分数']]
+            # print(ins_tbl)
+            res_ins_tbl=ins_tbl[['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号_x','行为描述','分数']]
+            res_ins_tbl.columns=['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数']
 
             return res_ins_tbl
 
@@ -140,7 +143,8 @@ class StudentData:
                 df_this_all.append(_this_crs_score)
 
         this_std_all_score=pd.concat(df_this_all)
-        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','分类编码','分类名称','细分内容','能力名称','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
+        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
+        this_std_all_score.columns=['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','行为编码','行为描述','分数','学期','节次','课程编码及名称','上课日期']
         # this_std_all_score.to_clipboard()
         return this_std_all_score
 
