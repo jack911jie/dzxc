@@ -55,11 +55,12 @@ class StudentData:
             ins_tbl['行为描述']=ins_tbl.apply(lambda x: x['行为描述_x'] if pd.isna(x['行为描述_y']) else x['行为描述_y'],axis=1)
             ins_tbl['分数']=ins_tbl.apply(lambda x: x['分数_y'] if x[std_name]==1 else x['分数_x'],axis=1)   
             ins_tbl['姓名']=std_name         
+            ins_tbl['标准分']=ins_tbl['分数']*100/3
 
             #筛选出结果
             # print(ins_tbl)
-            res_ins_tbl=ins_tbl[['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号_x','行为描述','分数']]
-            res_ins_tbl.columns=['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数']
+            res_ins_tbl=ins_tbl[['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号_x','行为描述','分数','标准分']]
+            res_ins_tbl.columns=['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数','标准分']
 
             return res_ins_tbl
 
@@ -143,8 +144,8 @@ class StudentData:
                 df_this_all.append(_this_crs_score)
 
         this_std_all_score=pd.concat(df_this_all)
-        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
-        this_std_all_score.columns=['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','行为编码','行为描述','分数','学期','节次','课程编码及名称','上课日期']
+        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数','标准分','学期','节次','课程编码及名称','上课日期']]
+        this_std_all_score.columns=['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','行为编码','行为描述','分数','标准分','学期','节次','课程编码及名称','上课日期']
         # this_std_all_score.to_clipboard()
         return this_std_all_score
 
@@ -190,11 +191,11 @@ if __name__=='__main__':
     std_list2=['李崇析','陈锦媛','陆浩铭','唐欣语','邹维韬','朱端桦','谢威年','韦宇浠','韦启元','沈芩锐','岑亦鸿','廖茗睿','黄进桓','黄钰竣','韦万祎']
     terms2=[['2022春',5]]
     p=StudentData(wecomid='1688856932305542',place='001-超智幼儿园',template_fn='学生课堂行为评分标准表.xlsx')
-    # res=p.multi_tbl_score(std_name='李崇析',in_list=[['2022春',5]],end_time='20220609')
-    # res.to_clipboard()
+    res=p.multi_tbl_score(std_name='李崇析',in_list=[['2022春',5]],end_time='20220609')
+    res.to_clipboard()
     # kk=p.chr_to_caption('邓恩睿')
     # print(kk)
     # res=p.batch_deal_std_scores(std_list=std_list,terms=terms,output_name='e:/temp/temp_dzxc/result.xlsx')
     # print(res)
 
-    p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220614')
+    # p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220614')
