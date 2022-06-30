@@ -187,28 +187,36 @@ class StudentData:
         return df
 
 
-    def pre_deal_score(self,terms=[['2022春',1]]):
-        for k,term in enumerate(terms):
-            info_xls=os.path.join(self.work_dir,self.place,'学生信息表',term[0][:4],term[0]+'-学生信息表（周'+self.num_to_weekday(term[1])+'）.xlsx')
-            this_info=WashData.std_score_this_crs(xls=info_xls)
-            _score=this_info['std_this_scores']
-            _medals=this_info['medals_this_class']
-            # scores.append(_score)
-            if k>0:
-                score=pd.merge(score,_score,how='outer',on='学生姓名')                
-                medals=pd.merge(medals,_medals,how='outer')
-            else:
-                score=_score
-                medals=_medals
+    # def pre_deal_score(self,terms=[['2022春',1]]):
+    #     for k,term in enumerate(terms):
+    #         info_xls=os.path.join(self.work_dir,self.place,'学生信息表',term[0][:4],term[0]+'-学生信息表（周'+self.num_to_weekday(term[1])+'）.xlsx')
+    #         this_info=WashData.std_score_this_crs(xls=info_xls)
+    #         _score=this_info['std_this_scores']
+    #         _medals=this_info['medals_this_class']
+    #         # scores.append(_score)
+    #         if k>0:
+    #             score=pd.merge(score,_score,how='outer',on='学生姓名')                
+    #             medals=pd.merge(medals,_medals,how='outer')
+    #         else:
+    #             score=_score
+    #             medals=_medals
 
-        return {'score':score,'medals':medals}
+    #     return {'score':score,'medals':medals}
 
 
     def teacher_cmt(self,crs_list,std_name='吴岳',terms=[['2022春',1]],term_cmt_date='20220704'):
         
+        std_mark=[]
         for k,term in enumerate(terms):
             std_info_fn=os.path.join(self.work_dir,self.place,'学生信息表',term[0][:4],term[0]+'-学生信息表（周'+self.num_to_weekday(term[1])+'）.xlsx')
             cmt_fn=os.path.join(self.work_dir,self.place,'每周课程反馈','反馈表',term[0][:4],term[0]+'-学生课堂学习情况反馈表（周'+self.num_to_weekday(term[1])+'）.xlsx')
+            std_mark_fn=os.path.join(self.work_dir,self.place,'每周课程反馈','反馈表',term[0][:4],term[0]+'-学生课堂行为记录表（周'+self.num_to_weekday(term[1])+'）.xlsx')
+
+            try:
+                _std_mark=pd.read_excel(std_mark_fn,sheet_name='课程信息表',skiprows=1,usecols='A:E')
+                std_mark.append(_std_mark)
+            except Exception as e:
+                print(e)
 
         #将学生信息表内的积分拼接
             this_info=WashData.std_score_this_crs(xls=std_info_fn)
@@ -232,7 +240,7 @@ class StudentData:
 
                 if '能力' in str(clmn_name) or '心理' in str(clmn_name):
                     smrys.append(clmn_name)
-                    smrys_term[clmn_name]=[term[0],'0']
+                    smrys_term[clmn_name]=[term[0],0]
 
             for clmn in clmns:
                 _df_cmt[clmn].fillna(_df_cmt[_df_cmt['学生姓名']=='通用评论'][clmn].tolist()[0],inplace=True)
@@ -244,10 +252,13 @@ class StudentData:
                 df_cmt=pd.merge(df_cmt,_df_cmt,how='outer',on='学生姓名')
                 df_score=pd.merge(df_score,_score,how='outer',on='学生姓名')
                 df_medals=pd.merge(df_medals,_medals,how='outer',on='学生姓名')
+                
             else:
                 df_cmt=_df_cmt
                 df_score=_score
                 df_medals=_medals
+
+        df_mark=pd.concat(std_mark)
 
         std_all_cmt=df_cmt[df_cmt['学生姓名']==std_name]
 
@@ -261,37 +272,45 @@ class StudentData:
             return txt
 
         crs_list['姓名']=std_name
+        crs_list['姓名首拼']=crs_list['姓名'].apply(lambda x: self.chr_to_caption(x))
         crs_list['评论']=crs_list['课程日期及名称'].apply(lambda x: replace_chr(std_all_cmt[x].tolist()[0],std_name,x))
         crs_list['类型']='课后反馈'
         crs_list['学期']=crs_list['课程日期及名称'].apply(lambda x: clmns_term[x][0])
-        crs_list['节次']=crs_list['课程日期及名称'].apply(lambda x: clmns_term[x][1])
+        crs_list['节次']=crs_list['课程日期及名称'].apply(lambda x: int(clmns_term[x][1]))
+        crs_list['老师']=crs_list['课程日期及名称'].apply(lambda x: df_mark[df_mark['课程名称']==x]['主教老师'].tolist()[0])
+        
+
 
         for smry in smrys:
 
             crs_list=crs_list.append({'课程日期及名称':smry[-8:]+'-'+smry[:-9],'是否上课':'√','上课日期':datetime.strptime(smry[-8:]+'000000','%Y%m%d%H%M%S'),'课程名称':smry[:-9],'姓名':std_name,
-                              '评论':std_all_cmt[smry].tolist()[0],'类型':'学期评语','学期':smrys_term[smry][0],'节次':smrys_term[smry][1]},ignore_index=True)   
+                              '姓名首拼':self.chr_to_caption(std_name),'评论':std_all_cmt[smry].tolist()[0],'类型':'学期评语','学期':smrys_term[smry][0],'节次':smrys_term[smry][1]},ignore_index=True)   
 
 
 
         return crs_list
 
-        # df_score=WashData.std_score_this_crs(xls=std_info_fn)['std_this_scores']
 
-        
-        # print(df_score)
 
     def batch_tch_cmt(self,output_name,std_terms,term_cmt_date='20220704',end_time=''):
         ress=[]
+        _std_counts=0
+        for terms,std_list in std_terms:
+            _std_counts+=len(std_list)
+
+        std_counts=0
         for terms,std_list in std_terms:
             for std_name in std_list:
-                print('\n正在处理 ',std_name,'……',end='')
+                print('\n正在处理 ',std_name,'……（第',str(std_counts+1),'个/共',str(_std_counts),'个)',end='')
             # pre_res=self.pre_deal_score(terms=terms)       
                 crs_list=self.std_all_crs(std_name=std_name,in_list=terms,end_time=end_time)
                 res=self.teacher_cmt(crs_list=crs_list ,std_name=std_name,terms=terms,term_cmt_date=term_cmt_date)
                 ress.append(res)
                 print('完成')
+                std_counts+=1
         print('\n正在合并数据')
         result=pd.concat(ress)
+        print('\n正在保存数据至excel')
         result.to_excel(output_name)
         os.startfile(os.path.dirname(output_name))
         print('\n完成')
