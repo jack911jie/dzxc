@@ -209,7 +209,7 @@ class pics:
             sort_list=sorted(list(std_name_count),key=str.lower)
             for n_std,std_name in enumerate(sort_list):
                 if std_name not in log_txt:
-                    log_txt.append(str(n_std).zfill(2)+'-'+std_name+': '+str(std_name_count[std_name])+'张')
+                    log_txt.append(str(n_std+1).zfill(2)+'-'+std_name+': '+str(std_name_count[std_name])+'张')
             log_txt.append('共'+str(sum(std_name_count.values()))+'张')
       
             if infos:
