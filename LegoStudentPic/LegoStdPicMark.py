@@ -194,7 +194,17 @@ class pics:
 
         def putCoverToPics():
             infos=read_pics_new()
-            # print(infos)
+
+            std_name_count_list=[]
+            for info_item in infos:
+                std_name_count_list.append(info_item[1])
+
+            #计算张数
+            std_name_count={}
+            for std_name in std_name_count_list:
+                std_name_count[std_name]=std_name_count_list.count(std_name)
+
+
             # infos=[infos[2]]            
             if infos:
                 print('正在写入标注信息并按姓名保存到文件夹')
@@ -209,7 +219,7 @@ class pics:
 
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
+                        saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1]+'-'+str(std_name_count[info[1]])+'张')
                         saveName=os.path.join(saveDir,info[4])
                         if not os.path.exists(saveDir):
                             # print(saveName)
@@ -1039,8 +1049,8 @@ class TempMark:
 
 
 if __name__=='__main__':
-    # pic=pics()
-    # pic.putCover(height=2250,term='2021春',crop='yes',bigger='yes',weekday=1)
+    pic=pics()
+    pic.putCover(height=2250,term='2022春',crop='yes',bigger='yes',weekday=5) 
     # stu_pics=LegoStudentPicDistribute.LegoPics(crsDate=20210909,crsName='L106手动小赛车',weekday=4,term='2021秋',mode='tiyan')
     # stu_pics.dispatch()
 
@@ -1054,8 +1064,8 @@ if __name__=='__main__':
     # p.put_cover_to_pic(img_src='e:/temp/20210924-L107我的小房子-080.JPG')
     # p.group_put(crs_date='20210924',crs_name='L107我的小房子')
 
-    p=TempMark()
-    p.putCover(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
+    # p=TempMark()
+    # p.putCover(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
     # # pic.put_mark()
