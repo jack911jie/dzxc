@@ -34,7 +34,7 @@ class StudentData:
         mid_score_tbl=big_tbl[big_tbl['分数']==2]
 
         df_print_tbl=pd.read_excel(self.standard_fn,sheet_name='打印给老师内容')
-        df_base_tbl=df_print_tbl[['环节','课堂项目','描述','打印编号','细分编码','分数']]
+        df_base_tbl=df_print_tbl[['环节','课堂项目','描述','打印编码','细分编码','分数']]
         # print(df_print_tbl)
         # print(df_base_tbl)
 
@@ -44,7 +44,7 @@ class StudentData:
             df_std=df_std_one[['行为描述',std_name]]
             
             df_res=pd.concat([df_base_tbl,df_std],axis=1)
-            _df_std_out=df_res[['打印编号','行为描述','细分编码','分数',std_name]]
+            _df_std_out=df_res[['打印编码','行为描述','细分编码','分数',std_name]]
             
             df_std_out=copy.deepcopy(_df_std_out)
             df_std_out.fillna(0,inplace=True)
@@ -69,8 +69,8 @@ class StudentData:
 
             #筛选出结果
             # print(ins_tbl)
-            res_ins_tbl=ins_tbl[['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号_x','行为描述','分数']]
-            res_ins_tbl.columns=['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数']
+            res_ins_tbl=ins_tbl[['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编码_x','行为描述','分数']]
+            res_ins_tbl.columns=['姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编码','行为描述','分数']
 
             return res_ins_tbl
 
@@ -153,8 +153,8 @@ class StudentData:
                 df_this_all.append(_this_crs_score)
 
         this_std_all_score=pd.concat(df_this_all)
-        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编号','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
-        this_std_all_score.columns=['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','行为编码','行为描述','分数','学期','节次','课程编码及名称','上课日期']
+        this_std_all_score=this_std_all_score[['姓名首拼','姓名','环节','一级能力编码','一级能力名称','二级能力编码','二级能力名称','细分编码','细分内容','打印编码','行为描述','分数','学期','节次','课程编码及名称','上课日期']]
+        this_std_all_score.columns=['姓名首拼','姓名','环节','一级指标编码','一级指标名称','二级指标编码','二级指标名称','三级指标编码','三级指标名称','四级指标编码','四级指标名称','分数','学期','节次','课程编码及名称','上课日期']
         # this_std_all_score.to_clipboard()
         return this_std_all_score
 
@@ -334,7 +334,7 @@ if __name__=='__main__':
     p=StudentData(wecomid='1688856932305542',place='001-超智幼儿园',template_fn='学生课堂行为评分标准表.xlsx')
     # res=p.multi_tbl_score(std_name='李贤斌',in_list=[['2022春',1]],end_time='20220614')
 
-    res=p.std_mark(std_name='李贤斌',tb_name='2',std_mark_fn='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\反馈表\\2022\\2022春-学生课堂行为记录表（周一）.xlsx')
+    # res=p.std_mark(std_name='李贤斌',tb_name='2',std_mark_fn='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\反馈表\\2022\\2022春-学生课堂行为记录表（周一）.xlsx')
 
     # res.to_clipboard()
 
@@ -342,7 +342,7 @@ if __name__=='__main__':
     # print(res)
     # p.teacher_cmt(std_name='邓恩睿',terms=[['2022春',1],['2021秋',1]])
 
-    # res=p.batch_tch_cmt(output_name='e:/temp/temp_dzxc/result_cmt.xlsx',std_terms=[[terms1,std_list1],[terms2,std_list2]])
+    res=p.batch_tch_cmt(output_name='e:/temp/temp_dzxc/result_cmt.xlsx',std_terms=[[terms1,std_list1],[terms2,std_list2]])
 
 
     # res.to_clipboard()
@@ -351,4 +351,4 @@ if __name__=='__main__':
     # res=p.batch_deal_std_scores(std_list=std_list,terms=terms,output_name='e:/temp/temp_dzxc/result.xlsx')
     # print(res)
 
-    # p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220614')
+    # p.batch_different_term('e:/temp/temp_dzxc/result.xlsx',[[terms1,std_list1],[terms2,std_list2]],end_time='20220714')
