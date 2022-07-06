@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'poster
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'TermSummary'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'query'))
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'module'))
+sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'StudentBehavior'))
 import Summary_hd
 import BeforeClass
 import picToMp4
@@ -17,6 +18,7 @@ import LegoStdPicMark
 import legoCrstoPPT
 import QueryForScore
 import QueryForClassTaken
+import std_beh_stat
 import iptcinfo3
 from datetime import datetime
 
@@ -65,6 +67,14 @@ def merge_animation_mv(crs_name='L056陀螺发射器',method_merge=1,bgm_src='de
             print('无此参数')
     except:
         print('出错。请检查目录中是否有相应文件。')
+
+def stat_student_behavior(wecomid,place,template_fn,std_terms,end_time,out_put_name):     
+    p=std_beh_stat.StudentData(wecomid=wecomid,place=place,template_fn=template_fn)
+    p.batch_different_term(output_name=out_put_name,std_terms=std_terms,end_time=end_time)
+
+def stat_teacher_comment(place,std_terms,out_put_name):     
+    p=std_beh_stat.StudentData(place=place,template_fn='学生课堂行为评分标准表.xlsx')
+    p.batch_tch_cmt(output_name=out_put_name,std_terms=std_terms)
 
 def stdpicWhiteMark(height=2250,term='2020秋',crop='yes',bigger='yes',weekday=[2]):
     pic=LegoStdPicMark.pics()
@@ -165,6 +175,9 @@ def temp_mark(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250
     p=LegoStdPicMark.TempMark()
     p.putCover(input_dir=input_dir,height=height,crop=crop,bigger=bigger)
 
+
+###########################################################################################################
+
 if __name__=='__main__':
 #排课检查课程冲突
     # check_crs_dup(place_input='001-超智幼儿园',term='2021秋',weekday=1,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
@@ -201,6 +214,27 @@ if __name__=='__main__':
     #                         cmt_date='20220309',tb_list=[['2021秋','w6'],['2022春','w6']], \
     #                         tch_name=['阿晓','芳芳'],mode='only16',k=1)
 
+#学生课堂行为评分汇总
+    # std_list1=['邓恩睿','邓立文','黄文俊','黄昱涵','李俊豪','廖世吉','李贤斌','磨治丞','农淑颖','农雨蒙','覃熙雅','陶梓翔','韦欣彤','韦欣怡','吴岳']
+    # terms1=[['2022春',1]]
+    # std_list2=['李崇析','陈锦媛','陆浩铭','唐欣语','邹维韬','朱端桦','谢威年','韦宇浠','韦启元','沈芩锐','岑亦鸿','廖茗睿','黄进桓','黄钰竣','韦万祎']
+    # terms2=[['2022春',5]]
+    # std_terms=[[terms1,std_list1],[terms2,std_list2]]
+
+    # stat_student_behavior(wecomid='1688856932305542',place='001-超智幼儿园',template_fn='学生课堂行为评分标准表.xlsx',
+    #                     std_terms=std_terms,end_time='',out_put_name='e:/temp/temp_dzxc/result_std_behavior.xlsx')
+
+#老师评语汇总
+    # std_list1=['邓恩睿','邓立文','黄文俊','黄昱涵','李俊豪','廖世吉','李贤斌','磨治丞','农淑颖','农雨蒙','覃熙雅','陶梓翔','韦欣彤','韦欣怡','吴岳']
+    # terms1=[['2022春',1]]
+    # std_list2=['李崇析','陈锦媛','陆浩铭','唐欣语','邹维韬','朱端桦','谢威年','韦宇浠','韦启元','沈芩锐','岑亦鸿','廖茗睿','黄进桓','黄钰竣','韦万祎']
+    # terms2=[['2022春',5]]
+    # std_terms=[[terms1,std_list1],[terms2,std_list2]]
+
+    # stat_teacher_comment(place='001-超智幼儿园',std_terms=std_terms,out_put_name='e:/temp/temp_dzxc/result_cmt.xlsx')
+
+
+
 #学员成长手册
     # std_grow_book(std_name='韦华晋',start_date='20200922',end_date='20210309',weekday='2',term='2020秋',tch_name='阿晓老师')
 
@@ -208,7 +242,7 @@ if __name__=='__main__':
     # std_ability_rose(std_name='韦成宇',term='2020秋',weekday='6')
 
 #将步骤图导出PPT
-    makePpt('L152三轮摩托车',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new',add_block='no',add_list=[[85546,2]])
+    # makePpt('L152三轮摩托车',copyToCrsDir='no',crsPPTDir='I:\\乐高\\乐高WeDo\\课程',pos_pic='yes',lxfml_mode='new',add_block='no',add_list=[[85546,2]])
     #85546-黄色橡皮筋,[85546,2]意思是85546，2个。
     #85544-红色橡皮筋
 
@@ -216,8 +250,8 @@ if __name__=='__main__':
     # view_score(place_input='001-超智幼儿园',std_name='w101',sort_by='剩余积分',plus_tiyan='no')
 
 # #按名字分配照片，并生成课后发给家长的照片：
-    # pics_distribute_and_make_poster(place='001-超智幼儿园', term='2022春',crsDate_name='20220425-L151机械大铁锤', 
-    #     force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='',act='both') 
+    pics_distribute_and_make_poster(place='001-超智幼儿园', term='2022春',crsDate_name='20220425-L151机械大铁锤', 
+        force_weekday=0,TeacherSig='阿晓老师',pic_forced_ht=1200,copy_to_feedback_dir='yes',mode='',act='both') 
      #act参数：both,dis_and_mark,exp_feedback
 
 # 课前生成海报
