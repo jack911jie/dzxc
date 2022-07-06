@@ -42,7 +42,7 @@ class pics:
         print('完成')
         
 
-    def putCover(self,height=2250,term='2020秋',crop='yes',bigger='yes',weekday=2):
+    def putCover(self,height=2250,term='2020秋',crop='yes',bigger='yes',weekday=2,savemode='all_together'): #savemode参数：all_together, individual
         def read_excel():
             crsFile=['课程信息表.xlsx','课程信息']
             # if weekday==2:
@@ -194,11 +194,28 @@ class pics:
 
         def putCoverToPics():
             infos=read_pics_new()
-            # print(infos)
-            # infos=[infos[2]]            
+
+            std_name_count_list=[]
+            for info_item in infos:
+                std_name_count_list.append(info_item[5]+info_item[1])
+
+            #计算张数
+            std_name_count={}
+            log_txt=[]
+            for std_name in std_name_count_list:
+                std_name_count[std_name]=std_name_count_list.count(std_name)
+
+            #生成张数清单文本
+            sort_list=sorted(list(std_name_count),key=str.lower)
+            for n_std,std_name in enumerate(sort_list):
+                if std_name not in log_txt:
+                    log_txt.append(str(n_std+1).zfill(2)+'-'+std_name+': '+str(std_name_count[std_name])+'张')
+            log_txt.append('共'+str(sum(std_name_count.values()))+'张')
+      
             if infos:
                 print('正在写入标注信息并按姓名保存到文件夹')
                 smallpics=[]
+                # log_txt=[]
                 for info in tqdm(infos):
                     date_crs=info[4].split('-')[0][0:4]+'-'+info[4].split('-')[0][4:6]+'-'+info[4].split('-')[0][6:]
                     # img=Image.open(info[0])
@@ -209,19 +226,28 @@ class pics:
 
                         # print('173 txt_write:',txt_write)
                         draw(img,bg_w,bg_h,txt_write)
-                        saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1])
-                        saveName=os.path.join(saveDir,info[4])
+                        if savemode=='individual':
+                            saveDir=os.path.join(self.stdPicsDir,term,'冲印版',str(weekday).zfill(2)+info[5]+info[1]+'-'+str(std_name_count[info[5]+info[1]])+'张')
+                            saveName=os.path.join(saveDir,info[4])
+                        elif savemode=='all_together':
+                            saveDir=os.path.join(self.stdPicsDir,term,'冲印版','所有')
+                            saveName=os.path.join(saveDir,info[5]+info[1]+'-'+info[4])
+
+
                         if not os.path.exists(saveDir):
                             # print(saveName)
                             os.makedirs(saveDir)
-                            img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
-                        else:
-                            img.save(saveName,quality=95,subsampling=0)
+                        img.save(saveName,quality=95,subsampling=0) #subsampling参数：子采样，通过实现色度信息的分辨率低于亮度信息来对图像进行编码的实践。可能的子采样值是0,1和2。
+
                             # print(saveName)
                         # print('生成的照片所在文件夹：{}'.format(saveDir))
                         # print('测试保存:',saveName)
                     else:
                         smallpics.append(info[4])
+
+                txt_log='\n'.join(log_txt)
+                with open(os.path.join(saveDir,'照片张数清单.txt'),'w') as write_fn:
+                    write_fn.write(txt_log)
 
                 if smallpics:
                     msg='完成 {}/{} 个文件。{}个文件太小，未完成：'.format(len(infos)-len(smallpics),len(infos),len(smallpics))+', '.join(smallpics)+'   too small.'
@@ -1039,8 +1065,8 @@ class TempMark:
 
 
 if __name__=='__main__':
-    # pic=pics()
-    # pic.putCover(height=2250,term='2021春',crop='yes',bigger='yes',weekday=1)
+    pic=pics()
+    pic.putCover(height=2250,term='2022春',crop='yes',bigger='yes',weekday=5,savemode='all_together') #savemode参数：all_together将照片放同一个文件夹，individual将照片按学生姓名分开放
     # stu_pics=LegoStudentPicDistribute.LegoPics(crsDate=20210909,crsName='L106手动小赛车',weekday=4,term='2021秋',mode='tiyan')
     # stu_pics.dispatch()
 
@@ -1054,8 +1080,8 @@ if __name__=='__main__':
     # p.put_cover_to_pic(img_src='e:/temp/20210924-L107我的小房子-080.JPG')
     # p.group_put(crs_date='20210924',crs_name='L107我的小房子')
 
-    p=TempMark()
-    p.putCover(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
+    # p=TempMark()
+    # p.putCover(input_dir='C:\\Users\\jack\\Desktop\\7寸相片冲印',height=2250,crop='yes',bigger='yes')
 
     # pic=SimpleMark(place_input='001-超智幼儿园')
     # # pic.put_mark()
