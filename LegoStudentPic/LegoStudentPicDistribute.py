@@ -31,7 +31,8 @@ class LegoPics:
         self.dir=self.dir.replace('$',place_input)
         self.stu_dir=config['乐高学员文件夹']
         self.stu_dir=self.stu_dir.replace('$',place_input)
-        self.stu_sigDir=config['2020乐高课程签到表文件夹']
+        self.stu_sigDir=config['科学机器人课程签到表文件夹']
+        self.stu_sigDir=self.stu_sigDir.replace('$',place_input)
         self.weekday=weekday
         self.other_tags=['每周课程4+','每周课程16','乐高step1','乐高step2','乐高step3','乐高step4','乐高step5']
         self.std_sig_dir=config['学员签到表文件夹']

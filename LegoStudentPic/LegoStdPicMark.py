@@ -20,9 +20,9 @@ iptcinfo_logger.setLevel(logging.ERROR)
 
 
 class pics:
-    def __init__(self):
+    def __init__(self,place_input='001-超智幼儿园'):
         print('正在初始化参数……',end='')
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoStudentPic.config'),'r',encoding='utf-8') as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoStudentPicMark.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
             _line=''
             for line in lines:
@@ -32,6 +32,7 @@ class pics:
         
         self.publicPicDir=config['公共图片']
         self.StdInfoDir=config['科学机器人课程签到表文件夹']
+        self.StdInfoDir=self.StdInfoDir.replace('$',place_input)
         # self.StdInfoDir=config['2019科学课签到表文件夹']
         
         self.CrsInfoDir=config['课程信息表']
@@ -595,8 +596,9 @@ class StepMark(pics):
         putCoverToPics()
 
 class AfterClassMark(pics):
-    def __init__(self):
+    def __init__(self,place_input='001-超智幼儿园'):
         super().__init__()
+        self.StdInfoDir=self.StdInfoDir.replace('$',place_input)
 
     
     def get_pics(self,crs_date='20210924',crs_name='L107我的小房子'):
