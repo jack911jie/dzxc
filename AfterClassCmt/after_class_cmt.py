@@ -61,7 +61,38 @@ class AfterClass:
         
         return df_cmt_res
 
+    def tch_cmt(self,std_name='邓恩睿',weekday=1,term='2022春',crs_name='20220411-L148小小直升机',
+                            ref_table='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\SOP\\学生课堂行为评分标准表00.xlsx'):
+        
+        #根据评语库及上课打分生成评语
+        df_cmt=self.std_complete_score(std_name=std_name,weekday=weekday,term=term,crs_name=crs_name,ref_table=ref_table)
+
+        cmts_kq=df_cmt[df_cmt['细分编码'].str[:2]=='01']['学生评语'].dropna().tolist()
+        cmts_fx=df_cmt[df_cmt['细分编码'].str[:2]=='02']['学生评语'].dropna().tolist()
+        cmts_dj=df_cmt[df_cmt['细分编码'].str[:2]=='03']['学生评语'].dropna().tolist()
+        cmts_zs=df_cmt[df_cmt['细分编码'].str[:2]=='04']['学生评语'].dropna().tolist()
+        cmts_sn=df_cmt[df_cmt['细分编码'].str[:2]=='05']['学生评语'].dropna().tolist()
+
+        cmts=[cmts_kq,cmts_fx,cmts_dj,cmts_zs,cmts_sn]
+
+        t_cmt=''
+        pre_t=['','在结构分析环节，','在搭建环节，','在作品展示环节，','在搭建完毕收纳整理环节，']
+        for num,cmt in enumerate(cmts):
+            if len (cmt)>0:
+                t_cmt=t_cmt+pre_t[num]+''.join(cmt)
+                t_cmt=self.stick_txt(t_cmt)
+                t_cmt=t_cmt[:-1]+'~'
+
+        t_cmt=t_cmt.replace('~','。')
+
+        return t_cmt
+        
     
+    def stick_txt(self,txt):
+        txt=txt.replace('。','，')
+        txt=txt[:-1]+'。'
+        # print(txt)
+        return txt
 
     def sel_cmt(self,df_cmt_all,prt_code='01KQ12'):
         cmt=df_cmt_all[df_cmt_all['打印编码']==prt_code]['评语'].tolist()        
@@ -73,5 +104,6 @@ class AfterClass:
 
 if __name__=='__main__':
     p=AfterClass(place='001-超智幼儿园',work_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室')
-    p.std_complete_score(std_name='邓恩睿',weekday=1,term='2022春',crs_name='20220411-L148小小直升机',
+    res=p.tch_cmt(std_name='邓恩睿',weekday=1,term='2022春',crs_name='20220411-L148小小直升机',
                             ref_table='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\SOP\\学生课堂行为评分标准表00.xlsx')
+    # print(res)
