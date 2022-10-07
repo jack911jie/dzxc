@@ -41,28 +41,68 @@ class Query:
         
         return cls
 
+    def deep_fn(self,term,dir,crs_name,std_list):
+        # df_current=pd.read_excel(fn,skiprows=1)
+        # std_list=[item[0] for item in df_current.iloc[:,4:5].values.tolist()]
+        # print(std_list)
+        rpt=0
+        rpt_info=[]
+        for root,dirs,fns in os.walk(dir):
+            for xls in fns:
+                # print('---------------------------------------------------')
+                if re.match(r'\d\d\d\d\w{1}-.*.xlsx$',xls) and xls[-8:-6]!='体验':
+                    fn_ever=os.path.join(root,xls)
+                    info_taken=WashData.class_taken(fn_ever)
+                    # print('info-taken std names:',info_taken['std_names'])
+                    try:
+                        cls_taken_get=[cls[9:] for cls in info_taken['cls_taken']]
+                        #输入的课程名单是否在既往的课程中
+                    except:
+                        pass
+
+                    # print('cls taken get:',cls_taken_get)
+                    
+                    if crs_name in cls_taken_get:
+                        # print('now crsname:',crs_name)
+                        #当前学期的学生姓名是否在过去的名单中
+                        for std in std_list:
+                            # print('std_name',std)
+                            if std in info_taken['std_names']:
+                                # print('in list std',std)
+                                rpt_info.append([std,crs_name,xls[:5],xls[-8:-6]])
+                                rpt+=1
+
+        # print(rpt_info)
+        return [rpt_info,rpt]
+        
+
     def check_duplicate(self,term='2021秋',weekday=5,crs_name='L103摩托车骑士',show='show'):
         wd=days_calculate.num_to_ch(weekday)
         fn_dir=os.path.join(self.std_info_dir,'学生信息表')
-        fn=os.path.join(fn_dir,term+'-学生信息表（周'+wd+'）.xlsx')
+        fn=os.path.join(fn_dir,term[:4],term+'-学生信息表（周'+wd+'）.xlsx')
         df_current=pd.read_excel(fn,skiprows=1)
         std_list=[item[0] for item in df_current.iloc[:,4:5].values.tolist()]
+
         info_current=[crs_name,std_list]
-        rpt=0
-        rpt_info=[]
-        for xls in os.listdir(fn_dir):
-            if re.match(r'\d\d\d\d\w{1}-.*.xlsx$',xls) and xls[-8:-6]!='体验':
-                fn_ever=os.path.join(fn_dir,xls)
-                info_taken=WashData.class_taken(fn_ever)
-                cls_taken_get=[cls[9:] for cls in info_taken['cls_taken']]
-                #输入的课程名单是否在既往的课程中
+        # rpt=0
+        # rpt_info=[]
+
+        rpt_info,rpt=self.deep_fn(term=term,dir=fn_dir,crs_name=crs_name,std_list=std_list)
+        
+        # for root,dirs,kk in os.walk('E:\\temp\\temp_dzxc'):
+        #     print(kk)
+        #     if re.match(r'\d\d\d\d\w{1}-.*.xlsx$',xls) and xls[-8:-6]!='体验':
+        #         fn_ever=os.path.join(fn_dir,xls)
+        #         info_taken=WashData.class_taken(fn_ever)
+        #         cls_taken_get=[cls[9:] for cls in info_taken['cls_taken']]
+        #         #输入的课程名单是否在既往的课程中
                 
-                if crs_name in cls_taken_get:
-                    #当前学期的学生姓名是否在过去的名单中
-                    for std in std_list:
-                        if std in info_taken['std_names']:
-                            rpt_info.append([std,crs_name,xls[:5],xls[-8:-6]])
-                            rpt+=1
+        #         if crs_name in cls_taken_get:
+        #             #当前学期的学生姓名是否在过去的名单中
+        #             for std in std_list:
+        #                 if std in info_taken['std_names']:
+        #                     rpt_info.append([std,crs_name,xls[:5],xls[-8:-6]])
+        #                     rpt+=1
         if show=='show':
             if rpt>0:
                 print('\n在 {} 学期 星期{} 的学生课程 {} 中检测到以下重复\n'.format(term,wd,crs_name))
@@ -160,4 +200,5 @@ if __name__=='__main__':
     qry=Query(place_input='001-超智幼儿园')
     # qry.std_class_taken(weekday=[1,4],display='print_list',format='only_clsnam')
     # qry.check_duplicate(term='2021秋',weekday=1,crs_name='L026跷跷板') 
-    conflict=qry.check_conflict(term='2021秋',weekday=1,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='yes')
+    conflict=qry.check_conflict(term='2022秋',weekday=5,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
+    # qry.test()
