@@ -19,13 +19,16 @@ def crs_sig_table(xls='E:\\temp\\2021春-学生信息表（周四）_test.xlsx')
     # new_title=left_6.append(df.iloc[0].str.cat(df.iloc[1],sep=',')[6:]).tolist() #构建新的表头，使用了函数 df.iloc[0].str.cat
     # title_time=left_11.append(df.iloc[0][11:].apply([0:8])).tolist()
     # print(df)
-    title_time=df.iloc[0,11:].apply(lambda x: x[2:10] if x.startswith('补') else x[0:8])
-    title_time=title_time.fillna('-')
-    title_time=left_11.append(title_time).tolist()    
+    try:
+        title_time=df.iloc[0,11:].apply(lambda x: x[2:10] if x.startswith('补') else x[0:8])
+        title_time=title_time.fillna('-')
+        title_time=left_11.append(title_time).tolist()    
 
-    title_crs=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[9:])).tolist()
-    raw_title_crs=df.iloc[0,11:].apply(lambda x: x if x.startswith('补') else x[9:])
-    title_crs=left_11.append(raw_title_crs.fillna('-')).tolist()
+        title_crs=left_11.append(df.iloc[0,11:].fillna('-').apply(lambda x: x if x=='-' else x[9:])).tolist()
+        raw_title_crs=df.iloc[0,11:].apply(lambda x: x if x.startswith('补') else x[9:])
+        title_crs=left_11.append(raw_title_crs.fillna('-')).tolist()
+    except Exception as e:
+        print(xls,'——',e)
     # print(title_crs)
 
     #学生实际上的课表

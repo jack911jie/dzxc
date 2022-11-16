@@ -23,8 +23,7 @@ class data_summary:
         self.feedback_dir=config['学生课程反馈表文件夹']
         self.public_dir=config['公共素材文件夹']
         self.term_pic_dir=config['学员阶段总结文件夹']
-        self.tch_sig_pic_dir=config['老师签名图片文件夹']
-
+        self.tch_sig_pic_dir=config['老师签名图片文件夹']        
         font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
         self.font_list=font_cfg['fontList']
         self.font=TxtFormat().fonts
