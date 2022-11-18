@@ -58,6 +58,7 @@ class LegoClass:
         jpg=bg.convert('RGB')
         save_name=os.path.join(self.out_dir,date_crs_input+'_'+crs_name_input+'_课前海报.jpg')
         jpg.save(save_name,quality=85)
+        os.startfile(self.out_dir)
         # bg.show()
         print('完成')
 
