@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.append('i:/py/dzxc/module')
+sys.path.append('i:/py/modules')
 import readConfig
 import re
 import json
@@ -87,8 +87,11 @@ class LegoCons:
         
     def putTag(self):        
         dirs=os.path.join(self.pth,self.consName,'零件总图')
-        df=pd.read_excel(os.path.join(self.pth,self.consName,self.consName+'步骤列表.xlsx'))
-        tag_list=np.array(df.loc[~pd.isna(df['描述'])]).tolist()
+        df=pd.read_excel(os.path.join(self.pth,self.consName,self.consName+'-ppt步骤零件名称.xlsm'))
+        tag_list=np.array(df.loc[~pd.isna(df['零件名称'])]).tolist()
+        # tag_list=df['零件名称']
+
+        print(df['零件名称'])
         
         print('正在给图片添加文字描述……\n')
 
@@ -102,6 +105,7 @@ class LegoCons:
         font = ImageFont.truetype('C:\Windows\Fonts\msyh.ttc',80)
         
         for lst in tag_list:
+            print(lst)
             # if not os.path.exists(os.path.join(self.pth,lst[0])):
             #     pth=os.path.join(self.pth,lst[0].replace('_tagged.png','.png')) #因makelist()生成的列表为包含了tagged.png的文件名，所以要改回来。
             # else:
@@ -161,13 +165,15 @@ class LegoCons:
             totalList=[]
             n=0
             for file in os.listdir(os.path.join(self.pth,self.consName,'零件总图')):
-                if file[-10:].lower()=='tagged.png': #把加标签的放入列表
+                # if file[-10:].lower()=='tagged.png': #把加标签的放入列表
+                if file[-4:].lower()=='.png': 
                     totalList.append(self.consName+'/零件总图/'+file)
                     n+=1
             if n==0:  #如果没有打过标签的零件图，则把原图放到列表
                 for file in os.listdir(os.path.join(self.pth,self.consName,'零件总图')):
-                    if file[-3:].lower()=='png': #如无加过标签，列表中也要改为_tagged.png的后缀
-                        newFile=file.replace('.png','_tagged.png')
+                    if file[-4:].lower()=='.png': #如无加过标签，列表中也要改为_tagged.png的后缀
+                        # newFile=file.replace('.png','_tagged.png')
+                        newFile=file
                         totalList.append(self.consName+'/零件总图/'+newFile)
         else:
             #pass
@@ -200,7 +206,7 @@ class ConsMovie:
             config=json.loads(_line)
 
         self.crs_list=config['课程信息表']   
-        self.endV=r'I:\大智小超\公共素材\视频类\片尾01.mp4'
+        self.endV=r'I:\\大智小超\\公共素材\\视频类\\片尾01.mp4'
         self.pth=pth
         self.consName=consName
         self.k=1/3 #转场占时长的比例
@@ -214,13 +220,17 @@ class ConsMovie:
         df=pd.read_excel(self.crs_list)
         course_info=df[df['课程编号']==self.consName[0:4]].values.tolist()
         # print(course_info[0])
-        self.crs_bigtype,self.crs_type,self.crs_code,self.crs_name,self.crs_age,self.crs_star,self.crs_intro,self.comment,self.crs_lego,self.preperation=course_info[0]
+        self.crs_bigtype,self.crs_type,self.crs_code,self.crs_name,\
+            self.crs_age,self.steps,self.blocks,self.crs_star,self.motor,self.trans_type,self.struc,self.detector,self.prgrm,self.prgrm_detail,\
+            self.knlg,self.abl_pps,self.crs_intro,self.comment,self.crs_lego,self.ques,self.preperation=course_info[0]
         self.crs_age="适合年龄："+self.crs_age
         self.crs_star="搭建难度："+self.crs_star
         self.crs_lego="使用教具："+self.crs_lego
         
         a=LegoCons(self.pth,self.consName)
         self.lst=a.makeList()
+
+        # print(self.lst)
         
     def exportMovie(self):
         if 3*(1-self.k)*len(self.lst) < 56:
@@ -252,7 +262,7 @@ class ConsMovie:
                 clips.append(_img)
                 n+=1    
                 
-        #计算正片时间，供logo字幕用
+            #计算正片时间，供logo字幕用
         drt=0
         for c in clips:
             drt=drt+(c.duration-crstime)
@@ -756,7 +766,7 @@ class AnimationAndVideo:
             print('第二段影片大于44秒，请先剪裁。')
             sys.exit(0)
 
-        building_ani_src=os.path.join('i:\\乐高\\图纸',self.crs_name,self.crs_name+'_building_animation_only.mp4')
+        building_ani_src=os.path.join('i:\\乐高\\图纸',self.crs_name,'video',self.crs_name+'_building_animation_only.mp4')
         if os.path.exists(building_ani_src):
             print('目录中已存在搭建动画,将用于合并生成视频号影片。')
             clip_01_src=os.path.join(self.pic_dir,self.crs_name,self.crs_name+'_building_animation_only.mp4')
@@ -862,7 +872,7 @@ class helpp():
         print(txt)       
         
     
-def run_1(pth,consName,crs_list,s=1):
+def run_1(pth,consName,s=1):
     if s==1: #仅新建项目
         mylego=LegoCons(pth,consName)
     elif s==2:#改名及输出列表
@@ -875,8 +885,8 @@ def run_1(pth,consName,crs_list,s=1):
         # mylego.creatItem()
         # mylego.makeList()
         # mylego.putTag()
-        mylego.putTag_wedo_coverpage()
-        mylego.expHTML_lego()    
+        # mylego.putTag_wedo_coverpage()
+        # mylego.expHTML_lego()    
         myMovie=ConsMovie(pth,consName)
         myMovie.exportMovie()
     
@@ -889,8 +899,9 @@ def run_test():
     mylego.putTag_wedo_coverpage()
 
 if __name__=='__main__':
-    #   run_1('I:\\乐高\\图纸','006鸭子',2)
-    #     run_1('I:\\乐高\\图纸','021天平',2)
+    run_1('I:\\乐高\\图纸','L839跳绳的小人',s=3)
+
+        # run_1('I:\\乐高\\图纸','021天平',2)
     # run_1('I:\\乐高\\图纸','035啃骨头的小狗',3)
     #     run_export_Poster()
     #     run_test()
@@ -898,8 +909,8 @@ if __name__=='__main__':
     # my=BuildAnimation('L033双翼飞机')
     # my.exp_building_movie(exptype='part')
 
-    my=AnimationAndVideo(crs_name='L056陀螺发射器')
-    my.export_mv(w=1280,h=720,bgm_src='default')
+    # my=AnimationAndVideo(crs_name='L056陀螺发射器')
+    # my.export_mv(w=1280,h=720,bgm_src='default')
     # k=my.read_crs_info()
     # p=k['知识点'].values.tolist()[0]
     # print(p.split('\n'))
