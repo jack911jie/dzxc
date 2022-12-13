@@ -303,13 +303,13 @@ class ConsMovie:
         mix=finalclip.set_audio(final_audio)
         totalTime=finalclip.duration
         
-        out=os.path.join(self.pth,self.consName,self.consName+'_搭建视频_'+str(int(totalTime))+'s.mp4')
+        out=os.path.join(self.pth,self.consName,'video',self.consName+'_搭建视频_'+str(int(totalTime))+'s.mp4')
         print('正在导出视频：{}...\n'.format(out))
         mix.write_videofile(out)
         self.killProcess()
         print('Done')
         
-    def expMovieIn60s(self):
+    def expMovieIn60s(self,out_dir='default'):
         print('正在剪辑...\n')
         w,h=850,480
         self.w=w
@@ -361,7 +361,12 @@ class ConsMovie:
         mix=finalclip.set_audio(final_audio)
         totalTime=finalclip.duration
         
-        out=os.path.join(self.pth,self.consName,self.consName+'_搭建视频_forced_60s.mp4')
+        if out_dir=='defalut':
+            out=os.path.join(self.pth,self.consName,'video',self.consName+'_搭建视频_forced_60s.mp4')
+        else:
+            if not os.path.exists(out_dir):
+                os.makedirs(out_dir)
+            out=os.path.join(out_dir,self.consName+'_搭建视频_forced_60s.mp4')
         print('正在导出视频：{}...\n'.format(out))
         mix.write_videofile(out)
         self.killProcess()
@@ -412,19 +417,19 @@ class ConsMovie:
             crs_h_intro=0.8
             clr='#6AB34A'
         
-        text = mpy.TextClip(txt=self.crs_name, fontsize=85, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_name, fontsize=80, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.1,self.h*crs_h_name)).set_duration(self.drtn)
         clips.append(text)
         
-        text = mpy.TextClip(txt=self.crs_age, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_age, fontsize=18, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.1,self.h*crs_h_age)).set_duration(self.drtn)
         clips.append(text)
         
-        text = mpy.TextClip(txt=self.crs_lego, fontsize=20, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.crs_lego, fontsize=18, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.1,self.h*crs_h_lego)).set_duration(self.drtn)
         clips.append(text)
         
-        text = mpy.TextClip(txt=self.crs_intro,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
+        text = mpy.TextClip(txt=self.knlg,align='West',fontsize=25, font='j:/fonts/yousheTitleHei.ttf',color=clr) \
                 .set_pos((self.w*0.1,self.h*crs_h_intro)).set_duration(self.drtn)
         clips.append(text)
         
