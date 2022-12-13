@@ -7,14 +7,15 @@ import readConfig
 import days_calculate
 import pandas as pd 
 import re
+import copy
 
 class Query:
-    def __init__(self,place_input='001-超智幼儿园'):
+    def __init__(self,wecom_id='1688856932305542',place_input='001-超智幼儿园'):
         config=readConfig.readConfig(os.path.join(os.path.dirname(__file__),'query.config'))
         self.std_in_class_list=config['学生分班表']
-        self.std_in_class_list=self.std_in_class_list.replace('$',place_input)
+        self.std_in_class_list=self.std_in_class_list.replace('$',wecom_id).replace('place',place_input)
         self.std_info_dir=config['机构文件夹']
-        self.std_info_dir=self.std_info_dir.replace('$',place_input)
+        self.std_info_dir=self.std_info_dir.replace('$',wecom_id).replace('place',place_input)
 
     def std_class_taken(self,weekday=[6],display='print_list',format='only_clsname'):
         wds=[]
@@ -193,12 +194,91 @@ class Query:
         # print(check_res)
 
         
+    def check_conflict_std(self,term='2021秋',weekday=5,cls=1,fn='c:/Users/jack/desktop/w5待排课程.txt',show_mode='crs'):
+        with open(fn,'r',encoding='utf-8') as f:
+            lines=f.readlines()
+        to_arrange=[itm.strip() for itm in lines]
 
+        df_stds=pd.read_excel(os.path.join(self.std_info_dir,'学生信息表','学生分班表.xlsx'))
+        _df_cls=df_stds[(df_stds['分班']=='w'+str(weekday)+str(cls).zfill(2)) & (df_stds['学期']==term)]
+        df_cls=copy.deepcopy(_df_cls)
+
+        if df_cls.shape[0]==0:
+            print('\n在学生分班表中未查询到符合条件的学生名单')
+            return
+        else:
+            df_cls['学生编码及姓名']=df_cls['ID']+df_cls['学生姓名']
+            res_cross=[]
+            res_cross_cls=[]
+            for std in df_cls['学生编码及姓名'].tolist():
+                # print('\n正在检查 {} 的课程……\n'.format(std))
+                try:
+                    df_std=pd.read_excel(os.path.join(self.std_info_dir,'学生档案',std+'.xlsx'),sheet_name='课程记录')
+                    # print(df_std)
+                    crs_taken=df_std['课程编码及名称'].tolist()
+                    cross=list(set(to_arrange).intersection(set(crs_taken)))
+                    if cross:
+                        # print('{} 有以下课程重复：{} \n----------------------------------------\n'.format(std[6:],','.join(cross)))
+                        res_cross.append([std,cross])
+                        # cls_asp=[]
+                        # for crs_cls in cross:
+                        #     if crs_cls not in cls_asp:
+                        #         cls_asp.append(crs_cls)
+                except Exception as err:
+                    print('错误：{}'.format(err))
+        
+        if len(res_cross)==0:
+            print('\n未发现课程冲突')
+            return 
+        else:
+            #课程去重
+            crs_list=[]
+            for itm in res_cross:
+                crs_list.extend(itm[1]) 
+
+            crs_lists=list(set(crs_list))
+
+            crs_asp=[]
+            for crs_name in crs_lists:
+                std_names=[]
+                for std_crs in res_cross:
+                    if crs_name in std_crs[1]:
+                        if std_crs[0] not in std_names:
+                            std_names.append(std_crs[0])
+                crs_asp.append([crs_name,std_names])
+
+            ###显示
+            if res_cross:
+                if show_mode=='':
+                    pass
+                elif show_mode=='crs':
+                    print('\n以下课程重复:')
+                    for itm in crs_asp:
+                        print('\n{} ------->\n{}\n-------------------'.format(itm[0],'，'.join(itm[1])))
+                else:
+                    print('\n以下学生有重复课程：')
+                    for itm in res_cross:
+                        print('\n{} ------->\n{}\n-------------------'.format(itm[0],'，'.join(itm[1])))
+
+                
+
+            #crs_asp:从重复课程角度显示学生姓名
+            #res_cross:从学生姓名角度显示重复课程
+            
+            return {'crs_asp':crs_asp,'res_cross':res_cross}
+
+
+class Vividict(dict):
+    def __missing__(self, key):
+        value = self[key] = type(self)()
+        return value
+        
 
 
 if __name__=='__main__':
     qry=Query(place_input='001-超智幼儿园')
-    # qry.std_class_taken(weekday=[1,4],display='print_list',format='only_clsnam')
+    res=qry.check_conflict_std(term='2022秋',weekday=5,cls=1,fn='c:/Users/jack/desktop/待排课程.txt',show_mode='crs')
+  
     # qry.check_duplicate(term='2021秋',weekday=1,crs_name='L026跷跷板') 
-    conflict=qry.check_conflict(term='2022秋',weekday=5,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
+    # conflict=qry.check_conflict(term='2022秋',weekday=5,fn='c:/Users/jack/desktop/待排课程.txt',show_res='yes',write_file='no')
     # qry.test()
