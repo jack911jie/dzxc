@@ -18,6 +18,7 @@ from PIL import Image,ImageDraw,ImageFont
 from tqdm import tqdm
 import exifread
 import iptcinfo3
+import datetime
 
 logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(lineno)d - %(message)s')
 logger = logging.getLogger(__name__)
@@ -201,7 +202,7 @@ class poster:
         crs_name=crs_nameInput[4:]
         crs_code=crs_nameInput[0:4]
         def basic_para():
-            print('正在初始化参数……',end='')
+            print('\n正在初始化参数……',end='')
             picWid=self.picWid
             r=0.75
             picX1,picX3=10,10
@@ -616,13 +617,45 @@ class poster:
                     else:
                         # print('{} 不在名单中，加入本次积分。'.format(crs_nameInput))
                         crs_sc=df_std_fn['课堂积分'].sum()+std_this_score
+
+                    break
             # print('from std fn total score:',std_name,crs_sc)
 
 
             #方法二：遍历学生信息表读取总积分
             # crs_sc=df_std_all_scores['课堂总积分'].tolist()[0]
+            
 
-            vrfy_sc=df_std_all_scores['核销积分'].tolist()[0]
+            #方法一：从学生档案读取核销积分
+            for std_fn in os.listdir(self.std_fn_dir):
+                if std_fn.split('.')[0][6:]==std_name:
+                    df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='积分兑换')
+                    # df_std_fn['兑换日期2']=df_std_fn['兑换日期'].apply(lambda x: datetime.datetime.strptime(str(x),'%Y%m%d'))
+                    # df_std_fn=df_std_fn[df_std_fn['兑换日期2']<=datetime.datetime.strptime(str(dateInput),'%Y%m%d')]
+                    # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
+                    if int(dateInput) in df_std_fn['兑换日期'].tolist():
+                        # print('{} 在名单中'.format(crs_nameInput))
+                        vrfy_sc=df_std_fn['兑换积分'].sum()
+                    else:
+                        # print('{} 不在名单中，加入本次核销积分。'.format(crs_nameInput))
+                        df_this_vfry=pd.read_excel(self.crsStudent,sheet_name='积分核销表')
+                        df_this_std_date_vfry=df_this_vfry[(df_this_vfry['学生姓名']==std_name) & (df_this_vfry['核销日期']==dateInput)]
+                        
+                        if df_this_std_date_vfry.shape[0]==0:
+                            this_vfry=0
+                        else:
+                            this_vfry=df_this_std_date_vfry['核销积分'].tolist()[0]
+                        vrfy_sc=df_std_fn['兑换积分'].sum()+this_vfry
+
+                    break
+        
+            # print('{} 核销积分'.format(vrfy_sc))
+
+            #方法二：遍历学生信息表读取核销积分
+            # vrfy_sc=df_std_all_scores['核销积分'].tolist()[0]
+
+
+
             remain_sc=df_std_all_scores['剩余积分'].tolist()[0]
             std_all_scores={
                 'crs_sc':crs_sc,
@@ -739,6 +772,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=5,term='2022秋')
+    my=poster(weekday=6,term='2022秋')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L134避震小拖头',20221209,TeacherSig='阿晓老师')
+    my.PosterDraw('L175喂食的小鸟',20221022,TeacherSig='阿晓老师')
