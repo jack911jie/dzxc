@@ -313,6 +313,41 @@ def class_taken(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学�
     return {'cls_taken':cls_taken,'std_names':std_names}
 
 
+def std_each_class_cmt(df_score,df_sig,std_name='黄建乐',crs_name='20221022-L175喂食的小鸟',
+                    xls_cmt='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\反馈表\\2022\\2022秋-学生课堂学习情况反馈表（周六）.xlsx'):
+    df_cmt=pd.read_excel(xls_cmt,sheet_name='课堂情况反馈表',skiprows=1)
+    df_cmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名','Unnamed: 5':'昵称','Unnamed: 6':'性别'},inplace=True)
+
+    crs_names=[itm if re.match(r'^\d{8}-L\d{3}.*',itm) else '' for itm in [str(itm) for itm in list(df_cmt.columns)]]
+    while '' in crs_names:
+        crs_names.remove('')
+
+
+    if df_sig[(df_sig['学生姓名']==std_name) & (df_sig[crs_name[:8]]==crs_name[9:])].empty:
+        print('\n{} 无签名数据/未上课'.format(std_name))
+        return np.nan
+    else:
+        #获取积分及积分币数量，生成替代文本。
+        df_medal_num=df_score['medals_this_class']
+        medal_num=df_medal_num[df_medal_num['学生姓名']==std_name][crs_name].tolist()[0]
+        df_this_score=df_score['std_this_scores']
+        score=df_this_score[df_this_score['学生姓名']==std_name][crs_name].tolist()[0]
+        txt_score=' {}枚积分币，共计 {}'.format(str(int(medal_num)),str(score))
+        
+        df_txt_cmt=df_cmt[df_cmt['学生姓名']==std_name][crs_name]
+         # 这个判断有点怪，但能用
+        if 'true' in str(pd.isna(df_txt_cmt)).lower():
+            txt_cmt=df_cmt[df_cmt['学生姓名']=='通用评论'][crs_name].tolist()[0]                    
+        else:
+            txt_cmt=df_txt_cmt.tolist()[0]
+          
+        txt_cmt=txt_cmt.replace('#',std_name).replace('*',txt_score)
+
+        return {'txt_cmt':txt_cmt,'medal_num':int(medal_num),'score':score}
+    
+
+
+
 if __name__=='__main__':
     # print(std_feedback())
     # k=std_term_crs(std_name='李俊豪',start_date='20210901',end_date='20211105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周五）.xlsx')
@@ -322,7 +357,15 @@ if __name__=='__main__':
     # k=crs_sig_table(xls='E:\\temp\\2021秋-学生信息表（周五）.xlsx')
     # print(k['total_crs'])
     # print(k['std_crs'])
-    print(std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no'))
+    res=std_all_scores(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no')
+    print(res[res['学生姓名']=='廖茗睿'])
+    # df_score=std_score_this_crs(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')
+    # df_sig=crs_sig_table(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')['std_crs']
+    
+    # cmt=std_each_class_cmt(df_score=df_score,df_sig=df_sig,std_name='黄建乐',crs_name='20221022-L175喂食的小鸟',
+                    # xls_cmt='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\反馈表\\2022\\2022秋-学生课堂学习情况反馈表（周六）.xlsx')
+    
+    # print(cmt)
     # print(class_taken())
     # print(std_score_this_crs())
 

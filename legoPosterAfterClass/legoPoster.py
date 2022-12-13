@@ -43,6 +43,7 @@ class poster:
         self.place_input=place_input
         self.std_sig_dir=config['学生签到表文件夹']
         self.feedback_dir=config['课后照片及反馈文件夹']
+        self.std_fn_dir=config['学生档案文件夹']
         wd=days_calculate.num_to_ch(str(weekday))
         # self.eachStd=config['个别学员评语表']
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
@@ -601,7 +602,26 @@ class poster:
 
             all_scores=df_this_crs_score['all_scores']
             df_std_all_scores=all_scores[all_scores['学生姓名']==std_name]
-            crs_sc=df_std_all_scores['课堂总积分'].tolist()[0]
+
+            
+
+            #方法一：从学生档案读取总积分
+            for std_fn in os.listdir(self.std_fn_dir):
+                if std_fn.split('.')[0][6:]==std_name:
+                    df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='课程记录')
+                    # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
+                    if crs_nameInput in df_std_fn['课程编码及名称'].tolist() and int(dateInput) in df_std_fn['上课日期'].tolist():
+                        # print('{} 在名单中'.format(crs_nameInput))
+                        crs_sc=df_std_fn['课堂积分'].sum()
+                    else:
+                        # print('{} 不在名单中，加入本次积分。'.format(crs_nameInput))
+                        crs_sc=df_std_fn['课堂积分'].sum()+std_this_score
+            # print('from std fn total score:',std_name,crs_sc)
+
+
+            #方法二：遍历学生信息表读取总积分
+            # crs_sc=df_std_all_scores['课堂总积分'].tolist()[0]
+
             vrfy_sc=df_std_all_scores['核销积分'].tolist()[0]
             remain_sc=df_std_all_scores['剩余积分'].tolist()[0]
             std_all_scores={
@@ -719,6 +739,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=1,term='2021秋')
+    my=poster(weekday=5,term='2022秋')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L109螺旋桨飞车',20211011,TeacherSig='阿晓老师')
+    my.PosterDraw('L134避震小拖头',20221209,TeacherSig='阿晓老师')
