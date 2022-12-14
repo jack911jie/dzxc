@@ -16,6 +16,15 @@ class Query:
         self.std_in_class_list=self.std_in_class_list.replace('$',wecom_id).replace('place',place_input)
         self.std_info_dir=config['机构文件夹']
         self.std_info_dir=self.std_info_dir.replace('$',wecom_id).replace('place',place_input)
+        self.week_to_str={
+            '1':'一',
+            '2':'二',
+            '3':'三',
+            '4':'四',
+            '5':'五',
+            '6':'六',
+            '7':'日'
+        }
 
     def std_class_taken(self,weekday=[6],display='print_list',format='only_clsname'):
         wds=[]
@@ -228,7 +237,8 @@ class Query:
                     print('错误：{}'.format(err))
         
         if len(res_cross)==0:
-            print('\n未发现课程冲突')
+
+            print('\n{}\n------>\n在{} 班级中未发现课程冲突'.format('\n'.join(to_arrange),term+' 周'+self.week_to_str[str(weekday)]))
             return 
         else:
             #课程去重
