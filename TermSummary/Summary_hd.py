@@ -14,6 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator
 import numpy as np
 from PIL import Image,ImageDraw,ImageFont,ImageEnhance
+from datetime import datetime
+import copy
 
 class data_summary:
     def __init__(self):
@@ -806,10 +808,559 @@ class data_summary:
         # print(df)
         return {'res_rose':res_rose,'res_bar':res_bar,'res_radar':res_radar}
 
+class StudentSummaryPaper:
+    def __init__(self,term='2022秋',wecom_id='1688856932305542',place='001-超智幼儿园'):
+        config=readConfig(os.path.join(os.path.dirname(os.path.realpath(__file__)),'configs','TermSummary.config'))
+        self.std_dir=config['学生信息文件夹']
+        self.std_dir=self.std_dir.replace('$',wecom_id).replace('place',place)
+        self.design_dir=config['图纸文件夹']
+        self.feedback_dir=config['学生课程反馈表文件夹']
+        self.public_dir=config['公共素材文件夹']
+        self.term_pic_dir=config['学员阶段总结文件夹']
+        self.tch_sig_pic_dir=config['老师签名图片文件夹']        
+        font_cfg=readConfig(os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),'configs','dzxc_fonts.config'))
+        self.font_list=font_cfg['fontList']
+        self.font=TxtFormat().fonts
+        self.term=term
 
+    def std_info(self,std_name='DZ0034顾业熙',prd=['20221023','20230303'],cmt_date='20230310'):
+        df_term_cmt=pd.read_excel(os.path.join(self.std_dir,'学生档案',std_name+'.xlsx'),sheet_name='阶段小结')
+        df_term_cmt['日期']=df_term_cmt['日期'].apply(lambda x: str(x))
+        df_term_crs=pd.read_excel(os.path.join(self.std_dir,'学生档案',std_name+'.xlsx'),sheet_name='课程记录')
+        df_term_crs['上课日期']=df_term_crs['上课日期'].apply(lambda x: datetime.strptime(str(x), '%Y%m%d'))
+        df_abl_mark=pd.read_excel(os.path.join(self.std_dir,'学生档案',std_name+'.xlsx'),sheet_name='学员能力评分')
+        df_abl_mark['评分日期']=df_abl_mark['评分日期'].apply(lambda x: str(x))
+
+        prd_date=[datetime.strptime(str(x),'%Y%m%d') for x in prd]
+
+        df_prd_crs=copy.deepcopy(df_term_crs[(df_term_crs['上课日期']>=prd_date[0]) & (df_term_crs['上课日期']<=prd_date[1])])
+        df_prd_crs['上课日期文本']=df_prd_crs['上课日期'].apply(lambda x: x.strftime('%Y-%m-%d'))
+
+        txt_prd=prd_date[0].strftime('%Y年%m月%d日')+'-'+prd_date[1].strftime('%Y年%m月%d日')
+        crs_list=df_prd_crs['课程编码及名称'].tolist()
+        date_list=df_prd_crs['上课日期文本'].tolist()
+        cmt_skill_txt=df_term_cmt[df_term_cmt['日期']==str(cmt_date)]['学习能力评价'].tolist()[0]
+        cmt_psy_txt=df_term_cmt[df_term_cmt['日期']==str(cmt_date)]['心理评价'].tolist()[0]
+        total_score=df_prd_crs['课堂积分'].sum()
+
+
+        abl_mark=df_abl_mark[df_abl_mark['评分日期']==str(cmt_date)]
+
+        return {
+            'crs_count':len(crs_list),
+            'prd':txt_prd,
+            'total_score':total_score,
+            'crs_list':crs_list,
+            'crs_date':date_list,
+            'cmt_skill_txt':cmt_skill_txt,
+            'cmt_psy_txt':cmt_psy_txt,
+            'abl_mark':abl_mark
+        }
+
+
+    def draw_paper(self,total_date_crs_list=[],term='2022秋',std_name='DZ0034顾业熙',prd=['20221023','20230303'],cmt_date='20230310',tch_name=['阿晓','芳芳'],k=1):
+        info=self.std_info(std_name=std_name,prd=prd,cmt_date=cmt_date)
+
+
+        #节数
+        crs_count=info['crs_count']
+
+        #上课时间起止
+        prd=info['prd']
+
+        #积分
+        total_score=info['total_score']
+
+        #评论文本
+        cmt_skill_txt=info['cmt_skill_txt']
+        cmt_psy_txt=info['cmt_psy_txt']
+
+
+        #底图
+        std_date_crs=[]
+        for num, crs in enumerate(info['crs_list']):
+            std_date_crs.append(''.join(info['crs_date'][num].split('-'))+'-'+crs)
+        bg_src=os.path.join(os.path.dirname(self.std_dir),'⭐素材收集⭐','模板图片','学员阶段总结模板01.jpg')
+        bg=Image.open(bg_src)
+        print(bg.size)
+        draw=ImageDraw.Draw(bg)
+
+
+        #课程图        
+        box_bar=self.draw_box_bar(std_list=std_date_crs,total_list=total_date_crs_list)        
+        bg.paste(box_bar.resize((2391,2391*box_bar.size[1]//box_bar.size[0])),(45,550))
+
+        #学习能力玫瑰图
+        rose=self.rose(cmt_date=cmt_date,std_name=std_name)
+        rose_pic=Plot().mat_to_pil_img(rose['chart'])
+        bg.paste(rose_pic.resize((640,640)),(390,1656))
+
+        #社会能力雷达图
+        radar=self.radar(cmt_date=cmt_date,std_name=std_name)
+        radar_pic=Plot().mat_to_pil_img(radar['chart'])
+        bg.paste(radar_pic.resize((640,640)),(1470,1656))
+
+
+        #姓名、评论等
+        draw.text((840,110),std_name[6:],fill='#231815',font=self.font('楷体',100))
+        draw.text((840,250),'你在 '+prd+' 期间',fill='#6D8DA8',font=self.font('优设标题',64))
+        draw.text((840,330),'完成了 '+str(crs_count)+' 节乐高机器人课的学习',fill='#6D8DA8',font=self.font('优设标题',64))
+        draw.text((840,410),'收获了 '+str(total_score)+' 分课堂积分',fill='#6D8DA8',font=self.font('优设标题',64))
+
+        font_size_cmt=44
+        TxtFormat().put_txt_img(draw=draw,tt=cmt_skill_txt,total_dis=int(980*k*0.9), \
+                                    xy=[248,2397],dis_line=int(23*k),fill='#3e3a39', \
+                                    font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
+
+        TxtFormat().put_txt_img(draw=draw,tt=cmt_psy_txt,total_dis=int(980*k*0.9), \
+                            xy=[1313,2397],dis_line=int(23*k),fill='#3e3a39', \
+                            font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
+        
+
+        #签名(如无图片，则用文字)
+        tch_sig_txt=[]
+        for m,tch_n in enumerate(tch_name):
+            try:
+                pic_tch_sig=Image.open(os.path.join(self.tch_sig_pic_dir,tch_n+'.png'))
+                pic_tch_sig=pic_tch_sig.resize((200,200*pic_tch_sig.size[1]//pic_tch_sig.size[0]))
+                r_sig,g_sig,b_sib,a_sig=pic_tch_sig.split()
+                bg.paste(pic_tch_sig,(950+m*1000,3015),mask=pic_tch_sig)
+            except FileNotFoundError as e:
+                print(e)
+                tch_sig_txt.append([m,tch_n])
+
+        #上课
+        # draw.text((950,3035),tch_name[0]+'老师',fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(50*k))) 
+        draw.text((950,3100),cmt_date[0:4]+'.'+cmt_date[4:6]+'.'+cmt_date[6:],fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(40*k))) 
+        #心理
+        # draw.text((1950,3035),tch_name[1]+'老师',fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(50*k))) 
+        draw.text((1950,3100),cmt_date[0:4]+'.'+cmt_date[4:6]+'.'+cmt_date[6:],fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(40*k))) 
+
+        if tch_sig_txt:
+            for tch_sig_t in tch_sig_txt:
+                if tch_sig_t[0]==0:
+                    draw.text((950,3035),tch_sig_t[1]+'老师',fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(50*k))) 
+                elif tch_sig_t[0]==1:
+                    draw.text((1950,3035),tch_sig_t[1]+'老师',fill='#3e3a39',font=self.font('丁永康硬笔楷书',int(50*k))) 
+                else:
+                    print('没有该老师签名，请检查。')
+
+
+        #slogan
+        # draw.text((600,3300),'让孩子从小玩科学，爱科学，学科学。',fill='#c23030',font=self.font('楷体',int(82*k))) 
+
+        # draw.text((int(380*k),int((y_logo+10))), '长按二维码 → \n关注视频号 →', fill = '#8E9184',font=self.font('微软雅黑',25))
+
+        
+        bg=bg.convert('RGB')
+        savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'-课程学习报告.jpg')
+        if not os.path.exists(self.term_pic_dir):
+            os.makedirs(self.term_pic_dir)
+        # savename=os.path.join('e:/temp/',std_name+'.jpg')
+        # bg.save(savename,quality=90,subsampling=0)
+        # bg.save(savename,quality=95,dpi=(300,300))
+        # bg.show()
+        print('图片保存完成，保存路径：{}'.format(savename))
+
+
+
+        bg.show()
+
+
+    
+    def draw_crs_box(self,crs_name='L026跷跷板',crs_date='2022-10-09',color_style='on'):
+        
+        if color_style=='off':
+            crs_date='----------'
+
+        box_bg=Image.new('RGB',[220,300],'#6D8DA8')
+        crs_pic_src=os.path.join(self.design_dir,crs_name,crs_name[4:]+'.jpg')
+        crs_pic=Image.open(crs_pic_src)
+        crs_pic=crs_pic.crop((560,0,1280,720)).resize((200,200))
+        wbox=Image.new('RGB',(200,200),'#ffffff')
+        box_bg.paste(wbox,(10,10))
+        box_bg.paste(crs_pic,(10,10))
+        
+        draw_box=ImageDraw.Draw(box_bg)
+
+        ft_size=24
+        draw_box.text((220//2-len(crs_name[4:])*ft_size//2,222),crs_name[4:],font=self.font('方正韵动粗黑简',ft_size))
+        draw_box.text((44,222+ft_size+10),crs_date,font=self.font('方正韵动粗黑简',20))
+
+
+        if color_style=='off':
+            box_bg=ImageEnhance.Brightness(box_bg).enhance(1.4)
+            box_bg=box_bg.convert('L')
+
+
+        return box_bg
+
+    def draw_box_bar(self,std_list,total_list,grid='8x2'):
+        #学生上过的课程和总课程的差集
+        dif_crs=list(set(total_list).difference(set(std_list)))
+        boxes=[]
+        for crs in tt_list:
+            if crs not in dif_crs:
+                boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='on'))
+            else:
+                boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='off'))
+        
+        
+
+        box_id=0
+        gap_x=10
+        gap_y=20
+        startxy=[20,10]
+
+        # wid=int(grid[0])*boxes[0].size[0]+(int(grid[0])-1)*gap_x+startxy[0]*2
+        # ht=int(grid[2])*boxes[0].size[1]+(int(grid[2])-1)*gap_y+startxy[1]*2
+
+        #位置固定，写死大小
+        bar_bg=Image.new('RGB',(1870,640),'#ffffff')
+
+        for rows in range(int(grid[2])):
+            for clmns in range(int(grid[0])):
+                bar_bg.paste(boxes[box_id],(20+clmns*(boxes[box_id].size[0]+gap_x),10+rows*(boxes[box_id].size[1]+gap_y)))
+
+                box_id+=1
+
+        return bar_bg
+    
+    def rose_and_bar(self,std_name,xls):
+        # print(xls)
+        df=WashData.std_feedback(std_name=std_name,xls=xls)
+        df_ability=df['df_ability']
+        std_ability=df_ability[df_ability['学生姓名']==std_name].iloc[:,1:]
+        dat=std_ability.columns.tolist()
+        score=std_ability.iloc[0,:].tolist()
+        dat_skill=dat[:5]
+        score_skill=score[:5]
+        dat_psycho=dat[5:]
+        score_psycho=score[5:]
+    
+    def read_abl_sheet(self,cmt_date='20230310',xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生档案\\DZ0034顾业熙.xlsx'):        
+        df_abl=pd.read_excel(xls,sheet_name='学员能力评分')
+        df_abl['评分日期']=df_abl['评分日期'].apply(lambda x: datetime.strptime(str(x),'%Y%m%d'))
+        df_res=df_abl[df_abl['评分日期']==datetime.strptime(str(cmt_date),'%Y%m%d')]
+
+        if not df_res.empty:
+            dat=df_res.columns.tolist()
+            score=df_res.iloc[0,1:].tolist()
+            dat_skill=dat[1:6]
+            dat_psycho=dat[6:]
+            score_skill=score[:5]
+            score_psycho=score[5:]
+
+            # print(dat_skill,dat_psycho,score_skill,score_psycho)
+            return {'dat_skill':dat_skill,'dat_psycho':dat_psycho,'score_skill':score_skill,'score_psycho':score_psycho}
+        else:
+            # print('无')
+            return np.nan
+
+    def rose(self,cmt_date='20230310',std_name='DZ0034顾业熙'):        
+        xls=os.path.join(self.std_dir,'学生档案',std_name+'.xlsx')
+        abl_res=self.read_abl_sheet(cmt_date=cmt_date,xls=xls)
+        dat_skill=abl_res['dat_skill']
+        score_skill=abl_res['score_skill']
+
+        # dat=['理解力','空间想象力','逻辑思维','注意力','创造力','表达力','抗挫能力','协作能力']
+        # score=[3,3,4,5,2,2,3,5]
+        # score.sort()
+
+        # colors=['#0D9482','#7594CA','#E37933','#E24B29','#F4BA19','#D199C3','#6EA647','#21A4DE']
+        colors=['#0D9482','#7594CA','#E37933','#E24B29','#F4BA19']
+        df_rose=pd.DataFrame({'dat':dat_skill,'score':score_skill,'colors':colors})
+
+        #排序
+        df_rose.sort_values(by=['score'],inplace=True)
+
+        theta = np.linspace(0,2*np.pi,len(dat_skill),endpoint=False)    # 360度等分成n份,endpoint设置是否封闭
+
+        # 设置画布
+        fig = plt.figure(figsize=(12,12))
+        # 极坐标
+        ax = plt.subplot(111,projection = 'polar')
+        # 顺时针并设置N方向为0度
+        ax.set_theta_direction(-1)
+        ax.set_theta_zero_location('N') 
+
+        # 在极坐标中画柱形图
+        
+        ax.bar(theta,
+                df_rose['score'].values,
+                width = 2*np.pi/5,
+                # color = np.random.random((len(score),3)),
+                # color=['#1E4D58','#245C6A','#296C7C','#2F7B8D','#348B9F','#399AB1','#40A9C2','#51B1C8'],
+                color=df_rose['colors'],
+                # labels=str(country_list), 
+                align = 'edge')
+
+        ## 绘制中心空白
+        ax.bar(x=0,    # 柱体的角度坐标
+            height=0.8,    # 柱体的高度, 半径坐标
+            width=np.pi*2,    # 柱体的宽度
+            color='white'
+            )
+        ''' 
+            显示一些简单的中文图例
+        '''
+        plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
+        title=std_name+'同学能力测评'
+        # ax.set_title(title,fontdict={'fontsize':20,'color':'#3923a8'})
+        #数据标签坐标附加系数
+        # y_k=[0.5,0.4,0.3,0.6,1.2,2.4,3.0,1.5]
+        y_k=[0.5,0.4,0.9,3.3,2.1]
+        angles=[x*np.pi/5 for x in range(1,2*len(dat_skill),2)]
+        angles[-1]=angles[-1]-np.pi/16
+        # angles[6],angles[7]=angles[6]-np.pi/16,angles[7]-np.pi/16
+        for angle,scores,data,color,k in zip(angles,df_rose['score'].values,df_rose['dat'].values,df_rose['colors'].values,y_k):
+            ax.text(angle,scores+k,data,color=color,fontsize=28) 
+            # ax.text(angle+0.04,scores+0.6,str(scores))
+
+        ax.axis('off')
+        # plt.savefig('e:/temp/Nightingale_rose_wcy.jpg',pil_kwargs={'quality':90},dpi=300)
+        # plt.show()
+        return {'chart':fig,'data':df_rose.values}
+        
+        def bar():
+            fig = plt.figure(figsize=(12,12))
+            # 极坐标
+            ax = plt.subplot(111)
+            plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
+            colors=['#D199C3','#6EA647','#21A4DE']
+            ax.bar(range(len(dat_psycho)),score_psycho,color=colors)            
+            x_major_locator = MultipleLocator(1)
+            ax.xaxis.set_major_locator(x_major_locator)
+            ax.set_xticks(range(len(dat_psycho)))
+            ax.set_xticklabels(dat_psycho,fontsize=24)
+            ax.get_xticklabels()[0].set_color("#D199C3")
+            ax.get_xticklabels()[1].set_color("#6EA647")
+            ax.get_xticklabels()[2].set_color("#21A4DE")
+
+            ax.set_yticks([])
+            ax.spines['right'].set_color('none')
+            ax.spines['top'].set_color('none')
+            ax.spines['left'].set_color('none')
+            # plt.xticks([0,1,2],dat_psycho)
+
+            # plt.show()
+            return {'chart':fig ,'data':''}
+
+        def radar():
+            xxl,rjl,qxl,zyl,zkl=dat_psycho
+            # 构造数据
+            values = score_psycho
+            feature = dat_psycho
+
+            N = len(values)
+            # 设置雷达图的角度，用于平分切开一个圆面
+            angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
+
+
+            # 为了使雷达图一圈封闭起来，需要下面的步骤
+            values = np.concatenate((values, [values[0]]))
+            angles = np.concatenate((angles, [angles[0]]))
+
+            # print(values,angles)
+
+            # 绘图
+            fig = plt.figure(figsize=(12,12))
+            # 这里一定要设置为极坐标格式
+            ax = fig.add_subplot(111, polar=True)
+            plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
+            # ccl=ax.patch
+            
+            colors=['#A85727','#54F537','#F58E51','#4438F5','#7976A8']
+            # 绘制折线图
+            ax.plot(angles, values, '.-', ms=30,linewidth=3,color='#F5EB02')
+            # 填充颜色
+            ax.fill(angles, values, color='#F5EB02',alpha=0.25)
+            # 添加每个特征的标签
+            ax.set_thetagrids(angles * 180 / np.pi, '',color='r',fontsize=13)
+            # 设置雷达图的范围
+            r_distance=10
+            ax.set_rlim(0, r_distance)
+
+            ax.grid(color='g', alpha=0.25, lw=3)
+            ax.spines['polar'].set_color('grey')
+            ax.spines['polar'].set_alpha(0.2)
+            ax.spines['polar'].set_linewidth(3)
+            # ax.spines['polar'].set_linestyle('-.')
+
+            #项目名称：
+            a=[0,0,np.pi/30,-np.pi/50,0,0,0]
+            # b=[r_distance*1.1,r_distance*1.1,r_distance*1.2,r_distance*1.4,r_distance*1.5,r_distance*1.2,r_distance*1.1]
+            # b=[r_distance*0.8,r_distance*1.1,r_distance*1.4,r_distance*1.4,r_distance*1.1]
+
+            # b=[r_distance*0.8,r_distance*1.1,r_distance*1.4,r_distance*1.4,r_distance*1.1]
+            b=[score_psycho[0]*1.05,score_psycho[1]*1.05,score_psycho[2]*1.35,score_psycho[3]*1.45,score_psycho[4]*1.1]
+
+            feature2 = dat_psycho
+            for k,i in enumerate(angles):
+                try:
+                    # print(k,i,feature2[k])
+                    ax.text(i+a[k],b[k],feature2[k],fontsize=34,color=colors[k])
+                    # ax.text(i+a[k],score_psycho[k],feature2[k],fontsize=34,color=colors[k])
+                    
+                except:
+                    pass
+
+            #分值：
+            # c = [1, 0.6, 1.6, 2.3, 1.5, 1,1]
+            # print(len(angles))
+            # for j,i in enumerate(angles):
+            #     try:
+            #         r=values[j]-2*i/np.pi
+            #         ax.text(i,values[j]+c[j],values[j],color='#218FBD',fontsize=18)
+            #     except:
+            #         pass
+
+            # 添加标题
+            #plt.title('活动前后员工状态表现')
+
+            # 添加网格线
+            ax.grid(True,color='grey',alpha=0.05)
+
+            # a=np.arange(0,2*np.pi,0.01)
+            # ax.plot(a,10*np.ones_like(a),linewidth=2,color='b')
+
+            ax.set_yticklabels([])
+            # plt.savefig(savefilename,transparent=True,bbox_inches='tight')
+            # 显示图形
+            
+            # plt.show()
+
+            return {'chart':fig,'data':''}
+        
+        res_rose=rose()        
+        res_bar=bar()
+        res_radar=radar()
+        # print(len(score))
+        # print(df)
+        return {'res_rose':res_rose,'res_bar':res_bar,'res_radar':res_radar}
+
+    def radar(self,cmt_date='20230310',std_name='DZ0034顾业熙'):
+        xls=os.path.join(self.std_dir,'学生档案',std_name+'.xlsx')
+        abl_res=self.read_abl_sheet(cmt_date=cmt_date,xls=xls)
+        dat_psycho=abl_res['dat_psycho']
+        score_psycho=abl_res['score_psycho']
+
+        xxl,rjl,qxl,zyl,zkl=dat_psycho
+        # 构造数据
+        values = score_psycho
+        feature = dat_psycho
+
+        N = len(values)
+        # 设置雷达图的角度，用于平分切开一个圆面
+        angles = np.linspace(0, 2 * np.pi, N, endpoint=False)
+
+
+        # 为了使雷达图一圈封闭起来，需要下面的步骤
+        values = np.concatenate((values, [values[0]]))
+        angles = np.concatenate((angles, [angles[0]]))
+
+        # print(values,angles)
+
+        # 绘图
+        fig = plt.figure(figsize=(12,12))
+        # 这里一定要设置为极坐标格式
+        ax = fig.add_subplot(111, polar=True)
+        plt.rcParams['font.sans-serif']=['SimHei']  # 黑体
+        # ccl=ax.patch
+        
+        colors=['#A85727','#54F537','#F58E51','#4438F5','#7976A8']
+        # 绘制折线图
+        ax.plot(angles, values, '.-', ms=30,linewidth=3,color='#F5EB02')
+        # 填充颜色
+        ax.fill(angles, values, color='#F5EB02',alpha=0.25)
+        # 添加每个特征的标签
+        ax.set_thetagrids(angles * 180 / np.pi, '',color='r',fontsize=13)
+        # 设置雷达图的范围
+        r_distance=10
+        ax.set_rlim(0, r_distance)
+
+        ax.grid(color='g', alpha=0.25, lw=3)
+        ax.spines['polar'].set_color('grey')
+        ax.spines['polar'].set_alpha(0.2)
+        ax.spines['polar'].set_linewidth(3)
+        # ax.spines['polar'].set_linestyle('-.')
+
+        #项目名称：
+        a=[0,0,np.pi/30,-np.pi/50,0,0,0]
+        # b=[r_distance*1.1,r_distance*1.1,r_distance*1.2,r_distance*1.4,r_distance*1.5,r_distance*1.2,r_distance*1.1]
+        # b=[r_distance*0.8,r_distance*1.1,r_distance*1.4,r_distance*1.4,r_distance*1.1]
+
+        # b=[r_distance*0.8,r_distance*1.1,r_distance*1.4,r_distance*1.4,r_distance*1.1]
+        b=[score_psycho[0]*1.05,score_psycho[1]*1.05,score_psycho[2]*1.35,score_psycho[3]*1.45,score_psycho[4]*1.1]
+
+        feature2 = dat_psycho
+        for k,i in enumerate(angles):
+            try:
+                # print(k,i,feature2[k])
+                ax.text(i+a[k],b[k],feature2[k],fontsize=34,color=colors[k])
+                # ax.text(i+a[k],score_psycho[k],feature2[k],fontsize=34,color=colors[k])
+                
+            except:
+                pass
+
+        #分值：
+        # c = [1, 0.6, 1.6, 2.3, 1.5, 1,1]
+        # print(len(angles))
+        # for j,i in enumerate(angles):
+        #     try:
+        #         r=values[j]-2*i/np.pi
+        #         ax.text(i,values[j]+c[j],values[j],color='#218FBD',fontsize=18)
+        #     except:
+        #         pass
+
+        # 添加标题
+        #plt.title('活动前后员工状态表现')
+
+        # 添加网格线
+        ax.grid(True,color='grey',alpha=0.05)
+
+        # a=np.arange(0,2*np.pi,0.01)
+        # ax.plot(a,10*np.ones_like(a),linewidth=2,color='b')
+
+        ax.set_yticklabels([])
+        # plt.savefig(savefilename,transparent=True,bbox_inches='tight')
+        # 显示图形
+        
+        # plt.show()
+
+        return {'chart':fig,'data':''}
 
 if __name__=='__main__':
-    my=data_summary()
+    my=StudentSummaryPaper()
+    tt_list=['20220923-L037认识零件','20220930-L040认识零件（二）','20221009-L026跷跷板','20221014-L023不倒翁',
+                '20221021-L066弹力小车','20221028-L034夏天的手摇风扇','20221104-L028手动雨刮器','20221111-L839跳绳的小人',
+                '20221118-L838旋转飞椅','20221125-L181滑雪的小人','20221202-L075蹦蹦跳跳的袋鼠','20221209-L134避震小拖头',
+                '20230217-L887旋转太阳花','20230224-L878可爱的小象','20230303-L874小青蛙','20230310-L869帅气的赛车']
+
+    # std_crs_list=['20220923-L037认识零件', '20220930-L040认识零件（二）', '20221009-L026跷跷板', '20221014-L023不倒翁', 
+    #             '20221021-L066弹力小车', '20221028-L034夏天的手摇风扇', '20221104-L028手动雨刮器', '20221111-L839跳绳的小人',
+    #             '20221118-L838旋转飞椅', '20221125-L181滑雪的小人', '20221202-L075蹦蹦跳跳的袋鼠', '20221209-L134避震小拖头', 
+    #             '20230217-L887旋转太阳花', '20230224-L878可爱的小象', '20230303-L874小青蛙']
+
+    # my.read_abl_sheet()
+    # rose_fig=my.rose(cmt_date='20230310',std_name='DZ0034顾业熙')
+
+    # res=my.draw_box_bar(std_list=std_crs_list,total_list=tt_list)
+    # res.show()
+
+    # tt=list(set(tt_list).difference(set(std_crs_list)))
+
+    # print(tt)
+    # res=my.std_info(std_name='DZ0034顾业熙',prd=['20220903','20230303'],cmt_date='20230310')
+    # print(res)
+
+    my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0034顾业熙',prd=['20220923','20230310'],cmt_date='20230310')
+
+    # res=my.draw_crs_box(crs_name='L026跷跷板',crs_date='2022-10-09',color_style='off')
+    # res.show()
+
+
+    # my=data_summary()
     # res=my.get_std_term_crs(std_name='韦华晋',tb_list=[['2020秋','w6'],['2021春','w6']],start_date='20200901',end_date='20210521')
     # print(res['total_crs'],'\n',res['std_crs'])
     # pic=my.rose_and_bar(std_name='韦宇浠',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\每周课程反馈\\2021春-学生课堂学习情况反馈表（周四）.xlsx')
