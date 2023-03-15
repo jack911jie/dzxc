@@ -859,9 +859,10 @@ class StudentSummaryPaper:
         }
 
 
-    def draw_paper(self,total_date_crs_list=[],term='2022秋',std_name='DZ0034顾业熙',prd=['20221023','20230303'],cmt_date='20230310',tch_name=['阿晓','芳芳'],k=1):
-        info=self.std_info(std_name=std_name,prd=prd,cmt_date=cmt_date)
+    def draw_paper(self,total_date_crs_list=[],term='2022秋',std_name='DZ0034顾业熙',prd=['20221023','20230303'],cmt_date='20230310',tch_name=['阿晓','芳芳'],
+                    grid='8x2',mode='term',k=1):
 
+        info=self.std_info(std_name=std_name,prd=prd,cmt_date=cmt_date)
 
         #节数
         crs_count=info['crs_count']
@@ -888,7 +889,7 @@ class StudentSummaryPaper:
 
 
         #课程图        
-        box_bar=self.draw_box_bar(std_list=std_date_crs,total_list=total_date_crs_list)        
+        box_bar=self.draw_box_bar(std_list=std_date_crs,total_list=total_date_crs_list,grid=grid,mode=mode)        
         bg.paste(box_bar.resize((2391,2391*box_bar.size[1]//box_bar.size[0])),(45,550))
 
         #学习能力玫瑰图
@@ -1398,8 +1399,8 @@ if __name__=='__main__':
     # my.read_abl_sheet()
     # rose_fig=my.rose(cmt_date='20230310',std_name='DZ0034顾业熙')
 
-    res=my.draw_box_bar(std_list=std_crs_list,total_list=tt_list,grid='8x2',mode='all')
-    res.show()
+    # res=my.draw_box_bar(std_list=std_crs_list,total_list=tt_list,grid='8x2',mode='all')
+    # res.show()
 
     # tt=list(set(tt_list).difference(set(std_crs_list)))
 
@@ -1407,7 +1408,7 @@ if __name__=='__main__':
     # res=my.std_info(std_name='DZ0034顾业熙',prd=['20220903','20230303'],cmt_date='20230310')
     # print(res)
 
-    # my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310')
+    my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310',grid='8x2',mode='all')
 
     # std_list=['DZ0034顾业熙','DZ0033刘泓彬','DZ0035李俊豪','DZ0054黄楚恒','DZ0051廖茗睿','DZ0032磨治丞','DZ0055刘晨凯','DZ0056陆一然','DZ0057潘子怡','DZ0058罗彬城']
     # for std in std_list:
