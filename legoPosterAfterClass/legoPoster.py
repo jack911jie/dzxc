@@ -288,7 +288,7 @@ class poster:
                 'pic02':'#ffffff',
                 'pic03':'#ffffff',
                 'pic04':'#ffffff',
-                'comments':'#00bde3', #老师评语
+                'comments':'#0d5b6b', #老师评语
                 'logo':'#ffffff', #logo
                 't_title_ke1':'#ffffff',
                 't_title_xue':'#ffffff',
@@ -296,9 +296,9 @@ class poster:
                 't_title_qi':'#ffffff',
                 't_title_ren':'#ffffff',
                 't_title_ke4':'#ffffff',
-                'scores':'#f7f7f7', #积分底色
-                'score_left':'#ffffff',
-                'score_right':'#ffffff',
+                'scores':'#f7cd6a', #积分底色
+                'score_left':'#f7cd6a',
+                'score_right':'#f7cd6a',
                 't_name':'#00b578',#姓名
                 't_kdgtn':'#00b578',#幼儿园
                 't_class':'#00b578',#班级
@@ -307,10 +307,10 @@ class poster:
                 't_tool':'#ffffff',#教具
                 't_knlg':'#ffffff',#知识点
                 't_date':'#ffffff',#日期
-                't_scores_left':'#8b988e',#积分文字
-                't_scores_right':'#8b988e',#积分文字
-                't_scores_title':'#8b988e',#积分标题
-                't_tch_cmt_title':'#795022',#老师评语标题
+                't_scores_left':'#f5bd3b',#积分文字
+                't_scores_right':'#ffffff',#积分文字
+                't_scores_title':'#ffffff',#积分标题
+                't_tch_cmt_title':'#ebf6fa',#老师评语标题
                 't_tch_cmt':'#ffffff',#老师评语
                 't_tch_sig':'#ffffff',#签名
                 't_bottom':'#656564' #二维码文字
@@ -358,7 +358,7 @@ class poster:
             return out
         
         def basic_bg(num):
-            color=color_list('202101')
+            color=color_list('202002')
 
             # y1:第一块左上角纵坐标，y1_2:第一块右下角纵坐标，以此类推
             # y及s后面的数字代表：
@@ -377,7 +377,7 @@ class poster:
             self.s4=s4
             
             #评论的高度
-            s5=(self.comment_font_size+self.comment_dis_line)*self.para_num+160
+            s5=(self.comment_font_size+self.comment_dis_line)*self.para_num+260
             self.s5=s5
 
             #积分的高度
@@ -427,7 +427,7 @@ class poster:
             self.y6_2=y6_2               
 
             if num==4:
-                img = Image.new("RGB",(900,total_len),(255,255,255))
+                img = Image.new("RGBA",(900,total_len),(255,255,255))
                 draw=ImageDraw.Draw(img)
                 draw.rectangle([(0,0),(900,y1_2)],fill=color['title_bg']) #乐高机器人课
                 draw.rectangle([(0,y2),(900,y2_2)],fill=color['name']) # 姓名 年龄
@@ -449,7 +449,7 @@ class poster:
                 draw.rectangle([(20,y_score+80+20),(440,y_score_2-20)],fill=color['score_left']) #积分左
                 draw.rectangle([(460,y_score+80+20),(880,y_score_2-20)],fill=color['score_right']) #积分右
             elif num==2:
-                img = Image.new("RGB",(900,int(total_len)),(255,255,255))
+                img = Image.new("RGBA",(900,int(total_len)),(255,255,255))
                 draw=ImageDraw.Draw(img)
                 draw.rectangle([(0,0),(900,y1_2)],fill=color['title_bg']) #乐高机器人课
                 draw.rectangle([(0,y2),(900,y2_2)],fill=color['name']) # 姓名 年龄
@@ -468,10 +468,8 @@ class poster:
                 draw.rectangle([(0,y_score),(300,y_score+80)],fill=color['scores']) #积分标题背景
                 draw.rectangle([(0,y_score+80),(900,y_score_2)],fill=color['scores']) #积分
                 draw.rectangle([(20,y_score+80+20),(440,y_score_2-20)],fill=color['score_left']) #积分左
-                draw.rectangle([(460,y_score+80+20),(880,y_score_2-20)],fill=color['score_right']) #积分右
-            
-
-            
+                draw.rectangle([(460,y_score+80+20),(880,y_score_2-20)],fill=color['score_right']) #积分右            
+                    
             return img  
         
         def pick_pics(stdName):
@@ -528,7 +526,7 @@ class poster:
                 pic_qrcode=_pic_qrcode.resize((130,130))
 
                 _pic_award=Image.open(os.path.join(self.public_pic_dir,'奖状.png'))
-                pic_award=_pic_award.resize((420,420*261//419))
+                pic_award=_pic_award.resize((420,420*261//419))               
                 r_ad,g_ad,b_ad,a_ad=pic_award.split()
                 
                 logging.info('照片尺寸：'+','.join(self.sstr(pic_crs.size)))
@@ -537,9 +535,11 @@ class poster:
                 img.paste(pic_02,(pic2[1][0],pic2[1][1]))
                 img.paste(pic_03,(pic3[1][0],pic3[1][1]))
                 img.paste(pic_04,(pic4[1][0],pic4[1][1])) 
+            
                 img.paste(pic_logo,(50,int(self.y6+self.s6/2-350/2.76/2)),mask=a)
                 img.paste(pic_qrcode,(700,int(self.y6+self.s6/2-130/2))) 
                 img.paste(pic_award,(20,self.y_score+100),mask=a_ad)   
+      
             else:
                 f_crs,f_01,f_02=pics
 
@@ -562,11 +562,14 @@ class poster:
                 img.paste(pic_crs,(pic0[1][0],pic0[1][1]))
                 img.paste(pic_01,(pic1[1][0],pic1[1][1]))
                 img.paste(pic_02,(pic2[1][0],pic2[1][1]))     
-
+           
                 img.paste(pic_logo,(50,int(self.y6+self.s6/2-350/2.76/2)),mask=a)
                 img.paste(pic_qrcode,(700,int(self.y6+self.s6/2-130/2)))
-                img.paste(pic_award,(20,self.y_score+100),mask=a_ad)   
 
+                img.paste(pic_award,(20,self.y_score+100),mask=a_ad)   
+  
+
+            # img=img.convert('RGB')
             print('完成')
             
         def expScript(name_input):
@@ -667,7 +670,7 @@ class poster:
 
         def putTxt(img,stdName,stdAge,KdgtName,ClassName):   
             print('    正在置入文本……',end='')
-            color=color_list('202101')
+            color=color_list('202002')
             draw=ImageDraw.Draw(img)     
 
             
@@ -679,7 +682,7 @@ class poster:
             draw.text((570,5), '人', fill = color['t_title_ren'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
             draw.text((670,5), '课', fill = color['t_title_ke4'],font=TxtFormat().fonts('汉仪超级战甲',75))  #大题目
             # draw.text((350,120), stdName, fill =color['t_name'] ,font=TxtFormat().fonts('楷体',60))  #姓名
-            draw.text((350,120), stdName, fill =color['t_name'] ,font=TxtFormat().fonts('汉仪心海行楷w',60))  #姓名
+            draw.text((350,120), stdName, fill =color['t_name'] ,font=TxtFormat().fonts('楷体',60))  #姓名
             # draw.text((530,160), str(stdAge)+'岁', fill = '#6AB34A',font=TxtFormat().fonts('微软雅黑',60))  #年龄    
             draw.text((280,200), KdgtName, fill = color['t_kdgtn'],font=TxtFormat().fonts('杨任东竹石体',33))  #幼儿园
             draw.text((460,200), ClassName, fill = color['t_class'],font=TxtFormat().fonts('杨任东竹石体',33))  #班级
@@ -702,8 +705,8 @@ class poster:
             vrfy_sc=std_scores['std_all_scores']['vrfy_sc']
             script=script.replace('*','{}枚积分币，共计{}'.format(str(round(std_this_medals)),str(std_this_score)))
 
-            self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
-            # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=36,addSPC='add_2spaces') #老师评语
+            # self.put_txt_img(img,script,780,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='汉仪字酷堂经解楷体w',font_size=36,addSPC='add_2spaces') #老师评语
+            self.put_txt_img(img,script,728,[60,self.y5+115],20,fill = color['t_tch_cmt'],font_name='楷体',font_size=38,addSPC='add_2spaces') #老师评语
             draw.text((650,int(self.y5_2-80)), TeacherSig, fill = color['t_tch_sig'],font=TxtFormat().fonts('汉仪字酷堂经解楷体w',45) )  #签名                    
             draw.text((500,int(self.y6+self.s6/2-35)), '长按二维码 → \n关注视频号 →', fill = color['t_bottom'],font=TxtFormat().fonts('微软雅黑',30)) 
             draw.text((20,self.y5+5), '我的课堂情况', fill = color['t_tch_cmt_title'],font=TxtFormat().fonts('汉仪糯米团',45))  #我的课堂情况
@@ -752,12 +755,15 @@ class poster:
             
             print('正在保存 {} 的课后反馈……'.format(std[3]),end='')
             
-            
+            img=img.convert('RGB')
             
             img.save(os.path.join(save_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
             if copy_to_feedback_dir=='yes':
                 save_feedback_dir=os.path.join(self.feedback_dir,str(dateInput)+'-'+crs_nameInput,std[2]+stdName)
+                if not os.path.exists(save_feedback_dir):
+                    os.makedirs(save_feedback_dir)
                 try:
+
                     img.save(os.path.join(save_feedback_dir,std[2]+stdName+'-'+str(dateInput)+'-'+crs_nameInput+'.jpg'))
                 except Exception as err:
                     print('课后照片及反馈文件夹不存在',err)
@@ -772,6 +778,6 @@ class poster:
         
     
 if __name__=='__main__':
-    my=poster(weekday=6,term='2022秋')
+    my=poster(weekday=5,term='2022秋')
 #     my.PosterDraw('可以伸缩的夹子')      
-    my.PosterDraw('L175喂食的小鸟',20221022,TeacherSig='阿晓老师')
+    my.PosterDraw('L869帅气的赛车',20230310,TeacherSig='阿晓老师',copy_to_feedback_dir='yes')
