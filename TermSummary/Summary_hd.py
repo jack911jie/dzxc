@@ -16,6 +16,7 @@ import numpy as np
 from PIL import Image,ImageDraw,ImageFont,ImageEnhance
 from datetime import datetime
 import copy
+import random
 
 class data_summary:
     def __init__(self):
@@ -882,7 +883,7 @@ class StudentSummaryPaper:
             std_date_crs.append(''.join(info['crs_date'][num].split('-'))+'-'+crs)
         bg_src=os.path.join(os.path.dirname(self.std_dir),'⭐素材收集⭐','模板图片','学员阶段总结模板01.jpg')
         bg=Image.open(bg_src)
-        print(bg.size)
+        # print(bg.size)
         draw=ImageDraw.Draw(bg)
 
 
@@ -914,7 +915,8 @@ class StudentSummaryPaper:
 
         TxtFormat().put_txt_img(draw=draw,tt=cmt_psy_txt,total_dis=int(980*k*0.9), \
                             xy=[1313,2397],dis_line=int(23*k),fill='#3e3a39', \
-                            font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")
+                            font_name='丁永康硬笔楷书',font_size=font_size_cmt,addSPC="yes")       
+        
         
 
         #签名(如无图片，则用文字)
@@ -951,20 +953,32 @@ class StudentSummaryPaper:
 
         # draw.text((int(380*k),int((y_logo+10))), '长按二维码 → \n关注视频号 →', fill = '#8E9184',font=self.font('微软雅黑',25))
 
+
+        bg=bg.convert('RGBA')
+        #印章
+        stamp_src=os.path.join(os.path.dirname(self.std_dir),'⭐素材收集⭐','模板图片','印章-小小工程师.png')
+        stamp=Image.open(stamp_src)
+        stamp=stamp.resize((350,350))
+        stamp=stamp.rotate(random.randint(0,7)*5)
+
+        r_stamp,g_stamp,b_stamp,a_stamp=stamp.split()
+        bg.paste(stamp,(1850+random.randint(0,5)*3,310+random.randint(0,5)*3),mask=a_stamp)
+        # bg.show()
+
         
         bg=bg.convert('RGB')
         savename=os.path.join(self.term_pic_dir,std_name+'-'+cmt_date+'-'+term+'-课程学习报告.jpg')
         if not os.path.exists(self.term_pic_dir):
             os.makedirs(self.term_pic_dir)
         # savename=os.path.join('e:/temp/',std_name+'.jpg')
-        # bg.save(savename,quality=90,subsampling=0)
+        bg.save(savename,quality=90,subsampling=0)
         # bg.save(savename,quality=95,dpi=(300,300))
         # bg.show()
         print('图片保存完成，保存路径：{}'.format(savename))
 
 
 
-        bg.show()
+        # bg.show()
 
 
     
@@ -1354,7 +1368,11 @@ if __name__=='__main__':
     # res=my.std_info(std_name='DZ0034顾业熙',prd=['20220903','20230303'],cmt_date='20230310')
     # print(res)
 
-    my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0034顾业熙',prd=['20220923','20230310'],cmt_date='20230310')
+    # my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310')
+
+    std_list=['DZ0034顾业熙','DZ0033刘泓彬','DZ0035李俊豪','DZ0054黄楚恒','DZ0051廖茗睿','DZ0032磨治丞','DZ0055刘晨凯','DZ0056陆一然','DZ0057潘子怡','DZ0058罗彬城']
+    for std in std_list:
+        my.draw_paper(total_date_crs_list=tt_list,std_name=std,prd=['20220923','20230310'],cmt_date='20230310')
 
     # res=my.draw_crs_box(crs_name='L026跷跷板',crs_date='2022-10-09',color_style='off')
     # res.show()
