@@ -1009,35 +1009,74 @@ class StudentSummaryPaper:
 
         return box_bg
 
-    def draw_box_bar(self,std_list,total_list,grid='8x2'):
-        #学生上过的课程和总课程的差集
-        dif_crs=list(set(total_list).difference(set(std_list)))
-        boxes=[]
-        for crs in tt_list:
-            if crs not in dif_crs:
-                boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='on'))
+    def draw_box_bar(self,std_list,total_list,grid='8x2',mode='term'):
+        #mode：term 幼儿园模式，上课节数固定，14或16节，如不够，则为灰色；all 周末班模式，以16节为一周期。
+        try:
+            if mode=='term':
+                crs_count=int(grid[0])*int(grid[2])
+                if total_list:
+                    if len(total_list)!=crs_count:
+                        raise ValueError('term模式下输入课程数不等于{}节'.format(str(crs_count)))
+                    else:
+                        std_list=std_list[:crs_count]
+                else:
+                    raise ValueError('term模式下必须输入本学期课程')
+            elif mode=='all':
+                crs_count=16
+                if len(std_list)<crs_count:
+                    raise ValueError('周末班模式输入课程小于16节')
+                else:
+                    std_list=std_list[:crs_count]
+                    total_list=std_list
             else:
-                boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='off'))
+                raise ValueError('没有这种上课模式，请检查draw_box_bar的参数')
+            
+            
+
+
+            #学生上过的课程和总课程的差集
+            dif_crs=list(set(total_list).difference(set(std_list)))
+            boxes=[]
+            for crs in tt_list:
+                if crs not in dif_crs:
+                    boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='on'))
+                else:
+                    boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='off'))
+            
+            
+            if grid=='8x2':                
+                box_id=0
+                gap_x=10
+                gap_y=20
+                startxy=[20,10]
+            elif grid=='7x2':
+                box_id=0
+                gap_x=20
+                gap_y=20
+                startxy=[105,10]
+            else:
+                box_id=0
+                gap_x=20
+                gap_y=20
+                startxy=[105,10]
+
+            # wid=int(grid[0])*boxes[0].size[0]+(int(grid[0])-1)*gap_x+startxy[0]*2
+            # ht=int(grid[2])*boxes[0].size[1]+(int(grid[2])-1)*gap_y+startxy[1]*2
+
+            #位置固定，写死大小
+            bar_bg=Image.new('RGB',(1870,640),'#ffffff')
+
+            for rows in range(int(grid[2])):
+                for clmns in range(int(grid[0])):
+                    bar_bg.paste(boxes[box_id],(startxy[0]+clmns*(boxes[box_id].size[0]+gap_x),startxy[1]+rows*(boxes[box_id].size[1]+gap_y)))
+
+                    box_id+=1
+
+      
+        except Exception as ve:
+            print(ve)
+            bar_bg=Image.new('RGB',(1870,640),'#ffffff')
         
-        
-
-        box_id=0
-        gap_x=10
-        gap_y=20
-        startxy=[20,10]
-
-        # wid=int(grid[0])*boxes[0].size[0]+(int(grid[0])-1)*gap_x+startxy[0]*2
-        # ht=int(grid[2])*boxes[0].size[1]+(int(grid[2])-1)*gap_y+startxy[1]*2
-
-        #位置固定，写死大小
-        bar_bg=Image.new('RGB',(1870,640),'#ffffff')
-
-        for rows in range(int(grid[2])):
-            for clmns in range(int(grid[0])):
-                bar_bg.paste(boxes[box_id],(20+clmns*(boxes[box_id].size[0]+gap_x),10+rows*(boxes[box_id].size[1]+gap_y)))
-
-                box_id+=1
-
         return bar_bg
     
     def rose_and_bar(self,std_name,xls):
@@ -1351,16 +1390,16 @@ if __name__=='__main__':
                 '20221118-L838旋转飞椅','20221125-L181滑雪的小人','20221202-L075蹦蹦跳跳的袋鼠','20221209-L134避震小拖头',
                 '20230217-L887旋转太阳花','20230224-L878可爱的小象','20230303-L874小青蛙','20230310-L869帅气的赛车']
 
-    # std_crs_list=['20220923-L037认识零件', '20220930-L040认识零件（二）', '20221009-L026跷跷板', '20221014-L023不倒翁', 
-    #             '20221021-L066弹力小车', '20221028-L034夏天的手摇风扇', '20221104-L028手动雨刮器', '20221111-L839跳绳的小人',
-    #             '20221118-L838旋转飞椅', '20221125-L181滑雪的小人', '20221202-L075蹦蹦跳跳的袋鼠', '20221209-L134避震小拖头', 
-    #             '20230217-L887旋转太阳花', '20230224-L878可爱的小象', '20230303-L874小青蛙']
+    std_crs_list=['20220923-L037认识零件', '20220930-L040认识零件（二）', '20221009-L026跷跷板', '20221014-L023不倒翁', 
+                '20221021-L066弹力小车', '20221028-L034夏天的手摇风扇', '20221104-L028手动雨刮器', '20221111-L839跳绳的小人',
+                '20221118-L838旋转飞椅', '20221125-L181滑雪的小人', '20221202-L075蹦蹦跳跳的袋鼠', '20221209-L134避震小拖头', 
+                '20230217-L887旋转太阳花', '20230224-L878可爱的小象', '20230303-L874小青蛙','20230310-L869帅气的赛车']
 
     # my.read_abl_sheet()
     # rose_fig=my.rose(cmt_date='20230310',std_name='DZ0034顾业熙')
 
-    # res=my.draw_box_bar(std_list=std_crs_list,total_list=tt_list)
-    # res.show()
+    res=my.draw_box_bar(std_list=std_crs_list,total_list=tt_list,grid='8x2',mode='all')
+    res.show()
 
     # tt=list(set(tt_list).difference(set(std_crs_list)))
 
@@ -1370,9 +1409,9 @@ if __name__=='__main__':
 
     # my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310')
 
-    std_list=['DZ0034顾业熙','DZ0033刘泓彬','DZ0035李俊豪','DZ0054黄楚恒','DZ0051廖茗睿','DZ0032磨治丞','DZ0055刘晨凯','DZ0056陆一然','DZ0057潘子怡','DZ0058罗彬城']
-    for std in std_list:
-        my.draw_paper(total_date_crs_list=tt_list,std_name=std,prd=['20220923','20230310'],cmt_date='20230310')
+    # std_list=['DZ0034顾业熙','DZ0033刘泓彬','DZ0035李俊豪','DZ0054黄楚恒','DZ0051廖茗睿','DZ0032磨治丞','DZ0055刘晨凯','DZ0056陆一然','DZ0057潘子怡','DZ0058罗彬城']
+    # for std in std_list:
+    #     my.draw_paper(total_date_crs_list=tt_list,std_name=std,prd=['20220923','20230310'],cmt_date='20230310')
 
     # res=my.draw_crs_box(crs_name='L026跷跷板',crs_date='2022-10-09',color_style='off')
     # res.show()
