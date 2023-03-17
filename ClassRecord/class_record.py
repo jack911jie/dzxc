@@ -150,11 +150,43 @@ class StudentClass:
             except Exception as err_batch:
                 print('执行出错，错误代码：',err_batch)
             
+class BuyRecord(StudentClass):
+    def write_buy_rec(self,std_name,buy_date,buy_amt,buy_price,crs_type):
+        buy_info=pd.DataFrame(data=[[str(crs_type),buy_amt,str(buy_date),buy_price]],columns=['课程类型','购课节数','购课日期','购课金额'])
+        tg_xlsx=os.path.join(self.root_dir,'学生档案',std_name+'.xlsx')
 
+        df_old=pd.read_excel(tg_xlsx,sheet_name='购课记录')
+        df_old['购课日期']=df_old['购课日期'].apply(lambda x: str(x))
+        for index,row in df_old.iterrows():
+            if row['课程类型']==crs_type and row['购课节数']==buy_amt and row['购课日期']==buy_date and row['购课金额']==buy_price:
+                # print('{} 已有相同的记录。'.format(std_name))
+                exit('{} 已有相同的记录： 购课日期：{}， 课程类型：{}， 购课节数：{}， 购课金额：{}'.format(std_name, str(buy_date),str(crs_type),str(buy_amt),str(buy_price)))
+
+        print('正在写入 {} 的购课记录……'.format(std_name),end='')
+        write_basic_log=write_data.WriteData().write_to_xlsx(input_dataframe=buy_info,output_xlsx=tg_xlsx,sheet_name='购课记录')
+        print('完成')
+
+        return write_basic_log
+        
+    def batch_write_buy_rec(self,term,class_id,buy_date,buy_amt,buy_price,crs_type):
+        df_stds=pd.read_excel(os.path.join(self.root_dir,'学生信息表','学生分班表.xlsx'),sheet_name='分班表')
+        df_stds['分班']=df_stds['分班'].apply(lambda x:x.upper())
+        df_stds['学生id及姓名']=df_stds['ID']+df_stds['学生姓名']
+        std_list=df_stds[(df_stds['学期']==term) & (df_stds['分班']==class_id.upper())]['学生id及姓名'].tolist()
+
+        for std in std_list:
+            self.write_buy_rec(std_name=std,buy_date=buy_date,buy_amt=buy_amt,buy_price=buy_price,crs_type=crs_type)
+        
 
 if  __name__=='__main__':
-    p=StudentClass(place='001-超智幼儿园',wecom_id='1688856932305542',term='2022秋',weekday=6)
-    p.append_verified_score(std_id_name='DZ0028杨涵宇',vfy_date=20221203)
+    p=BuyRecord()
+    # p.write_buy_rec(std_name='DZ0061农辉灿',buy_date='20230317',buy_amt=14,buy_price=770,crs_type='乐高')
+    p.batch_write_buy_rec(class_id='w501',buy_date='20230317',buy_amt=14,buy_price=770,crs_type='乐高')
+
+
+
+    # p=StudentClass(place='001-超智幼儿园',wecom_id='1688856932305542',term='2022秋',weekday=6)
+    # p.append_verified_score(std_id_name='DZ0028杨涵宇',vfy_date=20221203)
     # p.read_sig()          
     # res=p.read_cmt(std_id_name='DZ0001黄建乐',crs_date_name='20221022-L175喂食的小鸟')                                                      
     # print(res)
