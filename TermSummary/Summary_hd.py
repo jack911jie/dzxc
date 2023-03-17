@@ -1408,7 +1408,7 @@ if __name__=='__main__':
     # res=my.std_info(std_name='DZ0034顾业熙',prd=['20220903','20230303'],cmt_date='20230310')
     # print(res)
 
-    my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310',grid='8x2',mode='all')
+    my.draw_paper(total_date_crs_list=tt_list,std_name='DZ0051廖茗睿',prd=['20220923','20230310'],cmt_date='20230310',tch_name=['阿晓','芳芳'],grid='8x2',mode='all')
 
     # std_list=['DZ0034顾业熙','DZ0033刘泓彬','DZ0035李俊豪','DZ0054黄楚恒','DZ0051廖茗睿','DZ0032磨治丞','DZ0055刘晨凯','DZ0056陆一然','DZ0057潘子怡','DZ0058罗彬城']
     # for std in std_list:
