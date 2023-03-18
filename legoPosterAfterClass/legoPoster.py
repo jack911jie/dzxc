@@ -473,7 +473,7 @@ class poster:
             return img  
         
         def pick_pics(stdName):
-            # print('stdname:',stdName)
+            # print('stdname:',stdName,self.picStdDir)
             pic_title_addr=os.path.join(self.ConsDir,crs_nameInput,crs_name+'.jpg')  #课程的标题图
             
             ptn='-.*-'
@@ -482,7 +482,7 @@ class poster:
             for root,dirs,files in os.walk(os.path.join(self.picStdDir,stdName)):   #学员的照片
                 for file in files:
                     try:
-                        if re.findall(ptn,file)[0][1:-1]==crs_nameInput:
+                        if re.findall(ptn,file)[0][1:-1]==crs_nameInput and file[:8]==str(dateInput):
                             PicTags=readConfig.code_to_str(iptcinfo3.IPTCInfo(os.path.join(self.picStdDir,stdName,file)))
                             # print('tags:',PicTags)
                             if '每周课程4+' in PicTags:
