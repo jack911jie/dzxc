@@ -66,7 +66,7 @@ class LegoPics:
         return [dictPY,stdName]
         
     def dispatch(self):
-        print('将打标签的照片分配到“I:\\每周乐高课_学员\\{}”中……'.format(self.place))
+        print('将打标签的照片分配到“{}”中……'.format(self.stu_dir))
         stdInfos=self.read_sig(weekday=self.weekday)
 
         dictPY=stdInfos[0]
@@ -103,6 +103,7 @@ class LegoPics:
                                     oldName=os.path.join(self.dir,self.crsDate+'-'+self.crsName,fn)
                                     newName=os.path.join(stu_pic_dirName,fn)
                                     shutil.copyfile(oldName,newName)
+                                # print(oldName,newName)
                                 match_num+=1
                             else:
                                 not_match_num+=1
