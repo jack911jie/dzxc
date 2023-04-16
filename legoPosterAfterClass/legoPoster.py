@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(funcName)s-%(
 logger = logging.getLogger(__name__)
 
 class poster:
-    def __init__(self,weekday=2,term='2021春',place_input='001-超智幼儿园',mode=''):
+    def __init__(self,weekday=2,term='2021春',cls='w501',place_input='001-超智幼儿园',mode=''):
         
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),'LegoPosterAfterClass.config'),'r',encoding='utf-8') as f:
             lines=f.readlines()
@@ -45,6 +45,9 @@ class poster:
         self.std_sig_dir=config['学生签到表文件夹']
         self.feedback_dir=config['课后照片及反馈文件夹']
         self.std_fn_dir=config['学生档案文件夹']
+        self.place_root_dir=config['机构根目录']
+        self.place_root_dir=self.place_root_dir.replace('$',place_input)
+        self.cls=cls
         wd=days_calculate.num_to_ch(str(weekday))
         # self.eachStd=config['个别学员评语表']
         # 个别学员评语表":"E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\学员课堂学习情况反馈表.xlsx",
@@ -246,18 +249,23 @@ class poster:
             print('完成')
             return infos         
 
-        def read_scores(place_input,term,weekday):
+        def read_scores(xls_dir,place_input,term,weekday,cls):
             print('正在读取积分信息……',end='')
             wd=days_calculate.num_to_ch(str(weekday))
             if self.mode=='tiyan':
                 xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term[:4],term+'-学生信息表（体验）.xlsx')                  
             else:
                 xls_this=os.path.join(self.std_sig_dir,self.place_input,'学生信息表',term[:4],term+'-学生信息表（周'+wd+'）.xlsx')  
+
             this_crs_score_info=WashData.std_score_this_crs(xls_this)
             df_this_crs_score,df_this_medals=this_crs_score_info['std_this_scores'],this_crs_score_info['medals_this_class']
 
             place_dir=os.path.join(self.std_sig_dir,self.place_input)
-            df_all_scores=WashData.std_all_scores(place_dir,plus_tiyan='no')
+            # df_all_scores=WashData.std_all_scores(place_dir,plus_tiyan='no')
+
+            #新方法
+            df_all_scores=WashData.std_all_scores_new(xls_dir=xls_dir,
+                                                        place=place_input,term=term,std_list_or_name=cls,plus_tiyan='no')
 
             print('完成')
             return {'this_score':df_this_crs_score,'this_medals':df_this_medals,'all_scores':df_all_scores}
@@ -598,6 +606,7 @@ class poster:
             return script                   
 
         def get_std_scores(date_input,crs_name,std_name,df_this_crs_score):   
+            # print(df_this_crs_score)
             this_score=df_this_crs_score['this_score']      
             std_this_score=this_score[this_score['学生姓名']==std_name][str(date_input)+'-'+crs_name].tolist()[0]
 
@@ -608,58 +617,69 @@ class poster:
             df_std_all_scores=all_scores[all_scores['学生姓名']==std_name]
 
             
+            #方法一：从输入df中直接读取总积分
+            crs_sc=all_scores[all_scores['学生姓名']==std_name]['总积分'].tolist()[0]
 
-            #方法一：从学生档案读取总积分
-            for std_fn in os.listdir(self.std_fn_dir):
-                if std_fn.split('.')[0][6:]==std_name:
-                    df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='课程记录')
-                    # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
-                    if crs_nameInput in df_std_fn['课程编码及名称'].tolist() and int(dateInput) in df_std_fn['上课日期'].tolist():
-                        # print('{} 在名单中'.format(crs_nameInput))
-                        crs_sc=df_std_fn['课堂积分'].sum()
-                    else:
-                        # print('{} 不在名单中，加入本次积分。'.format(crs_nameInput))
-                        crs_sc=df_std_fn['课堂积分'].sum()+std_this_score
+            #方法二：从学生档案读取总积分
+            # for std_fn in os.listdir(self.std_fn_dir):
+            #     if std_fn.split('.')[0][6:]==std_name:
+            #         df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='课程记录')
+            #         # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
+            #         if crs_nameInput in df_std_fn['课程编码及名称'].tolist() and int(dateInput) in df_std_fn['上课日期'].tolist():
+            #             # print('{} 在名单中'.format(crs_nameInput))
+            #             crs_sc=df_std_fn['课堂积分'].sum()
+            #         else:
+            #             # print('{} 不在名单中，加入本次积分。'.format(crs_nameInput))
+            #             crs_sc=df_std_fn['课堂积分'].sum()+std_this_score
 
-                    break
+            #         break
             # print('from std fn total score:',std_name,crs_sc)
 
 
-            #方法二：遍历学生信息表读取总积分
+            #方法三：遍历学生信息表读取总积分
             # crs_sc=df_std_all_scores['课堂总积分'].tolist()[0]
             
 
             #方法一：从学生档案读取核销积分
-            for std_fn in os.listdir(self.std_fn_dir):
-                if std_fn.split('.')[0][6:]==std_name:
-                    df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='积分兑换')
-                    # df_std_fn['兑换日期2']=df_std_fn['兑换日期'].apply(lambda x: datetime.datetime.strptime(str(x),'%Y%m%d'))
-                    # df_std_fn=df_std_fn[df_std_fn['兑换日期2']<=datetime.datetime.strptime(str(dateInput),'%Y%m%d')]
-                    # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
-                    if int(dateInput) in df_std_fn['兑换日期'].tolist():
-                        # print('{} 在名单中'.format(crs_nameInput))
-                        vrfy_sc=df_std_fn['兑换积分'].sum()
-                    else:
-                        # print('{} 不在名单中，加入本次核销积分。'.format(crs_nameInput))
-                        df_this_vfry=pd.read_excel(self.crsStudent,sheet_name='积分核销表')
-                        df_this_std_date_vfry=df_this_vfry[(df_this_vfry['学生姓名']==std_name) & (df_this_vfry['核销日期']==dateInput)]
-                        
-                        if df_this_std_date_vfry.shape[0]==0:
-                            this_vfry=0
-                        else:
-                            this_vfry=df_this_std_date_vfry['核销积分'].tolist()[0]
-                        vrfy_sc=df_std_fn['兑换积分'].sum()+this_vfry
+            vrfy_sc=all_scores[all_scores['学生姓名']==std_name]['核销积分'].tolist()[0]
 
-                    break
+
+            #方法二：从学生档案读取核销积分
+            # for std_fn in os.listdir(self.std_fn_dir):
+            #     if std_fn.split('.')[0][6:]==std_name:
+            #         df_std_fn=pd.read_excel(os.path.join(self.std_fn_dir,std_fn),sheet_name='积分兑换')
+            #         # df_std_fn['兑换日期2']=df_std_fn['兑换日期'].apply(lambda x: datetime.datetime.strptime(str(x),'%Y%m%d'))
+            #         # df_std_fn=df_std_fn[df_std_fn['兑换日期2']<=datetime.datetime.strptime(str(dateInput),'%Y%m%d')]
+            #         # print(df_std_fn['课程编码及名称'].tolist(),df_std_fn['上课日期'].tolist(),crs_nameInput,dateInput)
+            #         if int(dateInput) in df_std_fn['兑换日期'].tolist():
+            #             # print('{} 在名单中'.format(crs_nameInput))
+            #             vrfy_sc=df_std_fn['兑换积分'].sum()
+            #         else:
+            #             # print('{} 不在名单中，加入本次核销积分。'.format(crs_nameInput))
+            #             df_this_vfry=pd.read_excel(self.crsStudent,sheet_name='积分核销表')
+            #             df_this_std_date_vfry=df_this_vfry[(df_this_vfry['学生姓名']==std_name) & (df_this_vfry['核销日期']==dateInput)]
+                        
+            #             if df_this_std_date_vfry.shape[0]==0:
+            #                 this_vfry=0
+            #             else:
+            #                 this_vfry=df_this_std_date_vfry['核销积分'].tolist()[0]
+            #             vrfy_sc=df_std_fn['兑换积分'].sum()+this_vfry
+
+            #         break
         
             # print('{} 核销积分'.format(vrfy_sc))
 
             #方法二：遍历学生信息表读取核销积分
             # vrfy_sc=df_std_all_scores['核销积分'].tolist()[0]
 
+            # print(df_std_all_scores)
+
+            #剩余积分方法一：从输入df中读取
+            remain_sc=all_scores[all_scores['学生姓名']==std_name]['剩余积分'].tolist()[0]
 
 
-            remain_sc=df_std_all_scores['剩余积分'].tolist()[0]
+            # remain_sc=df_std_all_scores['剩余积分'].tolist()[0]
+
             std_all_scores={
                 'crs_sc':crs_sc,
                 'vrfy_sc':vrfy_sc,
@@ -698,6 +718,8 @@ class poster:
             #评语&积分
             script=expScript(stdName)
             std_scores=get_std_scores(date_input=dateInput,crs_name=crs_nameInput,std_name=stdName,df_this_crs_score=df_std_scores)
+
+            # print(std_scores)
             std_this_score=std_scores['std_this_score']
             std_this_medals=std_scores['std_this_medals']
             crs_total_sc=std_scores['std_all_scores']['crs_sc']
@@ -727,7 +749,10 @@ class poster:
         para[0],para[1],para[2],para[3],para[4],para[5],para[6],para[7],para[8],para[9],para[10],para[11],para[12],para[13]
         
         INFO=read_excel()
-        df_std_scores=read_scores(place_input=self.place_input,term=self.term,weekday=self.weekday)
+        # df_std_scores=read_scores(place_input=self.place_input,term=self.term,weekday=self.weekday)
+        df_std_scores=read_scores(xls_dir=self.place_root_dir,place_input=self.place_input,term=self.term,weekday=self.weekday,cls=self.cls)
+
+        # print(df_std_scores)
         std_list,crs_info,teacherCmt=INFO['std_list'],INFO['crs_info'],INFO['tch_cmt']
 
         if not os.path.exists(os.path.join(self.bg,str(dateInput)[0:4],str(dateInput)+'-'+crs_nameInput)):

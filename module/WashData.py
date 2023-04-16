@@ -193,6 +193,65 @@ def std_all_scores(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超�
     # print(df_scores)
     return df_scores
 
+def  std_all_scores_new(xls_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',place='01-超智幼儿园',term='2023春',std_list_or_name='',plus_tiyan='no',):
+    df_s=pd.DataFrame({'ID':'DZ0000','机构':'测试机械','姓名首拼':'LCS','学生姓名':'李测试','性别':'女','课堂总积分':0,'活动总积分':0,'总积分':0,'核销积分':0,'剩余积分':0},index=[0])
+
+    dir_std=os.path.join(xls_dir,'学生档案')
+
+    std_list_xlsx=[]    
+    if std_list_or_name=='':
+        for fn in os.listdir(dir_std):
+            if re.match(r'DZ\d{4}.*.xlsx',fn) and fn!='DZ0000学生档案模板.xlsx':
+                std_list_xlsx.append(os.path.join(dir_std,fn))
+
+    elif isinstance(std_list_or_name,list):
+        std_list_xlsx=[os.path.join(xls_dir,'学生档案',ss_name+'.xlsx') for ss_name in std_list_or_name]
+    elif isinstance(std_list_or_name,str):
+        if std_list_or_name.startswith('w') or std_list_or_name.startswith('W'):
+            df_stdnames=pd.read_excel(os.path.join(xls_dir,'学生信息表','学生分班表.xlsx'))
+            df_stdnames['id_name']=df_stdnames['ID']+df_stdnames['学生姓名']
+            std_list_xlsx_pre=df_stdnames[(df_stdnames['学期']==term) & (df_stdnames['分班']==std_list_or_name.lower())]['id_name'].tolist()
+            std_list_xlsx=[os.path.join(xls_dir,'学生档案',ss+'.xlsx') for ss in std_list_xlsx_pre]
+            # print(std_list_xlsx)
+
+        elif std_list_xlsx_pre.startwith('D'):
+            std_list_xlsx=[os.path.join(xls_dir,'学生档案',std_list_or_name+'.xlsx')]
+
+    for std_xlsx in std_list_xlsx:
+        df_info=pd.read_excel(std_xlsx,sheet_name='基本情况')
+        id=df_info['ID'].tolist()[0]
+        place_name=place[4:]
+        std_name_py=df_info['姓名首拼'].tolist()[0]
+        std_name=df_info['姓名'].tolist()[0]
+        std_sex=df_info['性别'].tolist()[0]
+
+        df_all_cls_score=pd.read_excel(std_xlsx,sheet_name='课程记录')
+        if plus_tiyan=='yes':            
+            all_cls_score=df_all_cls_score['课堂积分'].sum()
+        else:
+            all_cls_score=df_all_cls_score[df_all_cls_score['上课类型']=='正式']['课堂积分'].sum()
+
+        all_act_score=0
+
+        total_score=all_cls_score+all_act_score
+
+        df_vrfy_score=pd.read_excel(std_xlsx,sheet_name='积分兑换')
+        vrfy_score_total=df_vrfy_score['兑换积分'].sum()                
+
+        remain_score=total_score-vrfy_score_total
+
+        std_score=[id,place_name,std_name_py,std_name,std_sex,all_cls_score,all_act_score,total_score,vrfy_score_total,remain_score]
+
+        df_s=df_s.append(pd.DataFrame([std_score],columns=['ID','机构','姓名首拼','学生姓名','性别','课堂总积分','活动总积分','总积分','核销积分','剩余积分']),ignore_index=True)
+
+    df=df_s[~(df_s['ID']=='DZ0000')]
+
+    # print(df)
+    return df
+
+            
+
+
 def std_score_this_crs(xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周一）.xlsx'):
     df=pd.read_excel(xls,sheet_name='课堂积分',header=None)
     res_date_crs=df.iloc[0,8:]   
@@ -357,8 +416,10 @@ if __name__=='__main__':
     # k=crs_sig_table(xls='E:\\temp\\2021秋-学生信息表（周五）.xlsx')
     # print(k['total_crs'])
     # print(k['std_crs'])
-    res=std_all_scores(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no')
-    print(res[res['学生姓名']=='廖茗睿'])
+    # res=std_all_scores(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no')
+    # print(res[res['学生姓名']=='廖茗睿'])
+
+    std_all_scores_new(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',place='01-超智幼儿园',term='2023春',std_list_or_name='w501',plus_tiyan='no')
     # df_score=std_score_this_crs(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')
     # df_sig=crs_sig_table(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')['std_crs']
     
