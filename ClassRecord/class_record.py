@@ -53,6 +53,17 @@ class StudentClass:
         
         return cmt
 
+
+    def read_term_cmt(self,std_id_name='DZ0057潘子怡',term_cmt_id='2023春学期总结-能力-20230625',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
+        xls_cmt=os.path.join('E:\\WXWork',self.wecom_id,'WeDrive\\大智小超科学实验室',self.place,'每周课程反馈\\反馈表',self.term[:4],self.term+'-学生课堂学习情况反馈表（周'+self.wk_to_str[str(self.weekday)]+'）.xlsx')
+    
+        try:
+            term_cmt=WashData.std_term_cmt(std_id_name=std_id_name,term_cmt_id=term_cmt_id,xls_cmt=xls_cmt)
+        except Exception as er:
+            term_cmt=er
+        
+        return term_cmt
+
     def append_cmt(self,std_id_name='DZ0001黄建乐',crs_date_name='20221022-L175喂食的小鸟',class_type='正式',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
         cmt=self.read_cmt(std_id_name=std_id_name,crs_date_name=crs_date_name)
         tg_xls=os.path.join(tg_dir,std_id_name+'.xlsx')
@@ -74,6 +85,34 @@ class StudentClass:
         except Exception as err:
             print('错误：',err)
 
+    def append_term_cmt(self,std_id_name='DZ0001黄建乐',cmtdate=20230625,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
+        #'2023春学期总结-能力-20230625'
+        cmtdate=str(cmtdate)
+        tg_xls=os.path.join(tg_dir,std_id_name+'.xlsx')
+
+        abl_id=self.term+'学期总结-能力-'+cmtdate
+        term_abl_cmt=self.read_term_cmt(std_id_name=std_id_name,term_cmt_id=abl_id,tg_dir=tg_dir)
+        psy_id=self.term+'学期总结-心理-'+cmtdate
+        term_psy_cmt=self.read_term_cmt(std_id_name=std_id_name,term_cmt_id=psy_id,tg_dir=tg_dir)
+        
+        
+        df_input=pd.DataFrame(data={'日期':[int(cmtdate)],'学期':[self.term],'学习能力评价':[term_abl_cmt],'心理评价':[term_psy_cmt]})
+        try:
+            print('\n正在写入 {} {} 的学期末评语 ---- '.format(std_id_name,self.term,end=''))
+            old_df=pd.read_excel(tg_xls,sheet_name='阶段小结')
+            # print(old_df,'\n',df_input)
+
+            vfy_df=write_data.WriteData().verify_data(df_old=old_df,df_new=df_input,cols=['日期','学期','学习能力评价','心理评价'],method='keep_new')
+            # print(vfy_df)
+            term_log=write_data.WriteData().write_to_xlsx(input_dataframe=vfy_df,output_xlsx=tg_xls,sheet_name='阶段小结',parse_date_col_name='')
+            print(term_log)
+        except Exception as err_term_log:
+            term_log=err_term_log
+
+        return term_log
+
+
+
     def append_verified_score(self,std_id_name='DZ0001黄建乐',vfy_date=20221203):    
         df_vfys=pd.read_excel(self.xls_info,sheet_name='积分核销表')
         df_vfy=df_vfys[(df_vfys['核销日期']==int(vfy_date)) & (df_vfys['学生姓名']==std_id_name[6:]) & (df_vfys['ID']==std_id_name[:6])]        
@@ -91,10 +130,7 @@ class StudentClass:
                 print('完成')       
             else:
                print('\n {} {} 的兑换积分信息已有记录……'.format(std_id_name,str(vfy_date)))
-
-        
-
-
+ 
     def new_xlsx(self,std_name,sex='女',birthday='',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
         num=0
         for fn in os.listdir(tg_dir):
@@ -149,7 +185,20 @@ class StudentClass:
                     print('完成')
             except Exception as err_batch:
                 print('执行出错，错误代码：',err_batch)
-            
+    
+    def std_term_cmt_batch(self,cmtdate,weekday,cls,tg_dir):
+        # tg_dir=os.path.join(self.root_dir,'学生档案')
+        fn_std_class=os.path.join(self.root_dir,'学生信息表','学生分班表.xlsx')
+        df_std_class=pd.read_excel(fn_std_class,sheet_name='分班表')
+        df_std_class['学生编码及姓名']=df_std_class['ID']+df_std_class['学生姓名']
+        std_list=df_std_class[df_std_class['分班']=='w'+str(weekday)+str(cls).zfill(2)]['学生编码及姓名']
+        for std  in std_list:
+            try:
+                self.append_term_cmt(std_id_name=std,cmtdate=cmtdate,tg_dir=tg_dir)
+            except Exception as batch_term_log_err:
+                print(std,' ',batch_term_log_err)
+        print('完成')
+
 class BuyRecord(StudentClass):
     def write_buy_rec(self,std_name,buy_date,buy_amt,buy_price,crs_type):
         buy_info=pd.DataFrame(data=[[str(crs_type),buy_amt,str(buy_date),buy_price]],columns=['课程类型','购课节数','购课日期','购课金额'])
@@ -179,13 +228,18 @@ class BuyRecord(StudentClass):
         
 
 if  __name__=='__main__':
-    p=BuyRecord()
+    # p=BuyRecord()
     # p.write_buy_rec(std_name='DZ0061农辉灿',buy_date='20230317',buy_amt=14,buy_price=770,crs_type='乐高')
-    p.batch_write_buy_rec(class_id='w501',buy_date='20230317',buy_amt=14,buy_price=770,crs_type='乐高')
+    # p.batch_write_buy_rec(class_id='w501',buy_date='20230317',buy_amt=14,buy_price=770,crs_type='乐高')
 
 
 
-    # p=StudentClass(place='001-超智幼儿园',wecom_id='1688856932305542',term='2022秋',weekday=6)
+    p=StudentClass(place='001-超智幼儿园',wecom_id='1688856932305542',term='2023春',weekday=5)
+
+    # res=p.read_term_cmt(std_id_name='DZ0057潘子怡',term_cmt_id='2023春学期总结-能力-20230625',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+    p.std_term_cmt_batch(cmtdate=20230625,weekday=5,cls=1,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+    # print(res)
+
     # p.append_verified_score(std_id_name='DZ0028杨涵宇',vfy_date=20221203)
     # p.read_sig()          
     # res=p.read_cmt(std_id_name='DZ0001黄建乐',crs_date_name='20221022-L175喂食的小鸟')                                                      

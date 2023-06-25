@@ -405,9 +405,20 @@ def std_each_class_cmt(df_score,df_sig,std_name='黄建乐',crs_name='20221022-L
         return {'txt_cmt':txt_cmt,'medal_num':int(medal_num),'score':score}
     
 
+def std_term_cmt(std_id_name='DZ0057潘子怡',term_cmt_id='2023春学期总结-能力-20230625',
+                    xls_cmt='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\每周课程反馈\\反馈表\\2022\\2022秋-学生课堂学习情况反馈表（周六）.xlsx'):
+    df_cmt=pd.read_excel(xls_cmt,sheet_name='课堂情况反馈表',skiprows=1)
+    df_cmt.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级','Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名','Unnamed: 5':'昵称','Unnamed: 6':'性别'},inplace=True)
 
+    try:
+        term_cmt_txt=df_cmt[(df_cmt['ID']==std_id_name[:6]) & (df_cmt['学生姓名']==std_id_name[6:])][term_cmt_id].tolist()[0]
+    except Exception as err:
+        term_cmt_txt=err
+    
+    return term_cmt_txt
 
 if __name__=='__main__':
+    pass
     # print(std_feedback())
     # k=std_term_crs(std_name='李俊豪',start_date='20210901',end_date='20211105',xls='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2021秋-学生信息表（周五）.xlsx')
     # print('std_crs',k['std_crs'])
@@ -419,7 +430,7 @@ if __name__=='__main__':
     # res=std_all_scores(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',plus_tiyan='no')
     # print(res[res['学生姓名']=='廖茗睿'])
 
-    std_all_scores_new(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',place='01-超智幼儿园',term='2023春',std_list_or_name='w501',plus_tiyan='no')
+    # std_all_scores_new(xls_dir='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园',place='01-超智幼儿园',term='2023春',std_list_or_name='w501',plus_tiyan='no')
     # df_score=std_score_this_crs(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')
     # df_sig=crs_sig_table(xls='E:\\WXWork\\1688856932305542\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生信息表\\2022\\2022秋-学生信息表（周六）.xlsx')['std_crs']
     
