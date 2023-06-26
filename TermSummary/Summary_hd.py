@@ -1038,7 +1038,7 @@ class StudentSummaryPaper:
             #学生上过的课程和总课程的差集
             dif_crs=list(set(total_list).difference(set(std_list)))
             boxes=[]
-            for crs in tt_list:
+            for crs in total_list:
                 if crs not in dif_crs:
                     boxes.append(self.draw_crs_box(crs_name=crs[9:],crs_date=crs[:8][:4]+'-'+crs[:8][4:6]+'-'+crs[:8][6:8],color_style='on'))
                 else:

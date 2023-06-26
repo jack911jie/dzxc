@@ -64,6 +64,44 @@ class StudentClass:
         
         return term_cmt
 
+    def read_cmt_scores(self):
+        xls_cmt_score=os.path.join('E:\\WXWork',self.wecom_id,'WeDrive\\大智小超科学实验室',self.place,'每周课程反馈\\反馈表',self.term[:4],self.term+'-学生课堂学习情况反馈表（周'+self.wk_to_str[str(self.weekday)]+'）.xlsx')
+
+        try:
+            df_cmt_score=pd.read_excel(xls_cmt_score,sheet_name='学员能力评分表',skiprows=1)
+            df_cmt_score.rename(columns={'Unnamed: 0':'ID','Unnamed: 1':'机构','Unnamed: 2':'班级',
+                                            'Unnamed: 3':'姓名首拼','Unnamed: 4':'学生姓名',
+                                            'Unnamed: 5':'昵称','Unnamed: 6':'性别','Unnamed: 7':'优点特性','Unnamed: 8':'提升特性'},inplace=True)
+
+            df_cmt_score['学生ID及姓名']=df_cmt_score['ID']+df_cmt_score['学生姓名']			
+            
+
+        except Exception as err_cmt_score:
+            df_cmt_score=pd.DataFrame()
+            print(err_cmt_score)
+        
+        return df_cmt_score
+
+    def append_cmt_score(self,std_id_name='DZ0057潘子怡',cmtdate=20230625,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
+        tg_xls=os.path.join(tg_dir,std_id_name+'.xlsx')
+        scr_data=self.read_cmt_scores()
+
+        # abl_scr=scr_data[scr_data['学生ID及姓名']==std_id_name][['理解力','空间想象力','逻辑思维','创造力','表达力']]
+        # psy_scr=scr_data[scr_data['学生ID及姓名']==std_id_name][['情绪力','人际力','自控力','适应力','学习力']]
+        all_scr=scr_data[scr_data['学生ID及姓名']==std_id_name][['理解力','空间想象力','逻辑思维','创造力','表达力','情绪力','人际力','自控力','适应力','学习力']]
+        all_scr['评分日期']=cmtdate
+        df_all_scr=all_scr[['评分日期','理解力','空间想象力','逻辑思维','创造力','表达力','情绪力','人际力','自控力','适应力','学习力']]
+        
+        try:
+            old_scr=pd.read_excel(tg_xls,sheet_name='学员能力评分')
+            #校验重复
+            vfy_scr=write_data.WriteData().verify_data(df_old=old_scr,df_new=df_all_scr,cols=['评分日期','理解力','空间想象力','逻辑思维','创造力','表达力','情绪力','人际力','自控力','适应力','学习力'],method='keep_new')
+
+            write_log=write_data.WriteData().write_to_xlsx(input_dataframe=vfy_scr,output_xlsx=tg_xls,sheet_name='学员能力评分',parse_date_col_name='')
+            print('{} {}'.format(std_id_name,write_log))
+        except Exception as err_cmtscr:
+            print(std_id_name,err_cmtscr)
+        
     def append_cmt(self,std_id_name='DZ0001黄建乐',crs_date_name='20221022-L175喂食的小鸟',class_type='正式',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案'):
         cmt=self.read_cmt(std_id_name=std_id_name,crs_date_name=crs_date_name)
         tg_xls=os.path.join(tg_dir,std_id_name+'.xlsx')
@@ -111,8 +149,6 @@ class StudentClass:
 
         return term_log
 
-
-
     def append_verified_score(self,std_id_name='DZ0001黄建乐',vfy_date=20221203):    
         df_vfys=pd.read_excel(self.xls_info,sheet_name='积分核销表')
         df_vfy=df_vfys[(df_vfys['核销日期']==int(vfy_date)) & (df_vfys['学生姓名']==std_id_name[6:]) & (df_vfys['ID']==std_id_name[:6])]        
@@ -125,7 +161,7 @@ class StudentClass:
             df_tg=pd.read_excel(os.path.join(self.root_dir,'学生档案',std_id_name+'.xlsx'),sheet_name='积分兑换')
             if int(vfy_date) not in df_tg['兑换日期'].tolist():
                 print('\n正在尝试写入 {} {} 的兑换积分信息…'.format(std_id_name,str(vfy_date)),end='')
-                write_basic_log=write_data.WriteData().write_to_xlsx(input_dataframe=df_write,output_xlsx=os.path.join(self.root_dir,'学生档案',std_id_name+'.xlsx'),sheet_name='积分兑换')
+                write_basic_log=write_data.WriteData().write_to_xlsx(input_dataframe=df_write,output_xlsx=os.path.join(self.root_dir,'学生档案',std_id_name+'.xlsx'),sheet_name='积分兑换',parse_date_col_name='')
                 print('\n',write_basic_log,end='')
                 print('完成')       
             else:
@@ -199,6 +235,20 @@ class StudentClass:
                 print(std,' ',batch_term_log_err)
         print('完成')
 
+
+    def std_cmt_score_batch(self,cmtdate,weekday,cls,tg_dir):
+        # tg_dir=os.path.join(self.root_dir,'学生档案')
+        fn_std_class=os.path.join(self.root_dir,'学生信息表','学生分班表.xlsx')
+        df_std_class=pd.read_excel(fn_std_class,sheet_name='分班表')
+        df_std_class['学生编码及姓名']=df_std_class['ID']+df_std_class['学生姓名']
+        std_list=df_std_class[df_std_class['分班']=='w'+str(weekday)+str(cls).zfill(2)]['学生编码及姓名']
+        for std  in std_list:
+            try:
+                self.append_cmt_score(std_id_name=std,cmtdate=cmtdate,tg_dir=tg_dir)
+            except Exception as batch_score_log_err:
+                print(std,' ',batch_score_log_err)
+        print('完成')
+
 class BuyRecord(StudentClass):
     def write_buy_rec(self,std_name,buy_date,buy_amt,buy_price,crs_type):
         buy_info=pd.DataFrame(data=[[str(crs_type),buy_amt,str(buy_date),buy_price]],columns=['课程类型','购课节数','购课日期','购课金额'])
@@ -237,7 +287,11 @@ if  __name__=='__main__':
     p=StudentClass(place='001-超智幼儿园',wecom_id='1688856932305542',term='2023春',weekday=5)
 
     # res=p.read_term_cmt(std_id_name='DZ0057潘子怡',term_cmt_id='2023春学期总结-能力-20230625',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
-    p.std_term_cmt_batch(cmtdate=20230625,weekday=5,cls=1,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+    # p.std_term_cmt_batch(cmtdate=20230625,weekday=5,cls=1,tg_dir='E:\\WXWork\\1688852895928129\\WeDrive\\大智小超科学实验室\\001-超智幼儿园\\学生档案')
+    # p.std_term_cmt_batch(cmtdate=20230625,weekday=5,cls=1,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+    # p.append_cmt_score(std_id_name='DZ0057潘子怡',tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+    p.std_cmt_score_batch(cmtdate=20230625,weekday=5,cls=1,tg_dir='E:\\temp\\temp_dzxc\\make_cus\\学生档案')
+ 
     # print(res)
 
     # p.append_verified_score(std_id_name='DZ0028杨涵宇',vfy_date=20221203)
