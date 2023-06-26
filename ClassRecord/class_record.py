@@ -78,7 +78,7 @@ class StudentClass:
             if crs_date_name not in df_tg['日期及课程编码名称'].tolist():
                 input_dataframe=pd.DataFrame(data=[[crs_date_name[:8],self.term,self.crs_type[crs_date_name[9].upper()],class_type,crs_date_name[9:],txt_cmt,score]],
                                                 columns=['上课日期','学期','课程类型','上课类型','课程编码及名称','课程反馈','课堂积分'])
-                write_log=write_data.WriteData().write_to_xlsx(input_dataframe=input_dataframe,output_xlsx=tg_xls,sheet_name='课程记录')
+                write_log=write_data.WriteData().write_to_xlsx(input_dataframe=input_dataframe,output_xlsx=tg_xls,sheet_name='课程记录',parse_date_col_name='')
                 print('{} {}'.format(crs_date_name,write_log))
             else:
                 print('{} 已有记录'.format(crs_date_name))
